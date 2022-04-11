@@ -1,0 +1,26 @@
+php_value memory_limit 256M
+
+<IfModule mod_rewrite.c>
+
+  # Turn Off mod_dir Redirect For Existing Directories
+  DirectorySlash Off
+  
+  # Rewrite For Public Folder
+  RewriteEngine on
+  
+  RewriteCond %{SERVER_PORT} 80
+  RewriteCond %{HTTP_HOST} ^(www\.)?forward-post\.com
+  RewriteRule ^(.*)$ https://www.forward-post.com/$1 [R,L]
+  
+  RewriteCond %{REQUEST_FILENAME} -d [OR]
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ ^$1 [N]
+
+    RewriteCond %{REQUEST_URI} (\.\w+$) [NC]
+    RewriteRule ^(.*)$ public/$1 
+
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php
+
+</IfModule>
