@@ -256,8 +256,8 @@
 										<td class="@can('editDraft')allowed-update @endcan" title="{{$row->status}}">
 											<div data-name="status" data-id="{{ $row->id }}" class="div-3">{{$row->status}}</div>
 										</td>
-										<td class="@can('editDraft')allowed-update @endcan" title="{{$row->status_date}}">
-											<div class="div-3">{{$row->status_date}}</div>
+										<td class="@can('update-user')allowed-update @endcan" title="{{$row->status_date}}">
+											<div data-name="status_date" data-id="{{ $row->id }}" class="div-3">{{$row->status_date}}</div>
 										</td>
 										<td class="@can('editDraft')allowed-update @endcan" title="{{$row->partner}}">
 											<div data-name="partner" data-id="{{ $row->id }}" class="div-3">{{$row->partner}}</div>
@@ -478,8 +478,8 @@
 										<td class="@can('editDraft')allowed-update @endcan" title="{{$row->status}}">
 											<div data-name="status" data-id="{{ $row->id }}" class="div-3">{{$row->status}}</div>
 										</td>
-										<td class="@can('editDraft')allowed-update @endcan" title="{{$row->status_date}}">
-											<div class="div-3">{{$row->status_date}}</div>
+										<td class="@can('update-user')allowed-update @endcan" title="{{$row->status_date}}">
+											<div data-name="status_date" data-id="{{ $row->id }}" class="div-3">{{$row->status_date}}</div>
 										</td>
 										<td class="@can('editDraft')allowed-update @endcan" title="{{$row->partner}}">
 											<div data-name="partner" data-id="{{ $row->id }}" class="div-3">{{$row->partner}}</div>
@@ -686,6 +686,11 @@
 											<option value="direction">Направление</option>
 											<option value="tariff">Тариф</option>
 											<option value="status">Статус</option>
+																						
+											@can('update-user')
+											<option value="status_date">Дата статуса</option>
+											@endcan
+											
 											<option value="partner">Партнер</option>
 											<option value="parcels_qty">Кол-во посылок</option>
 											<option value="tracking_local">Локальный</option>

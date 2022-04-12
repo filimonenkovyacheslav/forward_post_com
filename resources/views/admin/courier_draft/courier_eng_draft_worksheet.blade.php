@@ -224,8 +224,8 @@
 										<td class="@can('editEngDraft')allowed-update @endcan" title="{{$row->status}}">
 											<div data-name="status" data-id="{{ $row->id }}" class="div-3">{{$row->status}}</div>
 										</td>
-										<td class="@can('editEngDraft')allowed-update @endcan" title="{{$row->status_date}}">
-											<div class="div-3">{{$row->status_date}}</div>
+										<td class="@can('update-user')allowed-update @endcan" title="{{$row->status_date}}">
+											<div data-name="status_date" data-id="{{ $row->id }}" class="div-3">{{$row->status_date}}</div>
 										</td>
 										<td class="@can('editEngDraft')allowed-update @endcan" title="{{$row->tracking_main}}">
 											<div data-name="tracking_main" data-id="{{ $row->id }}" class="div-3">{{$row->tracking_main}}</div>
@@ -398,6 +398,11 @@
 									<select class="form-control" id="phil-ind-tracking-columns" name="phil-ind-tracking-columns">
 										<option value="" selected="selected"></option>
 										<option value="status">Status</option>
+
+										@can('update-user')
+										<option value="status_date">Status Date</option>
+										@endcan
+										
 										<option value="parcels_qty">Parcels qty</option>
 										<option value="tracking_local">Local tracking number</option>
 										<option value="pallet_number">Pallet number</option>

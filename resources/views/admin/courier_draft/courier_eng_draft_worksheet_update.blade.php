@@ -43,6 +43,15 @@
 								{!! Form::select('status', array('' => '', 'Pending' => 'Pending', 'Forwarding to the warehouse in the sender country' => 'Forwarding to the warehouse in the sender country', 'At the warehouse in the sender country' => 'At the warehouse in the sender country', 'At the customs in the sender country' => 'At the customs in the sender country', 'Forwarding to the receiver country' => 'Forwarding to the receiver country', 'At the customs in the receiver country' => 'At the customs in the receiver country', 'Forwarding to the receiver' => 'Forwarding to the receiver', 'Delivered' => 'Delivered', 'Return' => 'Return', 'Box' => 'Box', 'Pick up' => 'Pick up', 'Specify' => 'Specify', 'Think' => 'Think', 'Canceled' => 'Canceled'), $courier_eng_draft_worksheet->status,['class' => 'form-control']) !!}
 							</div>
 						</div>
+
+						@can('update-user')
+						<div class="form-group">
+							{!! Form::label('status_date','Status date',['class' => 'col-md-2 control-label'])   !!}
+							<div class="col-md-8">
+								{!! Form::date('status_date',$courier_eng_draft_worksheet->status_date,['class' => 'form-control'])!!}
+							</div>
+						</div>
+						@endcan						
 						
 						<div class="form-group">
 							{!! Form::label('tracking_main','Main tracking number',['class' => 'col-md-2 control-label'])   !!}

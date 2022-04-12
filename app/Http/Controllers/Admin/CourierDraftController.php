@@ -397,6 +397,12 @@ class CourierDraftController extends AdminController
     				$worksheet->checkCourierTask($worksheet->status);    				
     			}     	
     		}
+    		else if ($request->input('status_date')) {
+    			CourierDraftWorksheet::whereIn('id', $row_arr)
+    			->update([
+    				'status_date' => $request->input('status_date')
+    			]);       	
+    		}
     		else if ($request->input('tariff')) {
     			CourierDraftWorksheet::whereIn('id', $row_arr)
     			->update([
