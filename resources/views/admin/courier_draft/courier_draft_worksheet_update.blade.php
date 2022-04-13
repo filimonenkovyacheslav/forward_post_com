@@ -42,6 +42,19 @@
 								{!! Form::select('site_name', array('DD-C' => 'DD-C', 'For' => 'For'), $courier_draft_worksheet->site_name,['class' => 'form-control']) !!}
 							</div>
 						</div>
+						
+						@can('update-user')
+						@php
+							$courier_draft_worksheet->date = str_replace(".", "-", $courier_draft_worksheet->date);
+						@endphp
+						<div class="form-group">
+							{!! Form::label('date','Дата',['class' => 'col-md-2 control-label'])   !!}
+							<div class="col-md-8">
+								{!! Form::date('date',$courier_draft_worksheet->date,['class' => 'form-control'])!!}
+							</div>
+						</div>
+						@endcan
+						
 						<div class="form-group">
 							{!! Form::label('direction','Направление',['class' => 'col-md-2 control-label'])   !!}
 							<div class="col-md-8">

@@ -236,8 +236,8 @@
 										<td class="@can('editDraft')allowed-update @endcan" title="{{$row->site_name}}">
 											<div data-name="site_name" data-id="{{ $row->id }}" class="div-22">{{$row->site_name}}</div>
 										</td>
-										<td class="@can('editDraft')allowed-update @endcan" title="{{$row->date}}">
-											<div class="div-1">{{$row->date}}</div>
+										<td class="@can('update-user')allowed-update @endcan" title="{{$row->date}}">
+											<div data-name="date" data-id="{{ $row->id }}" class="div-3">{{$row->date}}</div>
 										</td>
 										<td class="@can('editDraft')allowed-update @endcan" title="{{$row->direction}}">
 											<div data-name="direction" data-id="{{ $row->id }}" class="div-2">{{$row->direction}}</div>
@@ -458,8 +458,8 @@
 										<td class="@can('editDraft')allowed-update @endcan" title="{{$row->site_name}}">
 											<div data-name="site_name" data-id="{{ $row->id }}" class="div-22">{{$row->site_name}}</div>
 										</td>
-										<td class="@can('editDraft')allowed-update @endcan" title="{{$row->date}}">
-											<div class="div-1">{{$row->date}}</div>
+										<td class="@can('update-user')allowed-update @endcan" title="{{$row->date}}">
+											<div data-name="date" data-id="{{ $row->id }}" class="div-3">{{$row->date}}</div>
 										</td>
 										<td class="@can('editDraft')allowed-update @endcan" title="{{$row->direction}}">
 											<div data-name="direction" data-id="{{ $row->id }}" class="div-2">{{$row->direction}}</div>
@@ -680,6 +680,11 @@
 										<select class="form-control" id="tracking-columns" name="tracking-columns">
 											<option value="" selected="selected"></option>
 											<option value="site_name">Сайт</option>
+											
+											@can('update-user')
+											<option value="date">Дата</option>
+											@endcan
+											
 											<option value="direction">Направление</option>
 											<option value="tariff">Тариф</option>
 											<option value="status">Статус</option>

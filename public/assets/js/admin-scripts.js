@@ -450,6 +450,7 @@ $('#tracking-columns').change((e)=>{
     const thisVal = $(e.target).val();
     if (thisVal === 'status') {
         $('[name="value-by-tracking"]').remove()
+        $('[name="date"]').remove()
         $('[name="site_name"]').remove()
         $('[name="tariff"]').remove()
         $('[name="partner"]').remove()
@@ -479,6 +480,7 @@ $('#tracking-columns').change((e)=>{
     }
     else if(thisVal === 'site_name'){
         $('[name="value-by-tracking"]').remove()
+        $('[name="date"]').remove()
         $('.status-value').remove()
         $('[name="tariff"]').remove()
         $('[name="partner"]').remove()
@@ -493,6 +495,7 @@ $('#tracking-columns').change((e)=>{
     }
     else if(thisVal === 'tariff'){
         $('[name="value-by-tracking"]').remove()
+        $('[name="date"]').remove()
         $('.status-value').remove()
         $('[name="site_name"]').remove()
         $('[name="status_date"]').remove()
@@ -508,6 +511,7 @@ $('#tracking-columns').change((e)=>{
     }
     else if(thisVal === 'partner'){
         $('[name="value-by-tracking"]').remove()
+        $('[name="date"]').remove()
         $('.status-value').remove()
         $('[name="site_name"]').remove()
         $('[name="status_date"]').remove()
@@ -526,6 +530,7 @@ $('#tracking-columns').change((e)=>{
     }
     else if(thisVal === 'sender_city') {
         $('[name="value-by-tracking"]').remove()
+        $('[name="date"]').remove()
         $('.status-value').remove()
         $('[name="site_name"]').remove()
         $('[name="status_date"]').remove()
@@ -546,6 +551,7 @@ $('#tracking-columns').change((e)=>{
     }
     else if(thisVal === 'status_date'){
         $('[name="value-by-tracking"]').remove()
+        $('[name="date"]').remove()
         $('[name="site_name"]').remove()
         $('.status-value').remove()
         $('[name="tariff"]').remove()
@@ -555,8 +561,21 @@ $('#tracking-columns').change((e)=>{
             <input class="form-control" type="date" name="status_date">
             `)
     }
+    else if(thisVal === 'date'){
+        $('[name="value-by-tracking"]').remove()
+        $('[name="status_date"]').remove()
+        $('[name="site_name"]').remove()
+        $('.status-value').remove()
+        $('[name="tariff"]').remove()
+        $('[name="partner"]').remove()
+        $('.city-value').remove()
+        $('.value-by-tracking').append(`
+            <input class="form-control" type="date" name="date">
+            `)
+    }
     else {
         $('.status-value').remove()
+        $('[name="date"]').remove()
         $('[name="site_name"]').remove()
         $('[name="tariff"]').remove()
         $('[name="partner"]').remove()
@@ -582,6 +601,7 @@ $('#phil-ind-tracking-columns').change((e)=>{
     const thisVal = $(e.target).val();   
     if (thisVal === 'status') {
         $('[name="value-by-tracking"]').remove()
+        $('[name="date"]').remove()
         $('.consignee-country-value').remove()
         $('[name="status_date"]').remove()
         $('.shipper-country-value').remove()
@@ -610,6 +630,7 @@ $('#phil-ind-tracking-columns').change((e)=>{
     }
     else if (thisVal === 'shipper_country') {       
         $('[name="value-by-tracking"]').remove()
+        $('[name="date"]').remove()
         $('.phil-ind-status-value').remove()
         $('[name="status_date"]').remove()
         $('.consignee-country-value').remove()
@@ -626,6 +647,7 @@ $('#phil-ind-tracking-columns').change((e)=>{
     }
     else if (thisVal === 'consignee_country') {
         $('[name="value-by-tracking"]').remove()
+        $('[name="date"]').remove()
         $('.phil-ind-status-value').remove()
         $('[name="status_date"]').remove()
         $('.shipper-country-value').remove()
@@ -647,6 +669,7 @@ $('#phil-ind-tracking-columns').change((e)=>{
     }
     else if (thisVal === 'shipper_city') {
         $('[name="value-by-tracking"]').remove()
+        $('[name="date"]').remove()
         $('.phil-ind-status-value').remove()
         $('[name="status_date"]').remove()
         $('.shipper-country-value').remove()
@@ -666,6 +689,7 @@ $('#phil-ind-tracking-columns').change((e)=>{
     }
     else if (thisVal === 'status_date') {
         $('[name="value-by-tracking"]').remove()
+        $('[name="date"]').remove()
         $('.phil-ind-status-value').remove()
         $('.shipper-country-value').remove()
         $('.city-value').remove()
@@ -674,8 +698,20 @@ $('#phil-ind-tracking-columns').change((e)=>{
             <input class="form-control" type="date" name="status_date">
             `)
     }
+    else if (thisVal === 'date') {
+        $('[name="value-by-tracking"]').remove()
+        $('[name="status_date"]').remove()
+        $('.phil-ind-status-value').remove()
+        $('.shipper-country-value').remove()
+        $('.city-value').remove()
+        $('.consignee-country-value').remove()
+        $('.phil-ind-value-by-tracking').append(`
+            <input class="form-control" type="date" name="date">
+            `)
+    }
     else {
         $('.phil-ind-status-value').remove()
+        $('[name="date"]').remove()
         $('.consignee-country-value').remove()
         $('[name="status_date"]').remove()
         $('.shipper-country-value').remove()
@@ -1037,7 +1073,7 @@ $('table td.allowed-update').not('.td-checkbox, .td-button').click((e)=>{
     $('#updateCellModal [name="tracking-columns"]').remove()
     $('#updateCellModal [name="phil-ind-tracking-columns"]').remove()
     $('#updateCellModal select').remove()
-    $('#updateCellModal [name="status_date"]').remove()
+    $('#updateCellModal [type="date"]').remove()
     let id = ''
     let name = ''
     let table = ''

@@ -403,6 +403,12 @@ class CourierDraftController extends AdminController
     				'status_date' => $request->input('status_date')
     			]);       	
     		}
+    		else if ($request->input('date')) {
+    			CourierDraftWorksheet::whereIn('id', $row_arr)
+    			->update([
+    				'date' => $request->input('date')
+    			]);       	
+    		}
     		else if ($request->input('tariff')) {
     			CourierDraftWorksheet::whereIn('id', $row_arr)
     			->update([
@@ -647,7 +653,7 @@ class CourierDraftController extends AdminController
     		$new_id = DB::getPdo()->lastInsertId();
     		CourierDraftWorksheet::find($new_id)
     		->update([
-    			'date'=>date('Y.m.d'),
+    			'date'=>date('Y-m-d'),
     			'status' => 'Дубль',
     			'status_date' => date('Y-m-d')
     		]);

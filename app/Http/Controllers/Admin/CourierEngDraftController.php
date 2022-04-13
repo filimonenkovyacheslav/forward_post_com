@@ -444,6 +444,12 @@ class CourierEngDraftController extends AdminController
     				'status_date' => $request->input('status_date')
     			]);       	
     		}
+    		else if ($request->input('date')) {
+    			CourierEngDraftWorksheet::whereIn('id', $row_arr)
+    			->update([
+    				'date' => $request->input('date')
+    			]);       	
+    		}
     		else if ($request->input('status')){
     			for ($i=0; $i < count($row_arr); $i++) { 
     				$status_error = $this->checkStatus('courier_eng_draft_worksheet', $row_arr[$i], $request->input('status'));

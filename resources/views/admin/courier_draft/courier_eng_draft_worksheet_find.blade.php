@@ -225,8 +225,8 @@
 										<td title="{{$row->id}}">
 											<div class="div-22">{{$row->id}}</div>
 										</td>
-										<td class="@can('editEngDraft')allowed-update @endcan" title="{{$row->date}}">
-											<div class="div-3">{{$row->date}}</div>
+										<td class="@can('update-user')allowed-update @endcan" title="{{$row->date}}">
+											<div data-name="date" data-id="{{ $row->id }}" class="div-3">{{$row->date}}</div>
 										</td>
 										<td class="@can('editEngDraft')allowed-update @endcan" title="{{$row->direction}}">
 											<div class="div-3">{{$row->direction}}</div>
@@ -403,6 +403,11 @@
 								<label class="checkbox-operations-change">Choose column:
 									<select class="form-control" id="phil-ind-tracking-columns" name="phil-ind-tracking-columns">
 										<option value="" selected="selected"></option>
+										
+										@can('update-user')
+										<option value="date">Date</option>
+										@endcan
+											
 										<option value="status">Status</option>
 										
 										@can('update-user')

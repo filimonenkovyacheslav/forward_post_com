@@ -37,6 +37,18 @@
 
 						{!! Form::open(['url'=>route('courierEngDraftWorksheetUpdate', ['id'=>$courier_eng_draft_worksheet->id]), 'class'=>'form-horizontal china-worksheet-form phil-ind-update-form','method' => 'POST']) !!}
 
+						@can('update-user')
+						@php
+							$courier_eng_draft_worksheet->date = str_replace(".", "-", $courier_eng_draft_worksheet->date);
+						@endphp
+						<div class="form-group">
+							{!! Form::label('date','Date',['class' => 'col-md-2 control-label'])   !!}
+							<div class="col-md-8">
+								{!! Form::date('date',$courier_eng_draft_worksheet->date,['class' => 'form-control'])!!}
+							</div>
+						</div>
+						@endcan						
+
 						<div class="form-group">
 							{!! Form::label('status','Status',['class' => 'col-md-2 control-label'])   !!}
 							<div class="col-md-8">

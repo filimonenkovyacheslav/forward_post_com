@@ -266,7 +266,7 @@ class BaseController extends Controller
                     'standard_phone' => '+'.$standard_phone,
                     'site_name' => $site_name,
                     'package_content' => 'Пусто: 0',
-                    'date' => date('Y.m.d'),
+                    'date' => date('Y-m-d'),
                     'status' => 'Доставляется на склад в стране отправителя',
                     'status_en'=> 'Forwarding to the warehouse in the sender country',
                     'status_he'=> "נשלח למחסן במדינת השולח",
@@ -305,7 +305,7 @@ class BaseController extends Controller
                 CourierEngDraftWorksheet::create([
                     'tracking_main' => $tracking,
                     'standard_phone' => '+'.$standard_phone,
-                    'date' => date('Y.m.d'),
+                    'date' => date('Y-m-d'),
                     'shipped_items' => 'Empty: 0',
                     'status' => 'Forwarding to the warehouse in the sender country',
                     'status_ru'=> 'Доставляется на склад в стране отправителя',

@@ -298,7 +298,7 @@
 											<div data-name="site_name" data-id="{{ $row->id }}" class="div-22">{{$row->site_name}}</div>
 										</td>
 										<td class="@can('editPost')allowed-update @endcan" title="{{$row->date}}">
-											<div class="div-1">{{$row->date}}</div>
+											<div class="div-3">{{$row->date}}</div>
 										</td>
 										<td class="@can('editPost')allowed-update @endcan" title="{{$row->direction}}">
 											<div data-name="direction" data-id="{{ $row->id }}" class="div-2">{{$row->direction}}</div>
@@ -533,7 +533,7 @@
 											<div data-name="site_name" data-id="{{ $row->id }}" class="div-22">{{$row->site_name}}</div>
 										</td>
 										<td class="@can('editPost')allowed-update @endcan" title="{{$row->date}}">
-											<div class="div-1">{{$row->date}}</div>
+											<div class="div-3">{{$row->date}}</div>
 										</td>
 										<td class="@can('editPost')allowed-update @endcan" title="{{$row->direction}}">
 											<div data-name="direction" data-id="{{ $row->id }}" class="div-2">{{$row->direction}}</div>

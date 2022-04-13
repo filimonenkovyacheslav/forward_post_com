@@ -139,7 +139,7 @@ class FrontController extends AdminController
             }
         }        
 
-        $new_worksheet->date = date('Y.m.d');
+        $new_worksheet->date = date('Y-m-d');
         $new_worksheet->status_date = date('Y-m-d');       
 
         if ($new_worksheet->save()){           
@@ -481,7 +481,7 @@ class FrontController extends AdminController
                 $new_worksheet->shipper_region = $this->israel_cities[$new_worksheet->sender_city];
             }
 
-            $new_worksheet->date = date('Y.m.d');
+            $new_worksheet->date = date('Y-m-d');
             $new_worksheet->status_date = date('Y-m-d');
             if ($request->input('need_box') === 'Мне не нужна коробка') {
                 $new_worksheet->status = 'Забрать';
