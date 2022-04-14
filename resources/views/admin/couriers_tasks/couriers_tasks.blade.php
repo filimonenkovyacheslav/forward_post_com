@@ -178,11 +178,11 @@
 										<td title="{{$row->standard_phone}}">
 											<div class="div-15">{{$row->standard_phone}}</div>
 										</td>
-										<td title="{{$row->courier}}">
-											<div class="div-3">{{$row->courier}}</div>
+										<td class="@can('editPost')allowed-update @endcan" title="{{$row->courier}}">
+											<div data-name="courier" data-id="{{ $row->id }}" class="div-3">{{$row->courier}}</div>
 										</td>
-										<td title="{{$row->pick_up_date_comments}}">
-											<div class="div-3">{{$row->pick_up_date_comments}}</div>
+										<td class="@can('editPost')allowed-update @endcan" title="{{$row->pick_up_date_comments}}">
+											<div data-name="pick_up_date_comments" data-id="{{ $row->id }}" class="div-3">{{$row->pick_up_date_comments}}</div>
 										</td>
 									@endforeach
 									@endif
@@ -196,10 +196,37 @@
 							@endif
 
 							<div class="checkbox-operations">
+								
+								{!! Form::open(['url'=>route('addCourierTaskDataById'), 'class'=>'worksheet-add-form','method' => 'POST']) !!}
+																		
+									<label style="display:none" class="checkbox-operations-change">
+										<select class="form-control" id="tracking-columns" name="tracking-columns">
+											<option value="" selected="selected"></option>
+											<option value="direction">Направление/Direction</option>
+											<option value="site_name">Сайт/Site</option>
+											<option value="status">Статус/Status</option>
+											<option value="comments_1">Комментарии 1/Comments 1</option>
+											<option value="comments_2">Комментарии 2/Comments 2</option> 
+											<option value="shipper_name">Отправитель/Shipper name</option>
+											<option value="shipper_country">Страна отправителя/Shipper country</option>
+											<option value="shipper_region">Регион отправителя/Shipper region</option>
+											<option value="shipper_city">Город отправителя/Shipper city</option>
+											<option value="shipper_address">Адрес отправителя/Shipper address</option>
+											<option value="standard_phone">Телефон отправителя/Shipper phone</option>
+											<option value="courier">Курьер/Courier</option>
+											<option value="pick_up_date_comments">Дата забора/Pick up date</option>  
+										</select>
+									</label>	
 
-							{!! Form::open(['url'=>route('doneById'),'method' => 'POST']) !!}
-							<a class="btn btn-success" onclick="ConfirmDone(event)" href="{{ url('/admin/couriers-tasks-done-id') }}">Done</a>
-							{!! Form::close() !!}
+									<label style="display:none" class="value-by-tracking checkbox-operations-change">
+										<textarea class="form-control" name="value-by-tracking"></textarea>
+									</label>									
+
+								{!! Form::close() !!}
+
+								{!! Form::open(['url'=>route('doneById'),'method' => 'POST']) !!}
+								<a class="btn btn-success" onclick="ConfirmDone(event)" href="{{ url('/admin/couriers-tasks-done-id') }}">Done</a>
+								{!! Form::close() !!}
 
 							</div>
 						
@@ -211,6 +238,34 @@
 		
 	</div><!-- .animated -->
 </div><!-- .content -->
+
+
+<!-- Modal -->
+<a id="update-cell" data-toggle="modal" data-target="#updateCellModal"></a>
+
+<div class="modal fade" id="updateCellModal" tabindex="-1" role="dialog" aria-labelledby="updateCellModalLabel" aria-hidden="true" style="background: rgba(0, 0, 0, 0.4);">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="updateCellModalLabel">Update cell</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<form action="{{ route('addCourierTaskDataById') }}" method="POST" enctype="multipart/form-data">
+				@csrf
+				<div class="modal-body">
+					<div class="form-group value-by-tracking">
+						<textarea class="form-control" name="value-by-tracking"></textarea>
+					</div>					
+				</div>
+				<div class="modal-footer">
+					<button type="submit" class="btn btn-primary" style="font-size:.8rem">SAVE</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
 
 
 <script>

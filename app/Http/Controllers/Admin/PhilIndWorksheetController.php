@@ -957,7 +957,12 @@ class PhilIndWorksheetController extends AdminController
     				}
     			}
 
-    			$this->updateNewPacking($row_arr, $value_by, $column, $check_column);     	    		
+    			$this->updateNewPacking($row_arr, $value_by, $column, $check_column);   
+    			
+    			for ($i=0; $i < count($row_arr); $i++) { 
+    				$worksheet = PhilIndWorksheet::find($row_arr[$i]);
+    				$worksheet->checkCourierTask($worksheet->status);
+    			}	  	    		
     		}
     		else if ($request->input('status')){
     			for ($i=0; $i < count($row_arr); $i++) { 

@@ -53,7 +53,7 @@ class CourierTask extends Model
             $new_task = new CourierTask();
             $new_task->eng_worksheet_id = $row->id;
             $new_task->direction = $row->direction;
-            $new_task->site_name = 'ORE';
+            $new_task->site_name = 'For';
             $new_task->status = $row->status;
             $new_task->parcels_qty = 1;
             $new_task->order_number = $row->order_number;
@@ -93,7 +93,7 @@ class CourierTask extends Model
             $new_task = new CourierTask();
             $new_task->eng_draft_id = $row->id;
             $new_task->direction = $row->direction;
-            $new_task->site_name = 'ORE';
+            $new_task->site_name = 'For';
             $new_task->status = $row->status;
             $new_task->parcels_qty = $row->parcels_qty;
             $new_task->order_number = $row->order_number;
@@ -151,11 +151,10 @@ class CourierTask extends Model
 
 
     /**
-    * Update the courier task.
+    * Getting the worksheet for this courier task.
     */
-    public function taskDone()
+    public function getWorksheet()
     {
-        $status = $this->status;
         $this_worksheet = null;
 
         if ($this->worksheet) {
@@ -170,6 +169,18 @@ class CourierTask extends Model
         elseif ($this->draftEng) {
             $this_worksheet = $this->draftEng;
         }
+
+        return $this_worksheet;
+    }
+
+
+    /**
+    * Update status of the courier task.
+    */
+    public function taskDone()
+    {
+        $status = $this->status;
+        $this_worksheet = $this->getWorksheet();
 
         if ($this_worksheet) {
             switch($status) {
@@ -198,5 +209,54 @@ class CourierTask extends Model
         }                        
 
         return true;
+    }
+
+
+    /**
+    * Update data of the courier task.
+    */
+    public function taskUpdate($value_by,$column)
+    {        
+        $this_worksheet = $this->getWorksheet();
+
+        if ($column === 'pick_up_date_comments') {
+            switch($this_worksheet->table) {
+                
+                case "new_worksheet":
+
+                $this_worksheet->pick_up_date = $value_by;
+            
+                break;
+                
+                case "phil_ind_worksheet":
+                
+                $this_worksheet->delivery_date_comments = $value_by;
+                
+                break;
+
+                case "courier_draft_worksheet":
+
+                $this_worksheet->pick_up_date = $value_by;
+            
+                break;
+                
+                case "courier_eng_draft_worksheet":
+
+                $this_worksheet->delivery_date_comments = $value_by;
+
+                break;       
+                default:
+                    break;
+            } 
+        } 
+        else{
+            $this_worksheet->$column = $value_by;
+        }
+        
+        $this->$column = $value_by;       
+        $this->save();
+        $this_worksheet->save();                      
+
+        return $this_worksheet;
     }
 }

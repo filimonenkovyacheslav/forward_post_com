@@ -441,8 +441,12 @@ class CourierDraftController extends AdminController
     			for ($i=0; $i < count($row_arr); $i++) { 
     				$worksheet = CourierDraftWorksheet::find($row_arr[$i]);
     				$worksheet->checkCourierTask($worksheet->status);
-
     			}
+    		}
+
+    		for ($i=0; $i < count($row_arr); $i++) { 
+    			$worksheet = CourierDraftWorksheet::find($row_arr[$i]);
+    			$worksheet->checkCourierTask($worksheet->status);
     		}
     	}
 
@@ -743,19 +747,21 @@ class CourierDraftController extends AdminController
 				$this->updateWarehouse(null, $new_worksheet->pallet_number, $new_worksheet->tracking_main);
 			}
 
-			// Notification of Warehouse
-			ReceiptArchive::where([
-				['tracking_main', $new_worksheet->tracking_main],
-				['worksheet_id', null],
-				['receipt_id', null]
-			])->delete();
-			$result = Receipt::where('tracking_main', $new_worksheet->tracking_main)->first();
-			if (!$result) {
-				$message = $this->checkReceipt($work_sheet_id, null, 'ru', $new_worksheet->tracking_main);
-			}
+			if ($new_worksheet->tracking_main) {
+				// Notification of Warehouse
+				ReceiptArchive::where([
+					['tracking_main', $new_worksheet->tracking_main],
+					['worksheet_id', null],
+					['receipt_id', null]
+				])->delete();
+				$result = Receipt::where('tracking_main', $new_worksheet->tracking_main)->first();
+				if (!$result) {
+					$message = $this->checkReceipt($work_sheet_id, null, 'ru', $new_worksheet->tracking_main);
+				}
 
-			$this->checkForMissingTracking($new_worksheet->tracking_main);
-			// End Notification of Warehouse
+				$this->checkForMissingTracking($new_worksheet->tracking_main);
+				// End Notification of Warehouse
+			}			
 
 			ReceiptArchive::where('worksheet_id', $id)->update(['worksheet_id' => $work_sheet_id]);
 			
@@ -772,6 +778,9 @@ class CourierDraftController extends AdminController
 				$this->addingOrderNumber($new_worksheet->standard_phone, 'ru');               
             }						
 			CourierDraftWorksheet::where('id', $id)->delete();
+
+			$new_worksheet->checkCourierTask($new_worksheet->status);
+			
 			return redirect()->to(session('this_previous_url'))->with('status', 'Строка успешно активирована!'.$message);
 		}
 		else{

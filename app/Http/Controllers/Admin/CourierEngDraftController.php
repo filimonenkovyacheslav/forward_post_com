@@ -436,6 +436,11 @@ class CourierEngDraftController extends AdminController
     				]);
     			}
     			// End Update Old Packing Eng     	
+
+    			for ($i=0; $i < count($row_arr); $i++) { 
+    				$worksheet = CourierEngDraftWorksheet::find($row_arr[$i]);
+    				$worksheet->checkCourierTask($worksheet->status);
+    			}
     		
     		}
     		else if ($request->input('status_date')) {
@@ -820,7 +825,7 @@ class CourierEngDraftController extends AdminController
 		if ($user->role === 'office_1' || $user->role === 'admin') {
 			$worksheet->background = 'tr-orange';
 		}
-		
+
 		if ($worksheet->save())	{
 
 			if ($worksheet->pallet_number) {
@@ -829,19 +834,21 @@ class CourierEngDraftController extends AdminController
 
 			$work_sheet_id = $worksheet->id;
 
-			// Notification of Warehouse
-			ReceiptArchive::where([
-				['tracking_main', $worksheet->tracking_main],
-				['worksheet_id', null],
-				['receipt_id', null]
-			])->delete();
-			$result = Receipt::where('tracking_main', $worksheet->tracking_main)->first();
-			if (!$result) {
-				$message = $this->checkReceipt($work_sheet_id, null, 'en', $worksheet->tracking_main);
-			}
-			
-			$this->checkForMissingTracking($worksheet->tracking_main);
-			// End Notification of Warehouse
+			if ($worksheet->tracking_main) {
+				// Notification of Warehouse
+				ReceiptArchive::where([
+					['tracking_main', $worksheet->tracking_main],
+					['worksheet_id', null],
+					['receipt_id', null]
+				])->delete();
+				$result = Receipt::where('tracking_main', $worksheet->tracking_main)->first();
+				if (!$result) {
+					$message = $this->checkReceipt($work_sheet_id, null, 'en', $worksheet->tracking_main);
+				}
+
+				$this->checkForMissingTracking($worksheet->tracking_main);
+				// End Notification of Warehouse
+			}			
 			
 			ReceiptArchive::where('worksheet_id', $id)->update(['worksheet_id' => $work_sheet_id]);
 
@@ -869,6 +876,9 @@ class CourierEngDraftController extends AdminController
 			}
 			
 			CourierEngDraftWorksheet::where('id', $id)->delete();
+
+			$worksheet->checkCourierTask($worksheet->status);
+			
 			return redirect()->to(session('this_previous_url'))->with('status', 'Row activated successfully!'.$message);
 		}
 		else{

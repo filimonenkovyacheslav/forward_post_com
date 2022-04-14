@@ -106,6 +106,55 @@ class CourierTaskController extends AdminController
     }
 
 
+    public function addCourierTaskDataById(Request $request)
+    {
+    	$row_arr = $request->input('row_id');
+    	$value_by = $request->input('value-by-tracking');
+    	$column = $request->input('tracking-columns');
+
+    	for ($i=0; $i < count($row_arr); $i++) { 
+    		$task = CourierTask::find($row_arr[$i]);
+    		$worksheet = $task->getWorksheet();
+
+    		if ($column === 'pick_up_date_comments') {
+    			switch($worksheet->table) {
+
+    				case "new_worksheet":
+
+    				$request->merge(['tracking-columns' => 'pick_up_date']);
+
+    				break;
+
+    				case "phil_ind_worksheet":
+
+    				$request->merge(['tracking-columns' => 'delivery_date_comments']);
+
+    				break;
+
+    				case "courier_draft_worksheet":
+
+    				$request->merge(['tracking-columns' => 'pick_up_date']);
+
+    				break;
+
+    				case "courier_eng_draft_worksheet":
+
+    				$request->merge(['tracking-columns' => 'delivery_date_comments']);
+
+    				break;       
+    				default:
+    				break;
+    			} 
+    		} 
+    		
+    		$this->toUpdatesArchive($request,$worksheet);
+    		$task->taskUpdate($value_by,$column);
+    	}
+
+    	return redirect()->to(session('this_previous_url'))->with('status', 'Задание успешно обновлено / Task updated successfully!');
+    }
+
+
 	public function exportExcelCourierTask(Request $request)
 	{
 		if (!$request->export_region && !$request->export_site) {

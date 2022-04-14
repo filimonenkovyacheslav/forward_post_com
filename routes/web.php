@@ -149,6 +149,8 @@ Route::group(['prefix' => 'admin','middleware' => 'auth'],function() {
 
 	Route::post('/couriers-tasks-done-id',['uses' => 'Admin\CourierTaskController@doneById','as' => 'doneById']);
 
+	Route::post('/couriers-tasks-data-id',['uses' => 'Admin\CourierTaskController@addCourierTaskDataById','as' => 'addCourierTaskDataById']);
+
 	// Корзина/Trash
 	Route::get('/trash',['uses' => 'Admin\TrashController@index','as' => 'adminTrash']);
 

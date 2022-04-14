@@ -1219,6 +1219,11 @@ class NewWorksheetController extends AdminController
     				$worksheet = NewWorksheet::find($row_arr[$i]);
     				$worksheet->checkCourierTask($worksheet->status);
     			}
+    		}
+
+    		for ($i=0; $i < count($row_arr); $i++) { 
+    			$worksheet = NewWorksheet::find($row_arr[$i]);
+    			$worksheet->checkCourierTask($worksheet->status);
     		}		
     	}
 
