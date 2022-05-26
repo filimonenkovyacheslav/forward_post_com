@@ -191,6 +191,15 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="form-group">
+                    <div class="row">
+                        {!! Form::label('consignee_country','Destination County',['class' => 'col-md-6 control-label'])   !!}
+                        <div class="col-md-6">
+                            {!! Form::select('consignee_country', $to_country, isset($data_parcel->consignee_country) ? $data_parcel->consignee_country: '',['class' => 'form-control']) !!}
+                        </div>
+                    </div>
+                </div>
                 
                 {!! Form::hidden('item_1','')!!}
                 {!! Form::hidden('q_item_1','')!!}
@@ -219,6 +228,15 @@
         {
             event.preventDefault();
             const form = event.target;
+
+            if (!document.querySelector('[name="shipper_country"]').value){
+                alert('The country field is required !');
+                return false;
+            }
+            if (!document.querySelector('[name="consignee_country"]').value){
+                alert('The country field is required !');
+                return false;
+            }
 
             const phone = document.querySelector('[name="standard_phone"]'); 
             if (phone.value.length < 10 || phone.value.length > 24) {

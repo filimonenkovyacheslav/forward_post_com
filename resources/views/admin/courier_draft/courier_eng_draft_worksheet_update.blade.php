@@ -234,7 +234,7 @@
 						<div class="form-group">
 							{!! Form::label('consignee_country','Consignee\'s country',['class' => 'col-md-2 control-label'])   !!}
 							<div class="col-md-8">
-								{!! Form::select('consignee_country', array('India' => 'India', 'Nepal' => 'Nepal', 'Nigeria' => 'Nigeria', 'Ghana' => 'Ghana', 'Cote D\'Ivoire' => 'Cote D\'Ivoire', 'South Africa' => 'South Africa', 'Thailand' => 'Thailand'), isset($courier_eng_draft_worksheet->consignee_country) ? $courier_eng_draft_worksheet->consignee_country: '',['class' => 'form-control']) !!}
+								{!! Form::select('consignee_country', $to_country, isset($courier_eng_draft_worksheet->consignee_country) ? $courier_eng_draft_worksheet->consignee_country: '',['class' => 'form-control']) !!}
 							</div>
 						</div>
 

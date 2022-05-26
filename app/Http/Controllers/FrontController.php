@@ -871,13 +871,15 @@ class FrontController extends AdminController
     {  
         $israel_cities = $this->israelCities();
         $israel_cities['other'] = 'Other city';
-        return view('phil_ind_parcel_form',compact('israel_cities'));      
+        $to_country = $this->to_country_arr;
+        return view('phil_ind_parcel_form',compact('israel_cities','to_country'));      
     }
 
 
     public function philIndParcelFormOld()
     {
-        return view('phil_ind_parcel_form_old');        
+        $to_country = $this->to_country_arr;
+        return view('phil_ind_parcel_form_old',compact('to_country'));        
     }
 
 
@@ -1007,7 +1009,8 @@ class FrontController extends AdminController
 
     public function showFormEng()
     {
-        return view('additional_form_eng');        
+        $to_country = $this->to_country_arr;
+        return view('additional_form_eng',compact('to_country'));        
     }
 
 

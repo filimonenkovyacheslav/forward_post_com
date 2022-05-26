@@ -88,16 +88,6 @@ class AdminController extends Controller
 
             		if ($packing) $country = $packing->country;
             		if (!$country) $country = $worksheet->consignee_country; 
-            		if (!$country) {
-            			$tracking = $worksheet->tracking_main;
-            			if (stripos($tracking, 'IN') !== false) $country = 'India';
-            			if (stripos($tracking, 'NE') !== false) $country = 'Nepal';
-            			if (stripos($tracking, 'AN') !== false) $country = 'Nigeria';
-            			if (stripos($tracking, 'AG') !== false) $country = 'Ghana';
-            			if (stripos($tracking, 'AD') !== false) $country = 'Cote D\'Ivoire';
-            			if (stripos($tracking, 'AS') !== false) $country = 'South Africa';
-            			if (stripos($tracking, 'T-') !== false) $country = 'Thailand';
-            		}
 
             		if ($country && $country === 'India') {
             			if (!$worksheet->shipper_name) $error_message .= 'Shipper\'s name,';

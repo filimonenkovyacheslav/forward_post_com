@@ -61,8 +61,9 @@ class PhilIndWorksheetController extends AdminController
 		$title = 'Update row '.$phil_ind_worksheet->id;
 		$user = Auth::user();
 		$israel_cities = $this->israelCities();
+		$to_country = $this->to_country_arr;
 
-		return view('admin.phil_ind.phil_ind_worksheet_update', ['title' => $title,'phil_ind_worksheet' => $phil_ind_worksheet, 'user' => $user,'new_column_1' => $arr_columns[0],'new_column_2' => $arr_columns[1],'new_column_3' => $arr_columns[2],'new_column_4' => $arr_columns[3],'new_column_5' => $arr_columns[4],'israel_cities' => $israel_cities]);
+		return view('admin.phil_ind.phil_ind_worksheet_update', ['title' => $title,'phil_ind_worksheet' => $phil_ind_worksheet, 'user' => $user,'new_column_1' => $arr_columns[0],'new_column_2' => $arr_columns[1],'new_column_3' => $arr_columns[2],'new_column_4' => $arr_columns[3],'new_column_5' => $arr_columns[4],'israel_cities' => $israel_cities,'to_country' => $to_country]);
 	}
 
 

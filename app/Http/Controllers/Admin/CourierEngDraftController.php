@@ -66,8 +66,9 @@ class CourierEngDraftController extends AdminController
 		$courier_eng_draft_worksheet = CourierEngDraftWorksheet::find($id);
 		$title = 'Update row '.$courier_eng_draft_worksheet->id;
 		$israel_cities = $this->israelCities();
+		$to_country = $this->to_country_arr;
 
-		return view('admin.courier_draft.courier_eng_draft_worksheet_update', compact('title','courier_eng_draft_worksheet','israel_cities'));
+		return view('admin.courier_draft.courier_eng_draft_worksheet_update', compact('title','courier_eng_draft_worksheet','israel_cities','to_country'));
 	}
 
 
@@ -729,16 +730,7 @@ class CourierEngDraftController extends AdminController
 			return response()->json(['error' => $error_message]);
 		}
 
-		$country = $courier_eng_draft_worksheet->consignee_country;
-		if (!$country) {
-			if (stripos($tracking, 'IN') !== false) $country = 'India';
-			if (stripos($tracking, 'NE') !== false) $country = 'Nepal';
-			if (stripos($tracking, 'AN') !== false) $country = 'Nigeria';
-			if (stripos($tracking, 'AG') !== false) $country = 'Ghana';
-			if (stripos($tracking, 'AD') !== false) $country = 'Cote D\'Ivoire';
-			if (stripos($tracking, 'AS') !== false) $country = 'South Africa';
-			if (stripos($tracking, 'T-') !== false) $country = 'Thailand';
-		}		
+		$country = $courier_eng_draft_worksheet->consignee_country;	
 
 		if ($country && $country === 'India') {
 			if (!$courier_eng_draft_worksheet->shipper_name) $error_message .= 'Shipper\'s name,';
