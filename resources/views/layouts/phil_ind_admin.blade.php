@@ -99,8 +99,8 @@
                             <i class="menu-icon fa fa-book "></i>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="{{url('/admin/receipts/dd')}}"> Квитанции ДД (Receipts DD) </a></li>
-                            <li><a href="{{url('/admin/receipts/ul')}}"> Квитанции ЮЛ (Receipts UL) </a></li>
+                            <li><a href="{{url('/admin/receipts/dd')}}"> Receipts DD </a></li>
+                            <li><a href="{{url('/admin/receipts/ul')}}"> Receipts UL </a></li>
                             <li><a href="{{route('adminReceiptsArchive')}}"></i> Notifications </a></li>
                         </ul>
                     </li>                     
@@ -123,19 +123,7 @@
                     <li>
                         <a href="{{route('adminWarehouse')}}"><i class="menu-icon fa fa-book "></i> Warehouse </a>
                     </li> 
-                    @endcan 
-
-                    @can('view-post')
-                    <li>
-                        <a href="{{route('adminIndex')}}"><i class="menu-icon fa fa-book "></i> Russian admin </a>
-                    </li>
-                    @endcan  
-
-                    @can('china-view-post')
-                    <li>
-                        <a href="{{route('adminChinaIndex')}}"><i class="menu-icon fa fa-book "></i> China admin </a>
-                    </li>
-                    @endcan      
+                    @endcan   
 
                     @can('editCourierTasks')
                     <li>
@@ -145,7 +133,7 @@
 
                     @can('changeColor')
                     <li>
-                        <a href="{{route('adminTrash')}}"><i class="menu-icon fa fa-book "></i> Корзина/Trash</a>
+                        <a href="{{route('adminTrash')}}"><i class="menu-icon fa fa-book "></i> Trash</a>
                     </li> 
                     @endcan        
 
