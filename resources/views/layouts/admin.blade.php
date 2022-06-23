@@ -169,6 +169,12 @@
                         <a href="{{route('adminUpdatesArchive')}}"><i class="menu-icon fa fa-book "></i> Updates Archive</a>
                     </li> 
                     @endcan   
+
+                    @can('editDraft')
+                    <li>
+                        <a href="{{route('tempLinks')}}"><i class="menu-icon fa fa-book "></i> Temporary links</a>
+                    </li> 
+                    @endcan 
                 
                 </ul>               
             </div><!-- /.navbar-collapse -->
