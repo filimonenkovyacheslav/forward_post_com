@@ -18,7 +18,8 @@ class CreateCourierEngDraftWorksheetTable extends Migration
             $table->string('date')->nullable(); 
             $table->string('direction')->nullable();
             $table->string('status')->nullable();    
-            $table->string('status_date')->nullable();      
+            $table->string('status_date')->nullable();  
+            $table->string('order_date')->nullable();    
             $table->string('tracking_main')->nullable();
             $table->string('order_number')->nullable();
             $table->string('parcels_qty')->default('1');

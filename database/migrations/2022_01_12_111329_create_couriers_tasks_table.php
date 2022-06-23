@@ -26,7 +26,7 @@ class CreateCouriersTasksTable extends Migration
             $table->string('status', 100)->nullable();
             $table->string('direction', 50)->nullable();
             $table->string('site_name', 10)->nullable();
-            $table->unsignedTinyInteger('parcels_qty')->nullable();
+            $table->string('parcels_qty',30)->nullable();
             $table->unsignedTinyInteger('order_number')->nullable();
             $table->text('comments_1')->nullable();
             $table->text('comments_2')->nullable();

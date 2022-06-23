@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -21,8 +23,12 @@ use App\Receipt;
 use App\ReceiptArchive;
 use App\Warehouse;
 use App\UpdatesArchive;
+use Illuminate\Support\Facades\File;
+use App\SignedDocument;
+use PDF;
 use DB;
 use Auth;
+use App\BaseModel;
 
 
 class Controller extends BaseController
@@ -35,12 +41,376 @@ class Controller extends BaseController
     protected $to_country_arr = ['India' => 'India','Nigeria' => 'Nigeria','Ghana' => 'Ghana','Ivory Coast' => 'Ivory Coast','Philippines' => 'Philippines','Thailand' => 'Thailand'];
     protected $israel_cities = ['Acre' => 'Nahariya','Afula' => 'Kiryat Shmona','Arad' => 'Eilat','Ariel' => 'Center','Ashdod' => 'South','Ashkelon' => 'South','Baqa-Jatt' => 'Haifa','Bat Yam' => 'Tel Aviv','Beersheba' => 'South','Beit She\'an' => 'Kiryat Shmona','Beit Shemesh' => 'Jerusalem','Beitar Illit' => 'Jerusalem','Binyamina' => 'North','Bnei Brak' => 'Tel Aviv','Caesaria' => 'North','Dimona' => 'Eilat','Eilat' => 'Eilat','El\'ad' => 'Center','Giv\'atayim' => 'Tel Aviv','Giv\'at Shmuel' => 'Center','Hadera' => 'Haifa','Haifa' => 'Haifa','Herzliya' => 'Tel Aviv','Hod HaSharon' => 'Center','Holon' => 'Tel Aviv','Jerusalem' => 'Jerusalem','Karmiel' => 'Nahariya','Kafr Qasim' => 'Center','Kfar Saba' => 'Center','Kiryat Ata' => 'Haifa','Kiryat Bialik' => 'Haifa','Kiryat Gat' => 'South','Kiryat Malakhi' => 'South','Kiryat Motzkin' => 'Haifa','Kiryat Ono' => 'Tel Aviv','Kiryat Shmona' => 'Kiryat Shmona','Kiryat Yam' => 'Haifa','Lod' => 'Center','Ma\'ale Adumim' => 'Jerusalem','Ma\'alot-Tarshiha' => 'Nahariya','Migdal HaEmek' => 'Nahariya','Modi\'in Illit' => 'Center','Modi\'in-Maccabim-Re\'ut' => 'Center','Nahariya' => 'Nahariya','Nazareth' => 'Nahariya','Nazareth Illit' => 'Nahariya','Nesher' => 'Haifa','Ness Ziona' => 'Center','Netanya' => 'Center','Netivot' => 'South','Ofakim' => 'South','Or Akiva' => 'Haifa','Or Yehuda' => 'Tel Aviv','Pardes Hana' => 'North','Petah Tikva' => 'Center','Qalansawe' => 'Center','Ra\'anana' => 'Center','Rahat' => 'South','Ramat Gan' => 'Tel Aviv','Ramat HaSharon' => 'Tel Aviv','Ramla' => 'Center','Rehovot' => 'Center','Rishon LeZion' => 'Center','Rosh HaAyin' => 'Center','Safed' => 'Kiryat Shmona','Sakhnin' => 'Nahariya','Sderot' => 'South','Shefa-\'Amr (Shfar\'am)' => 'Haifa','Tamra' => 'Haifa','Tayibe' => 'Center','Tel Aviv' => 'Tel Aviv','Tiberias' => 'Kiryat Shmona','Tira' => 'Center','Tirat Carmel' => 'Haifa','Umm al-Fahm' => 'Haifa','Yavne' => 'Center','Yehud-Monosson' => 'Center','Yokneam' => 'Haifa','Zikhron Yakov' => 'North'];
 
+    
+    protected function contentToObj($request)
+    {
+        $result = [];
+        parse_str($request->getContent(),$result);        
+        $result = (object)$result;
+        $request = $result;
+        return $request;
+    }
 
+
+    protected function checkExistPhone($request, $table)
+    {
+        $phone = $request->standard_phone;
+        switch ($table) {           
+
+            case "courier_draft_worksheet":
+
+            $worksheet = CourierDraftWorksheet::where('standard_phone',$phone)->first();;
+            if ($worksheet) return 'В нашей базе данных уже существует ваш заказ. Вы хотите добавить новый заказ?';
+            else return '';
+        
+            break;
+            
+            case "courier_eng_draft_worksheet":
+
+            $worksheet = CourierEngDraftWorksheet::where('standard_phone',$phone)->first();;
+            if ($worksheet) return 'One of your orders already exists in our database. Would you like to add one more?';
+            else return '';
+
+            break;
+        }
+    }
+
+
+    protected function generateRandomString($length = 10) {
+        return substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil($length/strlen($x)) )),1,$length);
+    }
+    
+    
     protected function toUpdatesArchive($request,$worksheet,$double = false,$double_create = 0)
     {
         $archive = new UpdatesArchive();
         $archive->createUpdatesArchive($request,$worksheet,$double,$double_create);
         return true;
+    }
+
+
+    protected function signedToUpdatesArchive($worksheet,$user_name = '',$uniq_id = '',$old_uniq_id = '')
+    {
+        $archive = new UpdatesArchive();
+        $archive->signedDocumentToUpdatesArchive($worksheet,$user_name,$uniq_id,$old_uniq_id);
+        return true;
+    }
+
+
+    protected function checkDocument($type,$id)
+    {
+        $items = DB::table('temp_tables')->select('name')->get();
+        if ($items->count()) {
+            foreach ($items as $item) {
+                if (Schema::hasColumn('table_'.$item->name, 'worksheet_id')) {
+                    $t = DB::table('table_'.$item->name)->where([
+                        ['id',1],
+                        ['type',$type],
+                        ['worksheet_id',$id]
+                    ])->first();
+                    if ($t) return true;
+                }     
+            }
+        }
+        return false;
+    }
+
+
+    protected function checkDocument_2($type,$id)
+    {
+        $items = $this->getUploadFiles($type,$id);
+        $worksheet = $this->getWorkSheet($type,$id);
+        $uniq_id = $worksheet->getLastDocUniq();
+        if (count($items) && $uniq_id){
+            foreach($items as $item){
+                if ($uniq_id === $item['uniq_id']) {
+                    return true;
+                }                
+            }           
+        }
+        else
+            return false;
+    }
+
+
+    protected function getWorkSheet($type,$id)
+    {
+        $worksheet = null;
+        
+        switch ($type) {
+
+            case "draft_id":
+
+            $worksheet = CourierDraftWorksheet::find($id);
+
+            break;
+
+            case "eng_draft_id":
+
+            $worksheet = CourierEngDraftWorksheet::find($id);
+
+            break;
+
+            case "worksheet_id":
+
+            $worksheet = NewWorksheet::find($id);
+
+            break;
+
+            case "eng_worksheet_id":
+
+            $worksheet = PhilIndWorksheet::find($id);
+
+            break;
+        }
+
+        return $worksheet;
+    }
+
+
+    protected function getUploadFiles($type,$id)
+    {
+          
+        $worksheet = $this->getWorkSheet($type,$id);
+        $documents = $worksheet->signedDocuments;
+        $last_doc = $worksheet->getLastDoc();
+        $items = [];
+        if ($documents) {
+            foreach ($documents as $document) { 
+                $signaturesPath = $this->checkDirectory('signatures');                    
+                if ($document->file_for_cancel) {
+                    $folderPath = $this->checkDirectory('documents_for_cancel');
+                    $file = $document->file_for_cancel;
+                    if ($file) $items[] = [
+                        'path'=>$folderPath.$file, 
+                        'name'=>$file,
+                        'signature'=>'',
+                        'uniq_id'=>'',                       
+                        'signature_for_cancel'=>$signaturesPath.$document->signature_for_cancel
+                    ];
+                }
+                if ($last_doc->id != $document->id) 
+                    $folderPath = $this->checkDirectory('canceled_documents');
+                else
+                    $folderPath = $this->checkDirectory('documents');
+                $file = $document->pdf_file;
+                if ($file) $items[] = [
+                    'path'=>$folderPath.$file, 
+                    'name'=>$file,
+                    'uniq_id'=>$document->uniq_id,
+                    'signature'=>$signaturesPath.$document->signature,
+                    'signature_for_cancel'=>''
+                ];
+            }
+        }       
+
+        return $items;
+    }
+
+
+    protected function deleteUploadFiles($type,$id)
+    {
+        $items = $this->getUploadFiles($type,$id);
+        if ($items) {
+            foreach($items as $item) {
+                if (file_exists($item['path'])) unlink($item['path']);
+                if (file_exists($item['signature'])) unlink($item['signature']);
+                if (file_exists($item['signature_for_cancel'])) unlink($item['signature_for_cancel']);
+            } 
+            return true;
+        }
+        else return false;             
+    }
+
+
+    protected function checkDirectory($name)
+    {
+        $folderPath = public_path().'/upload/'.$name;
+
+        if(!File::exists($folderPath)){
+            File::makeDirectory($folderPath);
+            $folderPath = $folderPath.'/';
+        }
+        else $folderPath = public_path('upload/'.$name.'/');
+
+        return $folderPath;
+    }
+
+
+    protected function formToImg($request)
+    {
+        /*$folderPath = $this->checkDirectory('ru_forms');
+
+        $img = $request->form_canvas;
+        $img = str_replace('data:image/jpeg;base64,', '', $img);
+        $img = str_replace(' ', '+', $img);
+        $data = base64_decode($img);
+        $file_name = uniqid().".jpeg";
+        $success = file_put_contents($folderPath.$file_name, $data);*/
+
+        return 'file_name';
+    }
+
+
+    protected function getDomainRule()
+    {
+        $domain = $_SERVER['SERVER_NAME'];
+        if (strripos($domain, 'forward-post') !== false) return 'forward';
+        else return 'ddcargos';
+    }
+
+
+    public function setTrackingToDocument($worksheet,$tracking)
+    {
+        $folderPath = $this->checkDirectory('documents');
+        $cancel = null;
+        
+        $document = $worksheet->getLastDoc();
+        if ($document) {
+            $file_name = $document->pdf_file;
+            if (file_exists($folderPath.$file_name))unlink($folderPath.$file_name);
+            
+            if (!$document->screen_ru_form) {
+                if ($this->getDomainRule() !== 'forward') {
+                    $pdf = PDF::loadView('pdf.pdfview',compact('worksheet','document','tracking','cancel'));
+                }
+                elseif($this->getDomainRule() === 'forward'){
+                    $pdf = PDF::loadView('pdf.pdfview_forward',compact('worksheet','document','tracking','cancel'));
+                }
+            }
+            else{
+                $pdf = PDF::loadView('pdf.pdfview_ru',compact('worksheet','document','tracking','cancel'));
+            }
+            $pdf->save($folderPath.$file_name);
+        }       
+
+        return $document;
+    }
+
+
+    public function cancelPdf(Request $request)
+    {
+        $worksheet = null;
+        $type = '';
+        $id = 0;
+        $document = null;
+        
+        if ($request->draft_id) {
+            $worksheet = CourierDraftWorksheet::find($request->draft_id);
+            $type = 'draft_id';
+            $document = $worksheet->getLastDoc();
+            $id = $worksheet->id;
+        }
+        elseif ($request->eng_draft_id) {
+            $worksheet = CourierEngDraftWorksheet::find($request->eng_draft_id);
+            $type = 'eng_draft_id';
+            $document = $worksheet->getLastDoc();
+            $id = $worksheet->id;
+        }
+        elseif ($request->worksheet_id) {
+            $worksheet = NewWorksheet::find($request->worksheet_id);
+            $type = 'worksheet_id';
+            $document = $worksheet->getLastDoc();
+            $id = $worksheet->id;
+        }
+        elseif ($request->eng_worksheet_id) {
+            $worksheet = PhilIndWorksheet::find($request->eng_worksheet_id);
+            $type = 'eng_worksheet_id';
+            $document = $worksheet->getLastDoc();
+            $id = $worksheet->id;
+        }
+
+        if ($document) {
+            if ($document->uniq_id) {
+                $this->signedToUpdatesArchive($worksheet,'','',$document->uniq_id);
+                return redirect("/cancel-pdf-id/$type/$id/");
+            }
+            else return back();
+        }
+        else return back();        
+    }
+
+
+    public function messageForCancelPdf($type,$id)
+    {
+        $message = '';
+
+        switch ($type) {
+            
+            case "worksheet_id":
+
+            $worksheet = NewWorksheet::find($id);
+        
+            break;
+            
+            case "eng_worksheet_id":
+
+            $worksheet = PhilIndWorksheet::find($id);
+            $message .= 'Please consider the packing list I had submitted invalid. The packing list number is '.$worksheet->getLastDocUniq();
+            if ($worksheet->tracking_main) {
+                $message .= ', the tracking number is '.$worksheet->tracking_main;
+            }
+
+            break;
+
+            case "draft_id":
+
+            $worksheet = CourierDraftWorksheet::find($id);
+        
+            break;
+            
+            case "eng_draft_id":
+
+            $worksheet = CourierEngDraftWorksheet::find($id);
+            $message .= 'Please consider the packing list I had submitted invalid. The packing list number is '.$worksheet->getLastDocUniq();
+            if ($worksheet->tracking_main) {
+                $message .= ', the tracking number is '.$worksheet->tracking_main;
+            }
+
+            break;
+        }
+
+        return [$message,$worksheet];
+    }
+
+
+    public function cancelPdfId($type,$id)
+    {    
+        if ($this->checkDocument($type,$id)) return redirect()->back()->with('status-error', 'There is an unfinished process!'); 
+        if (!$this->checkDocument_2($type,$id)) return redirect()->back()->with('status-error', 'There is nothing to cancel or an unfinished process! Complete the process or recreate the order!');  
+        $message = $this->messageForCancelPdf($type,$id)[0];
+        $worksheet = $this->messageForCancelPdf($type,$id)[1];
+        return view('pdf.form_cancel_pdf',compact('worksheet','type','message'));
+    }
+
+
+    protected function deleteOldWorksheet($id, $which_admin)
+    {
+        if ($id) {
+            switch ($which_admin) {
+
+                case "ru":
+
+                $this->removeTrackingFromPalletWorksheet($id, 'ru', true);
+                $this->deleteUploadFiles('draft_id',$id);
+                CourierDraftWorksheet::where('id', $id)->delete();
+                PackingSea::where('work_sheet_id', $id)->delete();
+                ReceiptArchive::where('worksheet_id', $id)->delete();
+
+                break;
+
+                case "eng":
+
+                $this->removeTrackingFromPalletWorksheet($id, 'en',true);
+                $this->deleteUploadFiles('eng_draft_id',$id);
+                CourierEngDraftWorksheet::where('id', $id)->delete();
+                PackingEng::where('work_sheet_id', $id)->delete();
+                ReceiptArchive::where('worksheet_id', $id)->delete();
+
+                break;
+            }
+        }  
+        return true;             
     }
     
 
@@ -1339,6 +1709,220 @@ class Controller extends BaseController
                 });
             }
         }      
+    }
+
+
+    protected function fillResponseDataRu($data, $request, $content = false, $draft = false){
+        $data_parcel = [];
+        if ($draft) $data_parcel['phone_exist_checked'] = 'true';
+        
+        if ($request->quantity_sender === '1') {               
+            $sender_name = explode(" ", $data->sender_name);
+            if (count($sender_name) > 1) {
+                $data_parcel['first_name'] = $sender_name[0];
+                $data_parcel['last_name'] = $sender_name[1];
+            }
+            elseif (count($sender_name) == 1) {
+                $data_parcel['first_name'] = $sender_name[0];
+                $data_parcel['last_name'] = '';
+            }
+            else{
+                $data_parcel['first_name'] = '';
+                $data_parcel['last_name'] = '';
+            }               
+            $data_parcel['sender_address'] = $data->sender_address;
+            $data_parcel['sender_city'] = $data->sender_city;
+            $data_parcel['sender_postcode'] = $data->sender_postcode;
+            $data_parcel['sender_country'] = $data->sender_country;
+            $data_parcel['standard_phone'] = $data->standard_phone;
+            $data_parcel['sender_phone'] = $data->sender_phone;
+            $data_parcel['sender_passport'] = $data->sender_passport;
+        }
+        if ($request->quantity_recipient === '1') {
+            $recipient_name = explode(" ", $data->recipient_name);
+            if (count($recipient_name) > 1) {
+                $data_parcel['recipient_first_name'] = $recipient_name[0];
+                $data_parcel['recipient_last_name'] = $recipient_name[1];
+            }
+            elseif (count($recipient_name) == 1) {
+                $data_parcel['recipient_first_name'] = $recipient_name[0];
+                $data_parcel['recipient_last_name'] = '';
+            }
+            else{
+                $data_parcel['recipient_first_name'] = '';
+                $data_parcel['recipient_last_name'] = '';
+            }
+            $data_parcel['recipient_street'] = $data->recipient_street;
+            $data_parcel['recipient_house'] = $data->recipient_house;
+            $data_parcel['recipient_room'] = $data->recipient_room;                
+            $data_parcel['recipient_city'] = $data->recipient_city;
+            $data_parcel['recipient_postcode'] = $data->recipient_postcode;
+            $data_parcel['recipient_country'] = $data->recipient_country;
+            $data_parcel['recipient_email'] = $data->recipient_email;
+            $data_parcel['recipient_phone'] = $data->recipient_phone;
+            $data_parcel['recipient_passport'] = $data->recipient_passport;               
+            $data_parcel['body'] = $data->body;
+            $data_parcel['district'] = $data->district;
+            $data_parcel['region'] = $data->region;
+        }
+
+        if ($content) {
+            $items = explode(";", $data->package_content);            
+            if (count($items)) {
+                $temp = '';
+                for ($i=0; $i < count($items); $i++) {                    
+                    if (strripos($items[$i], '-') !== false) {
+                        $temp = explode("-", $items[$i]);
+                        $data_parcel['item_'.($i+1)] = trim($temp[0]);
+                        $data_parcel['q_item_'.($i+1)] = trim($temp[1]);
+                    }
+                    elseif (strripos($items[$i], ':') !== false) {
+                        $temp = explode(":", $items[$i]);
+                        $data_parcel['item_'.($i+1)] = trim($temp[0]);
+                        $data_parcel['q_item_'.($i+1)] = trim($temp[1]);
+                    }
+                }
+            }
+        }
+
+        return $data_parcel;
+    }
+
+
+    protected function fillResponseDataEng($data, $request, $content = false, $draft = false)
+    {
+        $data_parcel = [];
+        if ($draft) $data_parcel['phone_exist_checked'] = 'true';
+        
+        if ($request->quantity_sender === '1') {
+            $shipper_name = explode(" ", $data->shipper_name);
+            if (count($shipper_name) > 1) {
+                $data_parcel['first_name'] = $shipper_name[0];
+                $data_parcel['last_name'] = $shipper_name[1];
+            }
+            elseif (count($shipper_name) == 1) {
+                $data_parcel['first_name'] = $shipper_name[0];
+                $data_parcel['last_name'] = '';
+            }
+            else{
+                $data_parcel['first_name'] = '';
+                $data_parcel['last_name'] = '';
+            }
+            $data_parcel['shipper_address'] = $data->shipper_address;
+            $data_parcel['standard_phone'] = $data->standard_phone;
+            $data_parcel['shipper_phone'] = $data->shipper_phone;
+            $data_parcel['shipper_country'] = $data->shipper_country;
+            $data_parcel['shipper_id'] = $data->shipper_id;
+            $data_parcel['shipper_city'] = $data->shipper_city;
+        }
+        
+        if ($request->quantity_recipient === '1') {
+            if (!$draft) {
+                $data = PhilIndWorksheet::where([
+                    ['shipper_phone',$request->input('shipper_phone')],
+                    ['consignee_name','<>', null],
+                    ['consignee_address','<>', null],
+                    ['consignee_phone','<>', null]
+                ])
+                ->orWhere([
+                    ['standard_phone', 'like', '%'.$request->input('shipper_phone').'%'],
+                    ['consignee_name','<>', null],
+                    ['consignee_address','<>', null],
+                    ['consignee_phone','<>', null]
+                ])
+                ->get()->last();
+            }
+            
+            if ($data) {
+                $address = trim(stristr($data->consignee_address, " "));                    
+                $consignee_name = explode(" ", $data->consignee_name);
+                if (count($consignee_name) > 1) {
+                    $data_parcel['consignee_first_name'] = $consignee_name[0];
+                    $data_parcel['consignee_last_name'] = $consignee_name[1];
+                }
+                elseif (count($consignee_name) == 1) {
+                    $data_parcel['consignee_first_name'] = $consignee_name[0];
+                    $data_parcel['consignee_last_name'] = '';
+                }
+                else{
+                    $data_parcel['consignee_first_name'] = '';
+                    $data_parcel['consignee_last_name'] = '';
+                }
+                $data_parcel['consignee_address'] = $address;
+                $data_parcel['consignee_country'] = $data->consignee_country;
+                $data_parcel['consignee_phone'] = $data->consignee_phone;
+                $data_parcel['consignee_id'] = $data->consignee_id;
+            }
+            else{
+                $data_parcel['consignee_first_name'] = '';
+                $data_parcel['consignee_last_name'] = '';
+                $data_parcel['consignee_address'] = '';
+                $data_parcel['consignee_phone'] = '';
+                $data_parcel['consignee_id'] = '';
+                $data_parcel['consignee_country'] = '';
+            }
+        }
+
+        if ($content) {
+            $shipper_name = explode(" ", $data->shipper_name);
+            if (count($shipper_name) > 1) {
+                $data_parcel['first_name'] = $shipper_name[0];
+                $data_parcel['last_name'] = $shipper_name[1];
+            }
+            elseif (count($shipper_name) == 1) {
+                $data_parcel['first_name'] = $shipper_name[0];
+                $data_parcel['last_name'] = '';
+            }
+            else{
+                $data_parcel['first_name'] = '';
+                $data_parcel['last_name'] = '';
+            }
+            $data_parcel['shipper_address'] = $data->shipper_address;
+            $data_parcel['standard_phone'] = $data->standard_phone;
+            $data_parcel['shipper_phone'] = $data->shipper_phone;
+            $data_parcel['shipper_country'] = $data->shipper_country;
+            $data_parcel['shipper_id'] = $data->shipper_id;
+            $data_parcel['shipper_city'] = $data->shipper_city;
+
+            $address = trim(stristr($data->consignee_address, " "));               
+            $consignee_name = explode(" ", $data->consignee_name);
+            if (count($consignee_name) > 1) {
+                $data_parcel['consignee_first_name'] = $consignee_name[0];
+                $data_parcel['consignee_last_name'] = $consignee_name[1];
+            }
+            elseif (count($consignee_name) == 1) {
+                $data_parcel['consignee_first_name'] = $consignee_name[0];
+                $data_parcel['consignee_last_name'] = '';
+            }
+            else{
+                $data_parcel['consignee_first_name'] = '';
+                $data_parcel['consignee_last_name'] = '';
+            }
+            $data_parcel['consignee_country'] = $data->consignee_country;
+            $data_parcel['consignee_address'] = $address;
+            $data_parcel['consignee_phone'] = $data->consignee_phone;
+            $data_parcel['consignee_id'] = $data->consignee_id;
+            $data_parcel['shipment_val'] = $data->shipment_val;
+
+            $items = explode(";", $data->shipped_items);            
+            if (count($items)) {
+                $temp = '';
+                for ($i=0; $i < count($items); $i++) {                    
+                    if (strripos($items[$i], '-') !== false) {
+                        $temp = explode("-", $items[$i]);
+                        $data_parcel['item_'.($i+1)] = trim($temp[0]);
+                        $data_parcel['q_item_'.($i+1)] = trim($temp[1]);
+                    }
+                    elseif (strripos($items[$i], ':') !== false) {
+                        $temp = explode(":", $items[$i]);
+                        $data_parcel['item_'.($i+1)] = trim($temp[0]);
+                        $data_parcel['q_item_'.($i+1)] = trim($temp[1]);
+                    }
+                }
+            }
+        }
+        
+        return $data_parcel;
     }
 
 

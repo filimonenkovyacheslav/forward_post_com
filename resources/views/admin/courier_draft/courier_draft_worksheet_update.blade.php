@@ -42,7 +42,7 @@
 								{!! Form::select('site_name', array('DD-C' => 'DD-C', 'For' => 'For'), $courier_draft_worksheet->site_name,['class' => 'form-control']) !!}
 							</div>
 						</div>
-						
+
 						@can('update-user')
 						@php
 							$courier_draft_worksheet->date = str_replace(".", "-", $courier_draft_worksheet->date);
@@ -61,12 +61,18 @@
 								{!! Form::text('direction',$courier_draft_worksheet->direction,['class' => 'form-control'])!!}
 							</div>
 						</div>
+
+						@if (!$courier_draft_worksheet->getLastDocUniq())
+						
 						<div class="form-group">
 							{!! Form::label('tariff','Тариф',['class' => 'col-md-2 control-label'])   !!}
 							<div class="col-md-8">
 								{!! Form::select('tariff', array('' => '', 'Море' => 'Море', 'Авиа' => 'Авиа'), $courier_draft_worksheet->tariff,['class' => 'form-control']) !!}
 							</div>
 						</div>
+						
+						@endif
+						
 						<div class="form-group">
 							{!! Form::label('status','Статус',['class' => 'col-md-2 control-label'])   !!}
 							<div class="col-md-8">
@@ -79,6 +85,15 @@
 							{!! Form::label('status_date','Дата статуса',['class' => 'col-md-2 control-label'])   !!}
 							<div class="col-md-8">
 								{!! Form::date('status_date',$courier_draft_worksheet->status_date,['class' => 'form-control'])!!}
+							</div>
+						</div>
+						@endcan
+
+						@can('update-user')
+						<div class="form-group">
+							{!! Form::label('order_date','Дата Заказа',['class' => 'col-md-2 control-label'])   !!}
+							<div class="col-md-8">
+								{!! Form::date('order_date',$courier_draft_worksheet->order_date,['class' => 'form-control'])!!}
 							</div>
 						</div>
 						@endcan
@@ -139,6 +154,8 @@
 							</div>
 						</div>
 
+						@if (!$courier_draft_worksheet->getLastDocUniq())
+						
 						<div class="form-group">
 							{!! Form::label('sender_name','Отправитель',['class' => 'col-md-2 control-label'])   !!}
 							<div class="col-md-8">
@@ -270,6 +287,9 @@
 								{!! Form::text('recipient_phone',$courier_draft_worksheet->recipient_phone,['class' => 'form-control'])!!}
 							</div>
 						</div>
+
+						@endif
+						
 						<div class="form-group">
 							{!! Form::label('recipient_passport','Номер паспорта получателя',['class' => 'col-md-2 control-label'])   !!}
 							<div class="col-md-8">
@@ -282,6 +302,8 @@
 								{!! Form::text('recipient_email',$courier_draft_worksheet->recipient_email,['class' => 'form-control'])!!}
 							</div>
 						</div>
+
+						@if (!$courier_draft_worksheet->getLastDocUniq())
 						
 						<div class="form-group">
 							{!! Form::label('package_content','Содержимое посылки',['class' => 'col-md-2 control-label'])   !!}
@@ -296,6 +318,9 @@
 								{!! Form::text('package_cost',$courier_draft_worksheet->package_cost,['class' => 'form-control'])!!}
 							</div>
 						</div>
+
+						@endif
+						
 						<div class="form-group">
 							{!! Form::label('courier','Курьер',['class' => 'col-md-2 control-label'])   !!}
 							<div class="col-md-8">
@@ -460,6 +485,8 @@
 							{!! Form::hidden('status',$courier_draft_worksheet->status,['class' => 'form-control'])!!}
 
 							{!! Form::hidden('status_date',$courier_draft_worksheet->status_date)!!}
+
+							{!! Form::hidden('order_date',$courier_draft_worksheet->order_date)!!}
 
 							{!! Form::hidden('partner',$courier_draft_worksheet->partner,['class' => 'form-control'])!!}
 

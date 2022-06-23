@@ -564,8 +564,9 @@ $('#tracking-columns').change((e)=>{
         $('[name="site_name"]').remove()
         $('[name="tariff"]').remove()
         $('[name="partner"]').remove()
-        $('[name="status_date"]').remove()
         $('.city-value').remove()
+        $('[name="status_date"]').remove()
+        $('[name="order_date"]').remove()
         $('.value-by-tracking').append(`
             <div class="status-value">
                 <select class="form-control" id="status" name="status">
@@ -586,6 +587,8 @@ $('#tracking-columns').change((e)=>{
                    <option value="Доставлено">Доставлено</option>
                     
                    <option value="Подготовка">Подготовка</option>
+
+                   <option value="Пакинг лист">Пакинг лист</option>
                     
                    <option value="Возврат">Возврат</option>
                     
@@ -609,8 +612,9 @@ $('#tracking-columns').change((e)=>{
         $('.status-value').remove()
         $('[name="tariff"]').remove()
         $('[name="partner"]').remove()
-        $('[name="status_date"]').remove()
         $('.city-value').remove()
+        $('[name="status_date"]').remove()
+        $('[name="order_date"]').remove()
         $('.value-by-tracking').append(`
             <select class="form-control" id="site_name" name="site_name">
                <option value="DD-C">DD-C</option>
@@ -625,9 +629,10 @@ $('#tracking-columns').change((e)=>{
         $('[name="date"]').remove()
         $('.status-value').remove()
         $('[name="site_name"]').remove()
-        $('[name="status_date"]').remove()
         $('[name="partner"]').remove()
         $('.city-value').remove()
+        $('[name="status_date"]').remove()
+        $('[name="order_date"]').remove()
         $('.value-by-tracking').append(`
             <select class="form-control" id="tariff" name="tariff">
                <option value="" selected="selected"></option>
@@ -644,9 +649,10 @@ $('#tracking-columns').change((e)=>{
         $('[name="date"]').remove()
         $('.status-value').remove()
         $('[name="site_name"]').remove()
-        $('[name="status_date"]').remove()
         $('[name="tariff"]').remove()
         $('.city-value').remove()
+        $('[name="status_date"]').remove()
+        $('[name="order_date"]').remove()
         $('.value-by-tracking').append(`
             <select class="form-control" id="partner" name="partner">
                <option value="" selected="selected"></option>
@@ -669,9 +675,10 @@ $('#tracking-columns').change((e)=>{
         $('[name="date"]').remove()
         $('.status-value').remove()
         $('[name="site_name"]').remove()
-        $('[name="status_date"]').remove()
         $('[name="tariff"]').remove()
         $('[name="partner"]').remove()
+        $('[name="status_date"]').remove()
+        $('[name="order_date"]').remove()
         $('.value-by-tracking').append(`
             <div class="city-value">
                 <div class="col-md-4">
@@ -682,45 +689,46 @@ $('#tracking-columns').change((e)=>{
                 </div>
 
                 <div class="col-md-4 choose-city-ru">                    
-                    <select class="form-control" style="display:none" disabled="disabled" id="sender_city" name="sender_city"><option value="Acre">Acre</option>
-                    <option value="Afula">Afula</option>
-                    <option value="Arad">Arad</option>
-                    <option value="Ariel">Ariel</option>
-                    <option value="Ashdod">Ashdod</option>
-                    <option value="Ashkelon">Ashkelon</option>
-                    <option value="Baqa-Jatt">Baqa-Jatt</option>
-                    <option value="Bat Yam">Bat Yam</option>
-                    <option value="Beersheba">Beersheba</option>
-                    <option value="Beit She'an">Beit She'an</option>
-                    <option value="Beit Shemesh">Beit Shemesh</option>
+                    <select class="form-control" style="display:none" disabled="disabled" id="sender_city" name="sender_city">
+                    <option value="Acre">Acre</option>                   
+                    <option value="Afula">Afula</option>                    
+                    <option value="Arad">Arad</option>                    
+                    <option value="Ariel">Ariel</option>                    
+                    <option value="Ashdod">Ashdod</option>                   
+                    <option value="Ashkelon">Ashkelon</option>                    
+                    <option value="Baqa-Jatt">Baqa-Jatt</option>                    
+                    <option value="Bat Yam">Bat Yam</option>                    
+                    <option value="Beersheba">Beersheba</option>                    
+                    <option value="Beit She'an">Beit She'an</option>                   
+                    <option value="Beit Shemesh">Beit Shemesh</option>                    
                     <option value="Beitar Illit">Beitar Illit</option>
-                    <option value="Binyamina">Binyamina</option> 
-                    <option value="Bnei Brak">Bnei Brak</option>
-                    <option value="Caesaria">Caesaria</option>
-                    <option value="Dimona">Dimona</option>
-                    <option value="Eilat">Eilat</option>
-                    <option value="El'ad">El'ad</option>
-                    <option value="Giv'atayim">Giv'atayim</option>
-                    <option value="Giv'at Shmuel">Giv'at Shmuel</option>
-                    <option value="Hadera">Hadera</option>
-                    <option value="Haifa">Haifa</option>
-                    <option value="Herzliya">Herzliya</option>
-                    <option value="Hod HaSharon">Hod HaSharon</option>
-                    <option value="Holon">Holon</option>
-                    <option value="Jerusalem">Jerusalem</option>
-                    <option value="Karmiel">Karmiel</option>
-                    <option value="Kafr Qasim">Kafr Qasim</option>
-                    <option value="Kfar Saba">Kfar Saba</option>
-                    <option value="Kiryat Ata">Kiryat Ata</option>
-                    <option value="Kiryat Bialik">Kiryat Bialik</option>
-                    <option value="Kiryat Gat">Kiryat Gat</option>
-                    <option value="Kiryat Malakhi">Kiryat Malakhi</option>
-                    <option value="Kiryat Motzkin">Kiryat Motzkin</option>
-                    <option value="Kiryat Ono">Kiryat Ono</option>
-                    <option value="Kiryat Shmona">Kiryat Shmona</option>
-                    <option value="Kiryat Yam">Kiryat Yam</option>
-                    <option value="Lod">Lod</option>
-                    <option value="Ma'ale Adumim">Ma'ale Adumim</option>
+                    <option value="Binyamina">Binyamina</option>                     
+                    <option value="Bnei Brak">Bnei Brak</option>  
+                    <option value="Caesaria">Caesaria</option>                  
+                    <option value="Dimona">Dimona</option>                    
+                    <option value="Eilat">Eilat</option>                    
+                    <option value="El'ad">El'ad</option>                    
+                    <option value="Giv'atayim">Giv'atayim</option>                    
+                    <option value="Giv'at Shmuel">Giv'at Shmuel</option>                    
+                    <option value="Hadera">Hadera</option>                    
+                    <option value="Haifa">Haifa</option>                    
+                    <option value="Herzliya">Herzliya</option>                    
+                    <option value="Hod HaSharon">Hod HaSharon</option>                    
+                    <option value="Holon">Holon</option>                    
+                    <option value="Jerusalem">Jerusalem</option>                    
+                    <option value="Karmiel">Karmiel</option>                    
+                    <option value="Kafr Qasim">Kafr Qasim</option>                    
+                    <option value="Kfar Saba">Kfar Saba</option>                    
+                    <option value="Kiryat Ata">Kiryat Ata</option>                    
+                    <option value="Kiryat Bialik">Kiryat Bialik</option>                    
+                    <option value="Kiryat Gat">Kiryat Gat</option>                    
+                    <option value="Kiryat Malakhi">Kiryat Malakhi</option>                    
+                    <option value="Kiryat Motzkin">Kiryat Motzkin</option>                    
+                    <option value="Kiryat Ono">Kiryat Ono</option>                   
+                    <option value="Kiryat Shmona">Kiryat Shmona</option>                    
+                    <option value="Kiryat Yam">Kiryat Yam</option>                    
+                    <option value="Lod">Lod</option>                   
+                    <option value="Ma'ale Adumim">Ma'ale Adumim</option>                   
                     <option value="Ma'alot-Tarshiha">Ma'alot-Tarshiha</option>
                     <option value="Migdal HaEmek">Migdal HaEmek</option>
                     <option value="Modi'in Illit">Modi'in Illit</option>
@@ -779,14 +787,28 @@ $('#tracking-columns').change((e)=>{
             <input class="form-control" type="date" name="status_date">
             `)
     }
+    else if(thisVal === 'order_date'){
+        $('[name="value-by-tracking"]').remove()
+        $('[name="date"]').remove()
+        $('[name="site_name"]').remove()
+        $('.status-value').remove()
+        $('[name="tariff"]').remove()
+        $('[name="partner"]').remove()
+        $('[name="status_date"]').remove()
+        $('.city-value').remove()
+        $('.value-by-tracking').append(`
+            <input class="form-control" type="date" name="order_date">
+            `)
+    }
     else if(thisVal === 'date'){
         $('[name="value-by-tracking"]').remove()
-        $('[name="status_date"]').remove()
         $('[name="site_name"]').remove()
         $('.status-value').remove()
         $('[name="tariff"]').remove()
         $('[name="partner"]').remove()
         $('.city-value').remove()
+        $('[name="status_date"]').remove()
+        $('[name="order_date"]').remove()
         $('.value-by-tracking').append(`
             <input class="form-control" type="date" name="date">
             `)
@@ -795,9 +817,10 @@ $('#tracking-columns').change((e)=>{
         $('.status-value').remove()
         $('[name="date"]').remove()
         $('[name="site_name"]').remove()
+        $('[name="status_date"]').remove()
+        $('[name="order_date"]').remove()
         $('[name="tariff"]').remove()
         $('[name="partner"]').remove()
-        $('[name="status_date"]').remove()
         $('.city-value').remove()
         $('[name="value-by-tracking"]').remove()
         $('.value-by-tracking').append(`
@@ -822,6 +845,7 @@ $('#phil-ind-tracking-columns').change((e)=>{
         $('[name="date"]').remove()
         $('.consignee-country-value').remove()
         $('[name="status_date"]').remove()
+        $('[name="order_date"]').remove()
         $('.shipper-country-value').remove()
         $('.city-value').remove()
         $('.phil-ind-value-by-tracking').append(`
@@ -830,6 +854,8 @@ $('#phil-ind-tracking-columns').change((e)=>{
                    <option value="" selected="selected"></option>
                     
                    <option value="Pending">Pending</option>
+
+                   <option value="Packing list">Packing list</option>
                     
                    <option value="Forwarding to the warehouse in the sender country">Forwarding to the warehouse in the sender country</option>
                     
@@ -865,8 +891,9 @@ $('#phil-ind-tracking-columns').change((e)=>{
         $('[name="value-by-tracking"]').remove()
         $('[name="date"]').remove()
         $('.phil-ind-status-value').remove()
-        $('[name="status_date"]').remove()
         $('.consignee-country-value').remove()
+        $('[name="status_date"]').remove()
+        $('[name="order_date"]').remove()
         $('.city-value').remove()
         $('.phil-ind-value-by-tracking').append(`
             <div class="shipper-country-value">
@@ -885,8 +912,9 @@ $('#phil-ind-tracking-columns').change((e)=>{
         $('[name="value-by-tracking"]').remove()
         $('[name="date"]').remove()
         $('.phil-ind-status-value').remove()
-        $('[name="status_date"]').remove()
         $('.shipper-country-value').remove()
+        $('[name="status_date"]').remove()
+        $('[name="order_date"]').remove()
         $('.city-value').remove()
         $('.phil-ind-value-by-tracking').append(`
             <div class="consignee-country-value">
@@ -912,9 +940,10 @@ $('#phil-ind-tracking-columns').change((e)=>{
         $('[name="value-by-tracking"]').remove()
         $('[name="date"]').remove()
         $('.phil-ind-status-value').remove()
-        $('[name="status_date"]').remove()
         $('.shipper-country-value').remove()
         $('.consignee-country-value').remove()
+        $('[name="status_date"]').remove()
+        $('[name="order_date"]').remove()
         $('.phil-ind-value-by-tracking').append(`
             <div class="city-value">
                 <div class="col-md-4 choose-city-eng">
@@ -1010,24 +1039,37 @@ $('#phil-ind-tracking-columns').change((e)=>{
             </div>
             `)
     }
-    else if (thisVal === 'status_date') {
+    else if (thisVal === 'status_date') {       
         $('[name="value-by-tracking"]').remove()
         $('[name="date"]').remove()
         $('.phil-ind-status-value').remove()
         $('.shipper-country-value').remove()
-        $('.city-value').remove()
         $('.consignee-country-value').remove()
+        $('.city-value').remove()
         $('.phil-ind-value-by-tracking').append(`
             <input class="form-control" type="date" name="status_date">
             `)
     }
-    else if (thisVal === 'date') {
+    else if (thisVal === 'order_date') {       
         $('[name="value-by-tracking"]').remove()
-        $('[name="status_date"]').remove()
+        $('[name="date"]').remove()
         $('.phil-ind-status-value').remove()
         $('.shipper-country-value').remove()
-        $('.city-value').remove()
         $('.consignee-country-value').remove()
+        $('[name="status_date"]').remove()
+        $('.city-value').remove()
+        $('.phil-ind-value-by-tracking').append(`
+            <input class="form-control" type="date" name="order_date">
+            `)
+    }
+    else if (thisVal === 'date') {       
+        $('[name="value-by-tracking"]').remove()
+        $('[name="status_date"]').remove()
+        $('[name="order_date"]').remove()
+        $('.phil-ind-status-value').remove()
+        $('.shipper-country-value').remove()
+        $('.consignee-country-value').remove()
+        $('.city-value').remove()
         $('.phil-ind-value-by-tracking').append(`
             <input class="form-control" type="date" name="date">
             `)
@@ -1036,8 +1078,9 @@ $('#phil-ind-tracking-columns').change((e)=>{
         $('.phil-ind-status-value').remove()
         $('[name="date"]').remove()
         $('.consignee-country-value').remove()
-        $('[name="status_date"]').remove()
         $('.shipper-country-value').remove()
+        $('[name="status_date"]').remove()
+        $('[name="order_date"]').remove()
         $('[name="value-by-tracking"]').remove()
         $('.city-value').remove()
         $('.phil-ind-value-by-tracking').append(`
@@ -1070,9 +1113,134 @@ $('[name="checkbox_operations_select"]').change((e)=>{
         $('.checkbox-operations-delete').show()
     }
     else if (thisVal === 'change'){
-        $('.checkbox-operations-change').show()
-        $('.checkbox-operations-delete').hide()
-        $('.checkbox-operations-color').hide()
+        if ($('[name="row_id[]"]:checked').length > 1) {
+            $('.checkbox-operations-change').show()
+            $('.checkbox-operations-delete').hide()
+            $('.checkbox-operations-color').hide()
+        }
+        else if ($('[type="checkbox"][name="row_id[]"]:checked').length == 1){
+            let action = $('.checkbox-operations-change-one').attr('action')
+            action += '/'+$('.checkbox-operations-change-one [name="row_id[]"]').val()
+            $('.checkbox-operations-change-one').attr('action',action)
+            $('.checkbox-operations-change-one').submit()
+        }
+    }
+    else if (thisVal === 'double'){
+        if ($('[name="row_id[]"]:checked').length == 1) {
+            const x = confirm("You can duplicate only if you have a PDF. Are you sure you want to duplicate?");           
+            if (x){
+                $('#double-qty').click()
+                $('#doubleQty').addClass('show')
+                $('#doubleQty').removeAttr('aria-hidden')
+                $('body').addClass('modal-open')
+                $('[name="duplicate_qty"]').val()
+                
+                let action = $('.checkbox-operations-double').attr('action')
+                action += '/'+$('.checkbox-operations-double [name="row_id[]"]').val()
+                $('.checkbox-operations-double').attr('action',action)               
+            }
+            else
+                return false;
+            
+        }
+        else{
+            alert('This option is only available with one line!')
+        }
+    }
+    else if (thisVal === 'activate'){
+        $('.alert.alert-danger').remove();
+        if ($('[name="row_id[]"]:checked').length == 1) {
+            const x = confirm("Are you sure you want to activate?");
+            if (x){
+                let action = $('.checkbox-operations-activate').attr('action');
+                const rowId = $('.checkbox-operations-activate [name="row_id[]"]').val();
+                const href = action + '-check-activate/'+rowId;               
+                $.ajax({
+                    url: href,
+                    type: "GET",
+                    headers: {
+                        'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function (data) {
+                        console.log(data);
+                        if (data.error) {
+                            $('.card-header').after(`
+                                <div class="alert alert-danger">
+                                `+data.error+`                                      
+                                </div>`)
+                            return 0;
+                        }
+                        else if (data.phone_exist) {
+                            let phone = confirm("A record with the same phone number was added to the database recently. Are you sure you want to add the record/records?");
+                            if (phone) {
+                                action += '-activate/'+rowId
+                                $('.checkbox-operations-activate').attr('action',action)
+                                $('.checkbox-operations-activate').submit()
+                            }                       
+                        }
+                        else{
+                            action += '-activate/'+rowId
+                            $('.checkbox-operations-activate').attr('action',action)
+                            $('.checkbox-operations-activate').submit()
+                        }
+                    },
+                    error: function (msg) {
+                        alert('Request error!');
+                    }
+                });                
+            }       
+            else
+                return false;
+            
+        }
+        else{
+            alert('This option is only available with one line!')
+        }
+    }
+    else if (thisVal === 'cancel-pdf'){
+        if ($('[name="row_id[]"]:checked').length == 1) {
+            $('.checkbox-operations-cancel-pdf').submit()            
+        }
+        else{
+            alert('This option is only available with one line!')
+        }
+    }
+    else if (thisVal === 'add-pdf'){
+        if ($('[name="row_id[]"]:checked').length == 1 || $('[name="row_id[]"]:checked').length == 0) {           
+            let action = $('.checkbox-operations-add-pdf').attr('action');
+            const uId = Date.now().toString(36) + Math.random().toString(36).substr(2);
+            let rowId = 0;
+            if ($('[name="row_id[]"]:checked').length == 1)
+                rowId = $('.checkbox-operations-add-pdf [name="row_id[]"]').val(); 
+                   
+            $.ajax({
+                type:'POST',
+                url:createTableUrl,
+                headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                data: {"session_token":uId},
+                success:function(data){
+                    if (data) {
+                        action += '/'+rowId+'/'+data+'/'+userName
+                        $('.checkbox-operations-add-pdf').attr('action',action)
+                        $('.checkbox-operations-add-pdf').submit() 
+                    }               
+                },
+                error: function (msg){
+                    alert('Error')
+                }
+            });                                 
+        }
+        else{
+            alert('This option is only available with one or null line!')
+        }
+    }
+    else if (thisVal === 'download-pdf'){
+        if ($('[name="row_id[]"]:checked').length == 1) {
+            $('.checkbox-operations-download-pdf').submit()            
+        }
+        else{
+            alert('This option is only available with one line!')
+        }
     }
     else if (thisVal === 'color'){
         $('.checkbox-operations-change').hide()
@@ -1087,34 +1255,44 @@ $('[name="checkbox_operations_select"]').change((e)=>{
     }
 })
 
+
+$('#add_double_qty').click((e)=>{
+    $('[name="duplicate_qty"]').val($('[name="double_qty"]').val())
+    $('.checkbox-operations-double').submit()
+})
+
+
 $('[name="row_id[]"]').change((e)=>{
-    if (e.target.checked === true) {
-        console.log($(e.target).val())
-        const thisVal = $(e.target).val();
+    const thisVal = $(e.target).val();
+    if (e.target.checked === true) {        
         $('.checkbox-operations form').append(`
-            <input type="hidden" name="row_id[]" value="`+$(e.target).val()+`" data-id="`+$(e.target).val()+`">
+            <input type="hidden" name="row_id[]" value="`+thisVal+`" data-id="`+thisVal+`">
             `);
         $('.checkbox-operations form').append(`
             <input type="hidden" name="old_color[]" 
             value="`+$(e.target).siblings('[name="old_color[]"]').val()+`" 
-            data-color="`+$(e.target).val()+`">
+            data-color="`+thisVal+`">
             `);
+        $('.checkbox-operations form .cancel-pdf').val(thisVal)
+        $('.checkbox-operations form .download-pdf').val(thisVal)
     }
     else{
-        $('.checkbox-operations form input[data-id="'+$(e.target).val()+'"]').remove();
-        $('.checkbox-operations form input[data-color="'+$(e.target).val()+'"]').remove();
+        $('.checkbox-operations form input[data-id="'+thisVal+'"]').remove();
+        $('.checkbox-operations form input[data-color="'+thisVal+'"]').remove();
     }
 })
 
 $('.checkbox-operations form').submit((e)=>{
     if (!$('.checkbox-operations form [name="row_id[]"]').length) {
-        if (location.href.indexOf('new-worksheet') == -1) {
-            alert('Select rows!')
-        }
-        else{
-            alert('Выберите строчки!')
-        }
-        return false
+        if ($('[name="checkbox_operations_select"]').val() !== 'add-pdf') {
+            if (location.href.indexOf('new-worksheet') == -1) {
+                alert('Select rows!')
+            }
+            else{
+                alert('Выберите строчки!')
+            }
+            return false
+        }       
     }
 })
 
@@ -1391,7 +1569,7 @@ $(document).delegate('select[name="choose_city_eng"]', 'change', function(){
 
 
 // Modals for table cells
-$('table td.allowed-update').not('.td-checkbox, .td-button').click((e)=>{
+$('table td.allowed-update').not('.td-checkbox, .td-button, .pdf-file').click((e)=>{
     $('#updateCellModal [name="row_id[]"]').remove()
     $('#updateCellModal [name="tracking-columns"]').remove()
     $('#updateCellModal [name="phil-ind-tracking-columns"]').remove()

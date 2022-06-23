@@ -21,6 +21,40 @@ Route::group(['prefix' => App\Http\Middleware\LocaleMiddleware::getLocale()], fu
 		return view('welcome');
 	})->name('welcome');
 
+	// Form with signature
+	Route::get('/form-with-signature/{id}/{token}/{user_name}', 'SignedDocumentController@formWithSignature')->name('formWithSignature');
+	
+	Route::get('/form-with-signature-eng/{id}/{token}/{user_name}', 'SignedDocumentController@formWithSignatureEng')->name('formWithSignatureEng');
+	
+	Route::get('/signature-page', 'SignedDocumentController@getSignature')->name('getSignature');
+	
+	Route::get('/pdfview/{id}', 'SignedDocumentController@pdfview')->name('pdfview');
+	
+	Route::get('/pdfview-forward/{id}', 'SignedDocumentController@pdfviewForward')->name('pdfviewForward');
+	
+	Route::get('/pdfview-ru/{id}', 'SignedDocumentController@pdfviewRu')->name('pdfviewRu');
+	
+	Route::get('/download-pdf/{id}', 'SignedDocumentController@downloadPdf')->name('downloadPdf');
+	
+	Route::post('/download-all-pdf', 'SignedDocumentController@downloadAllPdf')->name('downloadAllPdf');
+	
+	Route::post('/download-directory', 'SignedDocumentController@downloadDirectory')->name('downloadDirectory');
+	
+	Route::post('/cancel-pdf', 'Controller@cancelPdf')->name('cancelPdf');
+	
+	Route::get('/cancel-pdf-id/{type}/{id}', 'Controller@cancelPdfId')->name('cancelPdfId');
+	
+	Route::get('/signature-for-cancel', 'SignedDocumentController@signatureForCancel')->name('signatureForCancel');
+	
+	Route::get('/form-after-cancel/{type}/{id}/{document_id}/{token}', 'SignedDocumentController@formAfterCancel')->name('formAfterCancel');
+
+	Route::post('/create-temp-table', 'SignedDocumentController@createTempTable')->name('createTempTable');
+
+	Route::get('/form-success', 'SignedDocumentController@formSuccess')->name('formSuccess');
+
+	Route::get('/temp-links', 'SignedDocumentController@tempLinks')->name('tempLinks');
+	// End Form with signature
+	
 	Route::get('/page-{page_urn}','Admin\FrontPagesController@frontPage')->name('frontPage');
 	
 	Route::get('/parcel-form', 'FrontController@parcelForm')->name('parcelForm');

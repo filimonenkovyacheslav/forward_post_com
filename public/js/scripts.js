@@ -159,16 +159,26 @@ function clickAnswer(elem) {
 		$('[name="quantity_recipient"]').val(quantityRecipient);
 	}
 
-	if(quantityClick == 1) {		
-		setTimeout(
-			()=>{ 
-				$('#addRuParcel .question').text('Введите ваш номер телефона');
-				$('#addRuParcel .yes').hide();
-				$('#addRuParcel .no').hide();
-				$('#addRuParcel .check-phone').show();
-				$('#addRuParcel').modal(); 
-			}, 500);					
-	}
+	if (quantityClick == 1) {		
+	setTimeout(
+		()=>{ 
+			$('#addRuParcel .question').text('Ввести те же данные получателя, которые были при предыдущем заказе?');
+			if ($(elem).hasClass('yes')) {
+				$(elem).removeClass('sender').addClass('recipient');
+			}				
+			$('#addRuParcel').modal(); 
+		}, 500);		
+}
+else if(quantityClick == 2 && quantityYes > 0) {		
+	setTimeout(
+		()=>{ 
+			$('#addRuParcel .question').text('Введите ваш номер телефона');
+			$('#addRuParcel .yes').hide();
+			$('#addRuParcel .no').hide();
+			$('#addRuParcel .check-phone').show();
+			$('#addRuParcel').modal(); 
+		}, 500);					
+}
 }
 
 
@@ -184,17 +194,27 @@ function philIndAnswer(elem) {
 		quantityRecipient++;
 		$('[name="quantity_recipient"]').val(quantityRecipient);
 	}
-	
-	if(quantityClick == 1) {		
-		setTimeout(
-			()=>{ 
-				$('#philIndParcel .question').text('Enter your phone number');
-				$('#philIndParcel .yes').hide();
-				$('#philIndParcel .no').hide();
-				$('#philIndParcel .check-phone').show();
-				$('#philIndParcel').modal(); 
-			}, 500);					
-	}
+
+	if (quantityClick == 1) {		
+	setTimeout(
+		()=>{ 
+			$('#philIndParcel .question').text('Enter the same recipient data that you had on the previous order?');
+			if ($(elem).hasClass('yes')) {
+				$(elem).removeClass('sender').addClass('recipient');
+			}				
+			$('#philIndParcel').modal(); 
+		}, 500);		
+}
+else if(quantityClick == 2 && quantityYes > 0) {		
+	setTimeout(
+		()=>{ 
+			$('#philIndParcel .question').text('Enter your phone number');
+			$('#philIndParcel .yes').hide();
+			$('#philIndParcel .no').hide();
+			$('#philIndParcel .check-phone').show();
+			$('#philIndParcel').modal(); 
+		}, 500);					
+}
 }
 
 
@@ -216,7 +236,7 @@ function clickAnswer2(elem) {
 		quantityRecipient++;
 		$('[name="quantity_recipient"]').val(quantityRecipient);
 	}
-	
+
 	if(quantityClick == 1 && quantityYes == 0) {		
 		setTimeout(
 			()=>{ 
@@ -254,7 +274,7 @@ function philIndAnswer2(elem) {
 		quantityRecipient++;
 		$('[name="quantity_recipient"]').val(quantityRecipient);
 	}
-	
+
 	if(quantityClick == 1 && quantityYes == 0) {		
 		setTimeout(
 			()=>{ 
@@ -448,3 +468,122 @@ $('select[name="shipper_city"]').on('change', function(){
 	}							
 });
 
+
+// Operator with Client forms
+var availableNow = false
+$('.new-form .form-send-parcel input').on('input',(e)=>{
+	availableNow = true
+})
+$('.new-form .form-send-parcel select').on('change',(e)=>{
+	availableNow = true
+})
+
+if ($('#form_cancel_disabled').val() === 'false') {
+	$('.new-form .form-send-parcel input').prop('disabled',true);
+	$('.new-form .form-send-parcel select').prop('disabled',true);
+	$('.new-form .form-send-parcel button[type="submit"]').hide();
+} 
+else{
+	$('.new-form .form-send-parcel input').prop('disabled',false);
+	$('.new-form .form-send-parcel select').prop('disabled',false);
+	$('.new-form .form-send-parcel button[type="submit"]').show();
+}  
+
+function cancelDisabled(){
+	availableNow = true;
+	$('.new-form .form-send-parcel input').prop('disabled',false);
+	$('.new-form .form-send-parcel select').prop('disabled',false);
+	$('.new-form .form-send-parcel button[type="submit"]').show();
+	$('#form_cancel_disabled').val('true');
+}
+
+if ($('.new-form .form-send-parcel input').length > 0) {
+	getSignedValue()
+
+	setInterval(()=>{
+		if (availableNow) {
+			updateSignedValue()
+			setTimeout(()=>{
+				availableNow = false
+			},2000)			
+		}
+	}, 2000);
+
+	setInterval(()=>{
+		if (!availableNow) getSignedValue()
+	}, 5000);	
+}
+
+function isJson(str) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
+}
+
+function paramsToObject(data) {
+	const urlParams = new URLSearchParams(data)
+	const entries = urlParams.entries()
+	const result = {}
+	for(const [key, value] of entries) { 
+		result[key] = value;
+	}	
+	return result;
+}
+
+function updateSignedValue() {
+	const data = $('form.form-send-parcel').serialize()
+	$.ajax({
+		type:'POST',
+		url:addToTableUrl,
+		data: data,
+		success:function(data){
+			//console.log($('form.form-send-parcel').serialize())
+		},
+		error: function (msg){
+			//alert('Error')
+		}
+	}); 
+}
+
+function getSignedValue(){
+	const token = $('[name="session_token"]').val();
+	$.ajax({
+		type:'GET',
+		url:getFromTableUrl+'/'+token,
+		data: {"session_token": token},
+		success:function(data){
+			if (data) {
+				if (isJson(data)) {
+					obj = JSON.parse(data)
+				}
+				else{
+					obj = paramsToObject(data)					
+				}
+
+				for (let prop in obj) {
+					if ($('.new-form .form-send-parcel [name="'+prop+'"]').length > 0){
+						if (document.activeElement.getAttribute('name') !== prop)
+							$('.new-form .form-send-parcel [name="'+prop+'"]').val(obj[prop])
+					}
+					if (prop === 'first_name') {
+						$(".first-name").text(obj[prop])
+					}
+					if (prop === 'last_name') {
+						$(".last-name").text(obj[prop])
+					}
+					if (prop === 'form_cancel_disabled' && obj[prop] === 'true') {
+						$('.new-form .form-send-parcel input').prop('disabled',false);
+						$('.new-form .form-send-parcel select').prop('disabled',false);
+						$('.new-form .form-send-parcel button[type="submit"]').show();
+					}
+				} 				
+			}			            
+		},
+		error: function (msg){
+			//alert('Error')
+		}
+	});
+}

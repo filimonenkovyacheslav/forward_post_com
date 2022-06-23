@@ -5,12 +5,14 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use App\CourierTask;
 use App\UpdatesArchive;
+use App\SignedDocument;
+use App\BaseModel;
 
 
 class PhilIndWorksheet extends BaseModel
 {
     public $table = 'phil_ind_worksheet';
-    protected $fillable = ['order_number', 'tracking_main', 'status', 'status_date', 'status_ru', 'status_he', 'operator','date','direction','tracking_local','pallet_number','comments_1','comments_2','shipper_name', 'shipper_city','passport_number','return_date','shipper_address','standard_phone','shipper_phone','shipper_id','consignee_name','house_name','post_office','district','state_pincode','consignee_address','consignee_phone','consignee_id','shipped_items','shipment_val','courier','delivery_date_comments','weight','width','height','length','volume_weight','lot','payment_date_comments','amount_payment','background','shipper_country','consignee_country','in_trash','shipper_region'];
+    protected $fillable = ['order_number', 'tracking_main', 'status', 'status_date', 'status_ru', 'status_he', 'operator','date','direction','tracking_local','pallet_number','comments_1','comments_2','shipper_name', 'shipper_city','passport_number','return_date','shipper_address','standard_phone','shipper_phone','shipper_id','consignee_name','house_name','post_office','district','state_pincode','consignee_address','consignee_phone','consignee_id','shipped_items','shipment_val','courier','delivery_date_comments','weight','width','height','length','volume_weight','lot','payment_date_comments','amount_payment','background','shipper_country','consignee_country','in_trash','shipper_region','order_date','parcels_qty'];
 
 
     /**
@@ -81,5 +83,43 @@ class PhilIndWorksheet extends BaseModel
     public function updatesArchive()
     {
         return $this->hasOne('App\UpdatesArchive','eng_worksheet_id');
+    }
+
+   
+    /**
+    * Get the signed documents associated with the  eng worksheet.
+    */
+    public function signedDocuments()
+    {
+        return $this->hasMany('App\SignedDocument','eng_worksheet_id');
+    }
+
+
+    public function getLastDoc()
+    {
+        $documents = $this->signedDocuments;
+        if ($documents->count() > 1) {
+            foreach ($documents as $document) {
+                if ($document->id == $documents->max('id')) {
+                    return $document;
+                }
+            }
+        }
+        elseif($documents->count() == 1){
+            foreach ($documents as $document) {
+                if ($document->first_file) {
+                    return $document;
+                }
+            }
+        }
+        else return null;
+    }
+
+
+    public function getLastDocUniq()
+    {
+        $document = $this->getLastDoc();
+        if ($document) return $document->uniq_id;
+        else return null;
     }
 }

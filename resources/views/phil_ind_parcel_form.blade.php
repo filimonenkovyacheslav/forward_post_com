@@ -229,10 +229,10 @@
             event.preventDefault();
             const form = event.target;
 
-            if (!document.querySelector('[name="shipper_country"]').value){
+            /*if (!document.querySelector('[name="shipper_country"]').value){
                 alert('The country field is required !');
                 return false;
-            }
+            }*/
             if (!document.querySelector('[name="consignee_country"]').value){
                 alert('The country field is required !');
                 return false;

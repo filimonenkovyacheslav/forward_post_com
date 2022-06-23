@@ -21,9 +21,11 @@ class CreateNewWorksheetTable extends Migration
             $table->string('tariff')->nullable();           
             $table->text('status')->nullable();
             $table->string('status_date')->nullable();
+            $table->string('order_date')->nullable();
             $table->string('partner')->nullable();
             $table->string('tracking_main')->nullable();
             $table->string('order_number')->nullable();
+            $table->string('parcels_qty')->nullable();
             $table->string('tracking_local')->nullable();
             $table->string('tracking_transit')->nullable();
             $table->string('pallet_number')->nullable();

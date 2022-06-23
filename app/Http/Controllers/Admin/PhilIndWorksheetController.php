@@ -21,8 +21,8 @@ use Auth;
 
 class PhilIndWorksheetController extends AdminController
 {
-	private $status_arr = ["Forwarding to the warehouse in the sender country", "Pending", "Return", "Box", "Pick up", "Specify", "Think", "Canceled", "Double"];
-	private $status_arr_2 = ["At the customs in the sender country", "At the warehouse in the sender country", "Forwarding to the warehouse in the sender country", "Pending", "Return", "Box", "Pick up", "Specify", "Think", "Canceled", "Double"];
+	private $status_arr = ["Forwarding to the warehouse in the sender country", "Pending", "Return", "Box", "Pick up", "Specify", "Think", "Canceled", "Double","Packing list"];
+	private $status_arr_2 = ["At the customs in the sender country", "At the warehouse in the sender country", "Forwarding to the warehouse in the sender country", "Pending", "Return", "Box", "Pick up", "Specify", "Think", "Canceled", "Double","Packing list"];
     
 
     public function index(){
@@ -287,6 +287,7 @@ class PhilIndWorksheetController extends AdminController
 	{
 		$id = $request->input('action');
 		$this->removeTrackingFromPalletWorksheet($id, 'en');
+		$this->deleteUploadFiles('eng_worksheet_id',$id);
 		
 		DB::table('phil_ind_worksheet')
 		->where('id', '=', $id)
@@ -1027,6 +1028,7 @@ class PhilIndWorksheetController extends AdminController
 
 		for ($i=0; $i < count($row_arr); $i++) { 
 			$this->removeTrackingFromPalletWorksheet($row_arr[$i], 'en');
+			$this->deleteUploadFiles('eng_worksheet_id',$row_arr[$i]);
 		}
 
 		PhilIndWorksheet::whereIn('id', $row_arr)->delete();

@@ -228,4 +228,63 @@ class UpdatesArchive extends Model
         return true;
     }
 
+
+    public function signedDocumentToUpdatesArchive($worksheet,$user_name = '',$uniq_id = '',$old_uniq_id = '')
+    {
+        $table = $worksheet->table;
+        $id = $worksheet->id;
+        $user = Auth::user();
+        if ($user) {
+            $this->column_name = 'PDF';
+            $this->old_data = $old_uniq_id;
+            $this->new_data = $uniq_id;
+            $this->user_name = $user->name;
+            $this->updates_date = date('Y-m-d');
+            switch($table) {
+                case 'new_worksheet';
+                $this->worksheet_id = $id;
+                break;
+                case 'phil_ind_worksheet';
+                $this->eng_worksheet_id = $id;
+                break;
+                case 'courier_draft_worksheet';
+                $this->draft_id = $id;
+                break;
+                case 'courier_eng_draft_worksheet';
+                $this->eng_draft_id = $id;
+                break;       
+                default:
+                break;
+            }
+            $this->save();
+            return true;
+        }
+        elseif($user_name){
+            $this->column_name = 'PDF';
+            $this->old_data = $old_uniq_id;
+            $this->new_data = $uniq_id;
+            $this->user_name = $user_name;
+            $this->updates_date = date('Y-m-d');
+            switch($table) {
+                case 'new_worksheet';
+                $this->worksheet_id = $id;
+                break;
+                case 'phil_ind_worksheet';
+                $this->eng_worksheet_id = $id;
+                break;
+                case 'courier_draft_worksheet';
+                $this->draft_id = $id;
+                break;
+                case 'courier_eng_draft_worksheet';
+                $this->eng_draft_id = $id;
+                break;       
+                default:
+                break;
+            }
+            $this->save();
+            return true;
+        }
+        else return false;
+    }
+
 }

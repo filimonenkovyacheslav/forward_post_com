@@ -1,4 +1,4 @@
-@extends('layouts.phil_ind_admin')
+@extends('layouts.admin')
 @section('content')
 @can('editColumns-2')
 <!-- <div class="breadcrumbs">
@@ -184,6 +184,9 @@
 	}
 
 
+	var thisUrl = "{{ url('/') }}";
+
+
 	function runTrackingModal(event)
 	{
 		event.preventDefault();
@@ -198,7 +201,7 @@
 			success: function (data) {
 				document.querySelector('#run-modal').click();
 				if (data.title) $('#warehouseRunModal .pallet-title').text(data.title);
-				if (data.tracking) $('#warehouseRunModal form').attr('action','/admin/warehouse-tracking-move/'+data.tracking);
+				if (data.tracking) $('#warehouseRunModal form').attr('action',thisUrl+'/admin/warehouse-tracking-move/'+data.tracking);
 				if (data.palletArr) {
 					const palletArr = JSON.parse(data.palletArr);
 					let html = '<option value=""></option>';
@@ -228,7 +231,7 @@
 			},
 			success: function (data) {
 				document.querySelector('#add-tracking').click();
-				if (data.id) $('#warehouseAddTracking form').attr('action','/admin/warehouse-add-tracking/'+data.id);
+				if (data.id) $('#warehouseAddTracking form').attr('action',thisUrl+'/admin/warehouse-add-tracking/'+data.id);
 			},
 			error: function (msg) {
 				alert('Ошибка admin');

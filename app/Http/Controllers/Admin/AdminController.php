@@ -21,34 +21,10 @@ class AdminController extends Controller
 {
 	const ROLES_ARR = array('admin' => 'admin', 'user' => 'user', 'warehouse' => 'warehouse', 'office_1' => 'office_1','office_ru' => 'office_ru', 'office_agent_ru' => 'office_agent_ru', 'viewer' => 'viewer', 'china_admin' => 'china_admin', 'china_viewer' => 'china_viewer', 'office_eng' => 'office_eng', 'office_ind' => 'office_ind', 'viewer_eng' => 'viewer_eng', 'viewer_1' => 'viewer_1', 'viewer_2' => 'viewer_2', 'viewer_3' => 'viewer_3', 'viewer_4' => 'viewer_4', 'viewer_5' => 'viewer_5', 'courier' => 'courier');
 	const VIEWER_ARR = array('viewer_1', 'viewer_2', 'viewer_3', 'viewer_4', 'viewer_5');
-	private $ru_status_arr = ["Возврат", "Коробка", "Забрать", "Уточнить", "Думают", "Отмена", "Подготовка", "Дубль"];
-	private $en_status_arr = ["Pending", "Return", "Box", "Pick up", "Specify", "Think", "Canceled", "Double"];
-	private $ru_status_arr_2 = ["Доставляется на склад в стране отправителя", "Возврат", "Коробка", "Забрать", "Уточнить", "Думают", "Отмена", "Подготовка", "Дубль"];
-	private $en_status_arr_2 = ["Forwarding to the warehouse in the sender country", "Pending", "Return", "Box", "Pick up", "Specify", "Think", "Canceled", "Double"];
-
-
-	protected function checkExistPhone($request, $table)
-	{
-		$phone = $request->input('standard_phone');
-		switch ($table) {			
-
-			case "courier_draft_worksheet":
-
-			$worksheet = CourierDraftWorksheet::where('standard_phone',$phone)->first();;
-			if ($worksheet) return 'В нашей базе данных уже существует ваш заказ. Вы хотите добавить новый заказ?';
-			else return '';
-		
-			break;
-			
-			case "courier_eng_draft_worksheet":
-
-			$worksheet = CourierEngDraftWorksheet::where('standard_phone',$phone)->first();;
-			if ($worksheet) return 'One of your orders already exists in our database. Would you like to add one more?';
-			else return '';
-
-			break;
-		}
-	}
+	private $ru_status_arr = ["Возврат", "Коробка", "Забрать", "Уточнить", "Думают", "Отмена", "Подготовка", "Дубль","Пакинг лист"];
+	private $en_status_arr = ["Pending", "Return", "Box", "Pick up", "Specify", "Think", "Canceled", "Double","Packing list"];
+	private $ru_status_arr_2 = ["Доставляется на склад в стране отправителя", "Возврат", "Коробка", "Забрать", "Уточнить", "Думают", "Отмена", "Подготовка", "Дубль","Пакинг лист"];
+	private $en_status_arr_2 = ["Forwarding to the warehouse in the sender country", "Pending", "Return", "Box", "Pick up", "Specify", "Think", "Canceled", "Double","Packing list"];
 
 
     protected function checkRowColor(Request $request)
@@ -69,8 +45,8 @@ class AdminController extends Controller
                     if (!$worksheet->recipient_name) $error_message .= 'Получатель,';
                     if (!$worksheet->recipient_city) $error_message .= 'Город получателя,';
                     if (!$worksheet->recipient_street) $error_message .= 'Улица получателя,';
-                    if (!$worksheet->recipient_house) $error_message .= '№ дома пол-ля,';
-                    if (!$worksheet->recipient_room) $error_message .= '№ кв. пол-ля,';
+                    if (!$worksheet->recipient_house) $error_message .= '№ дома получателя,';
+                    if (!$worksheet->recipient_room) $error_message .= '№ кв. получателя,';
                     if (!$worksheet->recipient_phone) $error_message .= 'Телефон получателя,';
 
                     if ($error_message !== 'Заполните обязателные поля в строке с телефоном отправителя '.$worksheet->standard_phone.': ') {
@@ -148,6 +124,9 @@ class AdminController extends Controller
 			if (!$worksheet->tracking_main && !in_array($status, $this->ru_status_arr)) {
 				return 'Status cannot be higher than "Забрать" without tracking number!';
 			}
+			elseif (!$worksheet->getLastDocUniq() && $status === "Забрать") {
+				return 'Status cannot be "Забрать" without PDF!';
+			}			
 			elseif ($worksheet->tracking_main && in_array($status, $this->ru_status_arr)) {
 				return 'Status cannot be lower than "Доставляется на склад в стране отправителя" with tracking number!';
 			}
@@ -160,6 +139,9 @@ class AdminController extends Controller
 			$worksheet = PhilIndWorksheet::find($id);
 			if (!$worksheet->tracking_main && !in_array($status, $this->en_status_arr)) {
 				return 'Status cannot be higher than "Pick up" without tracking number!';
+			}
+			elseif (!$worksheet->getLastDocUniq() && $status === "Pick up") {
+				return 'Status cannot be "Pick up" without PDF!';
 			}
 			elseif ($worksheet->tracking_main && in_array($status, $this->en_status_arr)) {
 				return 'Status cannot be lower than "Forwarding to the warehouse in the sender country" with tracking number!';
@@ -174,6 +156,9 @@ class AdminController extends Controller
 			if (!$worksheet->tracking_main && !in_array($status, $this->ru_status_arr)) {
 				return 'Status cannot be higher than "Забрать" without tracking number!';
 			}
+			elseif (!$worksheet->getLastDocUniq() && $status === "Забрать") {
+				return 'Status cannot be "Забрать" without PDF!';
+			}
 			elseif ($worksheet->tracking_main && in_array($status, $this->ru_status_arr)) {
 				return 'Status cannot be lower than "Доставляется на склад в стране отправителя" with tracking number!';
 			}
@@ -186,6 +171,9 @@ class AdminController extends Controller
 			$worksheet = CourierEngDraftWorksheet::find($id);
 			if (!$worksheet->tracking_main && !in_array($status, $this->en_status_arr)) {
 				return 'Status cannot be higher than "Pick up" without tracking number!';
+			}
+			elseif (!$worksheet->getLastDocUniq() && $status === "Pick up") {
+				return 'Status cannot be "Pick up" without PDF!';
 			}
 			elseif ($worksheet->tracking_main && in_array($status, $this->en_status_arr)) {
 				return 'Status cannot be lower than "Forwarding to the warehouse in the sender country" with tracking number!';
@@ -222,7 +210,6 @@ class AdminController extends Controller
 			}
 			
 			if($check_tracking) $status_error = 'ВНИМАНИЕ! В СИСТЕМЕ УЖЕ СУЩЕСТВУЕТ ТАКОЙ ТРЕКИНГ-НОМЕР. ИСПРАВЬТЕ ОШИБОЧНУЮ ЗАПИСЬ ИЛИ ВНЕСИТЕ ДРУГОЙ НОМЕР!';
-			return $status_error;
 		
 			break;
 			
@@ -237,10 +224,9 @@ class AdminController extends Controller
 				$check_tracking = CourierEngDraftWorksheet::where([
 					['tracking_main', '=', $tracking]
 				])->first();
-			}
+			}			
 			
 			if($check_tracking) $status_error = 'WARNING! THE TRACKING NUMBER ALREADY EXISTS. FIX THE DEFECT RECORD OR CHANGE THE TRACKING NUMBER';
-			return $status_error;
 			
 			break;
 
@@ -257,9 +243,11 @@ class AdminController extends Controller
 				])->first();
 
 			}
+
+			$worksheet = CourierDraftWorksheet::find($id);
 			
 			if($check_tracking) $status_error = 'ВНИМАНИЕ! В СИСТЕМЕ УЖЕ СУЩЕСТВУЕТ ТАКОЙ ТРЕКИНГ-НОМЕР. ИСПРАВЬТЕ ОШИБОЧНУЮ ЗАПИСЬ ИЛИ ВНЕСИТЕ ДРУГОЙ НОМЕР!';
-			return $status_error;
+			elseif ($worksheet->tracking_main !== $tracking) $this->setTrackingToDocument($worksheet,$tracking);
 		
 			break;
 			
@@ -275,9 +263,11 @@ class AdminController extends Controller
 					['tracking_main', '=', $tracking]
 				])->first();
 			}
+
+			$worksheet = CourierEngDraftWorksheet::find($id);
 			
 			if($check_tracking) $status_error = 'WARNING! THE TRACKING NUMBER ALREADY EXISTS. FIX THE DEFECT RECORD OR CHANGE THE TRACKING NUMBER';
-			return $status_error;
+			elseif ($worksheet->tracking_main !== $tracking) $this->setTrackingToDocument($worksheet,$tracking);
 
 			break;
 		}

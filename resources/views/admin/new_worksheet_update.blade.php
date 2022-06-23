@@ -208,12 +208,18 @@
 								{!! Form::text('direction',$new_worksheet->direction,['class' => 'form-control'])!!}
 							</div>
 						</div>
+
+						@if (!$new_worksheet->getLastDocUniq())
+						
 						<div class="form-group">
 							{!! Form::label('tariff','Тариф',['class' => 'col-md-2 control-label'])   !!}
 							<div class="col-md-8">
 								{!! Form::select('tariff', array('' => '', 'Море' => 'Море', 'Авиа' => 'Авиа'), $new_worksheet->tariff,['class' => 'form-control']) !!}
 							</div>
 						</div>
+
+						@endif
+						
 						<div class="form-group">
 							{!! Form::label('status','Статус',['class' => 'col-md-2 control-label'])   !!}
 							<div class="col-md-8">
@@ -283,6 +289,8 @@
 
 						@can('editPost')
 
+						@if (!$new_worksheet->getLastDocUniq())
+
 						<div class="form-group">
 							{!! Form::label('sender_name','Отправитель',['class' => 'col-md-2 control-label'])   !!}
 							<div class="col-md-8">
@@ -341,12 +349,18 @@
 								{!! Form::text('sender_phone',$new_worksheet->sender_phone,['class' => 'form-control'])!!}
 							</div>
 						</div>
+
+						@endif
+
 						<div class="form-group">
 							{!! Form::label('sender_passport','Номер паспорта отправителя',['class' => 'col-md-2 control-label'])   !!}
 							<div class="col-md-8">
 								{!! Form::text('sender_passport',$new_worksheet->sender_passport,['class' => 'form-control'])!!}
 							</div>
 						</div>
+
+						@if (!$new_worksheet->getLastDocUniq())
+
 						<div class="form-group">
 							{!! Form::label('recipient_name','Получатель',['class' => 'col-md-2 control-label'])   !!}
 							<div class="col-md-8">
@@ -413,6 +427,9 @@
 								{!! Form::text('recipient_phone',$new_worksheet->recipient_phone,['class' => 'form-control'])!!}
 							</div>
 						</div>
+
+						@endif
+
 						<div class="form-group">
 							{!! Form::label('recipient_passport','Номер паспорта получателя',['class' => 'col-md-2 control-label'])   !!}
 							<div class="col-md-8">
@@ -429,13 +446,15 @@
 						@endcan
 
 						@can('editColumns-3')
+
+						@if (!$new_worksheet->getLastDocUniq())
 						
 						<div class="form-group">
 							{!! Form::label('package_content','Содержимое посылки',['class' => 'col-md-2 control-label'])   !!}
 							<div class="col-md-8">
 								{!! Form::text('package_content',$new_worksheet->package_content,['class' => 'form-control'])!!}
 							</div>
-						</div>
+						</div>						
 
 						@endcan
 
@@ -447,6 +466,9 @@
 								{!! Form::text('package_cost',$new_worksheet->package_cost,['class' => 'form-control'])!!}
 							</div>
 						</div>
+
+						@endif
+						
 						<div class="form-group">
 							{!! Form::label('courier','Курьер',['class' => 'col-md-2 control-label'])   !!}
 							<div class="col-md-8">
@@ -657,6 +679,10 @@
 							{!! Form::hidden('background',$new_worksheet->background)!!}
 
 							{!! Form::hidden('status_date',$new_worksheet->status_date)!!}
+
+							{!! Form::hidden('order_date',$new_worksheet->order_date)!!}
+
+							{!! Form::hidden('parcels_qty',$new_worksheet->parcels_qty)!!}
 
 							{!! Form::hidden('site_name',$new_worksheet->site_name,['class' => 'form-control'])!!}
 

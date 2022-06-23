@@ -179,7 +179,7 @@
 						<div class="form-group">
 							{!! Form::label('status','Status',['class' => 'col-md-2 control-label'])   !!}
 							<div class="col-md-8">
-								{!! Form::select('status', array('' => '', 'Pending' => 'Pending', 'Forwarding to the warehouse in the sender country' => 'Forwarding to the warehouse in the sender country', 'At the warehouse in the sender country' => 'At the warehouse in the sender country', 'At the customs in the sender country' => 'At the customs in the sender country', 'Forwarding to the receiver country' => 'Forwarding to the receiver country', 'At the customs in the receiver country' => 'At the customs in the receiver country', 'Forwarding to the receiver' => 'Forwarding to the receiver', 'Delivered' => 'Delivered', 'Return' => 'Return', 'Box' => 'Box', 'Pick up' => 'Pick up', 'Specify' => 'Specify', 'Think' => 'Think', 'Canceled' => 'Canceled'), $phil_ind_worksheet->status,['class' => 'form-control']) !!}
+								{!! Form::select('status', array('' => '', 'Pending' => 'Pending', 'Packing list' => 'Packing list', 'Forwarding to the warehouse in the sender country' => 'Forwarding to the warehouse in the sender country', 'At the warehouse in the sender country' => 'At the warehouse in the sender country', 'At the customs in the sender country' => 'At the customs in the sender country', 'Forwarding to the receiver country' => 'Forwarding to the receiver country', 'At the customs in the receiver country' => 'At the customs in the receiver country', 'Forwarding to the receiver' => 'Forwarding to the receiver', 'Delivered' => 'Delivered', 'Return' => 'Return', 'Box' => 'Box', 'Pick up' => 'Pick up', 'Specify' => 'Specify', 'Think' => 'Think', 'Canceled' => 'Canceled'), $phil_ind_worksheet->status,['class' => 'form-control']) !!}
 							</div>
 						</div>
 						
@@ -233,6 +233,8 @@
 						@endcan
 
 						@can('editPost')
+
+						@if (!$phil_ind_worksheet->getLastDocUniq())
 						
 						<div class="form-group">
 							{!! Form::label('shipper_name','Shipper\'s name',['class' => 'col-md-2 control-label'])   !!}
@@ -436,6 +438,8 @@
 							</div>
 						</div>
 
+						@endif
+
 						<div class="form-group">
 							{!! Form::label('operator','Operator',['class' => 'col-md-2 control-label'])   !!}
 							<div class="col-md-8">
@@ -621,6 +625,10 @@
 							{!! Form::hidden('background',$phil_ind_worksheet->background)!!}
 
 							{!! Form::hidden('status_date',$phil_ind_worksheet->status_date)!!}
+
+							{!! Form::hidden('order_date',$phil_ind_worksheet->order_date)!!}
+
+							{!! Form::hidden('parcels_qty',$phil_ind_worksheet->parcels_qty)!!}
 
 							{!! Form::hidden('shipper_city',$phil_ind_worksheet->shipper_city)!!}
 
