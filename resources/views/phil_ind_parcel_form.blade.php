@@ -152,6 +152,7 @@
                 {!! Form::hidden('phone_exist_checked',isset($data_parcel->phone_exist_checked) ? $data_parcel->phone_exist_checked : '')!!}
                 {!! Form::hidden('status_box','')!!}
                 {!! Form::hidden('comments_2','')!!}
+                {!! Form::hidden('short_order','short_order') !!}
 
                 <h3>CUSTOMER INFORMATION</h3>                
 

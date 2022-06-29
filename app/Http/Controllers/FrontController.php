@@ -959,7 +959,7 @@ class FrontController extends AdminController
         $worksheet->status_date = date('Y-m-d');
         $worksheet->order_date = date('Y-m-d');
 
-        if (!$request->status_box) {
+        if ($request->comments_2 !== 'I need boxes') {
             if(!$request->short_order)
                 $worksheet->status = 'Pick up';
             else
