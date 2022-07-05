@@ -32,13 +32,45 @@
             <h1>Заказ посылки</h1>
             <h5>Обязательные поля отмечены значком  (*)</h5>
             <h5>Данные отправителя (заполняется на английском)</h5>
+
+            <h5>Упаковка</h5>
+
+            <div class="form-group">
+                <label class="control-label">Мне нужна пустая коробка/коробки</label>
+                <input onclick="clickRadio(this)" type="radio" name="need_box" value="need">
+                <h6>укажите типы и количество коробок</h6>
+                <h6>ТИП - КОЛЛИЧЕСТВО</h6>
+                <ul class="box-group">
+                    <li style="width: 170px;">
+                        <label class="control-label">Очень большая</label>
+                        <input type="number" data-name="Очень большая" name="extra_large" style="width: 40px;float: right;" min="0">
+                    </li>
+                    <li style="width: 170px;">
+                        <label class="control-label">Большая</label>
+                        <input type="number" data-name="Большая" name="large" style="width: 40px;float: right;" min="0">
+                    </li>
+                    <li style="width: 170px;">
+                        <label class="control-label">Средняя</label>
+                        <input type="number" data-name="Средняя" name="medium" style="width: 40px;float: right;" min="0">
+                    </li>
+                    <li style="width: 170px;">
+                        <label class="control-label">Маленькая</label>
+                        <input type="number" data-name="Маленькая" name="small" style="width: 40px;float: right;" min="0">
+                    </li>
+                </ul>
+
+                <label class="control-label">Мне не нужна коробка</label>
+                <input onclick="clickRadio(this)" type="radio" name="need_box" value="not_need" checked>
+            </div> 
          
 
             {!! Form::open(['url'=>route('formUpdateAfterCancel'),'onsubmit' => 'сonfirmSigned(event)', 'class'=>'form-horizontal form-send-parcel','method' => 'POST']) !!}
 
             {!! Form::hidden('phone_exist_checked',isset($data_parcel->phone_exist_checked) ? $data_parcel->phone_exist_checked : '')!!}
 
-            {!! Form::hidden('signature','signature') !!}     
+            {!! Form::hidden('signature','signature') !!}  
+            {!! Form::hidden('status_box','')!!}
+            {!! Form::hidden('comment_2','')!!}   
 
             @if (isset($token))
             <input type="hidden" name="session_token" value="{{ $token }}">
@@ -299,43 +331,6 @@
                 </div>
             </div>
 
-            <h5>Упаковка</h5>
-
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-md-6 control-label">
-                        {!! Form::radio('need_box','Мне нужна коробка на 30 кг', false)!!}
-                        <span>Мне нужна коробка на 30 кг</span>
-                    </div> 
-                    <div class="col-md-6 control-label">
-                        {!! Form::radio('need_box','Мне нужна коробка на 20 кг', false)!!}
-                        <span>Мне нужна коробка на 20 кг</span>
-                    </div>                                            
-                </div>
-            </div>
-
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-md-6 control-label">
-                        {!! Form::radio('need_box','Мне нужна коробка на 10 кг', false)!!}
-                        <span>Мне нужна коробка на 10 кг</span>
-                    </div> 
-                    <div class="col-md-6 control-label">
-                        {!! Form::radio('need_box','Мне не нужна коробка', true)!!}
-                        <span>Мне не нужна коробка</span>
-                    </div>                   
-                </div>
-            </div>
-
-            <div class="form-group">
-                <div class="row">                       
-                    <div class="col-md-12 control-label">
-                        {!! Form::radio('need_box','Мне нужно несколько коробок', false)!!}
-                        <span>Мне нужно несколько коробок</span>
-                    </div>
-                </div>
-            </div>
-
             <h3>ГАРАНТИЙНЫЕ ОБЯЗАТЕЛЬСТВА ОТПРАВИТЕЛЯ:</h3>
             <p>Я, <span class="first-name">{{isset($data_parcel->first_name) ? $data_parcel->first_name : ''}}</span> <span class="last-name">{{isset($data_parcel->last_name) ? $data_parcel->last_name : ''}}</span>, нижеподписавшийся/нижеподписавшаяся, подтверждаю, что являюсь отправителем всех вышеуказанных предметов, перечисленных в этом упаковочном листе, включая прилагаемый дополнительный подписанный упаковочный лист (если таковой имеется), и что я лично их упаковал. Подписывая форму, я гарантирую следующее:</p>
             <ol>
@@ -386,6 +381,57 @@
 
 
 <script>
+    const boxGroup = document.querySelectorAll('.box-group input');
+    boxGroup.forEach(function(item) {
+        if (localStorage.getItem('boxString')) 
+            item.disabled = false;
+        else
+            item.disabled = true;                
+    })
+
+    setTimeout(()=>{
+        if (localStorage.getItem('boxString')) {
+            const boxString = localStorage.getItem('boxString');
+            const tempArr = boxString.split('; ');
+
+            $('[name="need_box"]').each((k,el)=>{
+                if ($(el).val() === 'need') 
+                    $(el).prop( "checked", true );
+                else
+                    $(el).prop( "checked", false );
+            });
+
+            $('.box-group input').each((k,el)=>{
+                for (let i = 0; i < tempArr.length; i++) {
+                    if ($(el).attr('data-name') === tempArr[i].split(': ')[0]) 
+                        $(el).val(tempArr[i].split(': ')[1])                    
+                }
+            });
+        }
+
+        const button = document.querySelector('form.form-send-parcel button[type="submit"]')
+        const checkPhone = document.querySelector('form.form-send-parcel [name="phone_exist_checked"]').value
+        if (checkPhone) {
+            result = confirm("Вы хотите отправить форму ?")
+            if (result) button.click()
+        }
+    },500)
+
+
+    function clickRadio(elem){    
+        const boxGroup = document.querySelectorAll('.box-group input');       
+        if (elem.value === 'need') {                
+            boxGroup.forEach(function(item) {
+                item.disabled = false;
+            })               
+        }
+        else{
+            boxGroup.forEach(function(item) {
+                item.disabled = true;
+            })
+        }
+    }
+
     
     function сonfirmSigned(event)
     {
@@ -450,6 +496,38 @@
         })
 
         if (trueInput) return false;
+
+        /*Boxes info*/
+        const needBox = $('[name="need_box"]:checked').val();        
+        if (needBox === 'need') {
+            $('[name="status_box"]').val('true');
+            let boxString = '';
+            let boxVal = 0;
+            $('.box-group input').each((k,el)=>{
+                boxVal += parseInt($(el).val());
+            })
+            if (boxVal < 1) {
+                alert('ПОЖАЛУЙСТА, УКАЗЫВАЙТЕ ТИП КАК МИНИМУМ ОДНОЙ КОРОБКИ !');
+                return false;
+            }
+            else{
+                $('.box-group input').each((k,el)=>{
+                    if(parseInt($(el).val())){
+                        boxString += $(el).attr('data-name') +': '+ $(el).val() + '; ';
+                    }                   
+                })
+                $('[name="comment_2"]').val(boxString);
+
+                if (!$('[name="phone_exist_checked"]').val()) {
+                    localStorage.setItem('boxString',boxString);
+                }
+                else{
+                    localStorage.removeItem('boxString');
+                }
+
+            }            
+        }
+        else $('[name="status_box"]').val('false');
 
         form.submit();        
     }

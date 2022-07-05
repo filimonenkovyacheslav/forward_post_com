@@ -28,6 +28,7 @@ class CreateCouriersTasksTable extends Migration
             $table->string('site_name', 10)->nullable();
             $table->string('parcels_qty',30)->nullable();
             $table->unsignedTinyInteger('order_number')->nullable();
+            $table->string('packing_num',30)->nullable();
             $table->text('comments_1')->nullable();
             $table->text('comments_2')->nullable();
             $table->string('shipper_name', 150)->nullable();            

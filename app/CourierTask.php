@@ -12,7 +12,7 @@ use App\CourierEngDraftWorksheet;
 class CourierTask extends Model
 {   
     protected $table = 'couriers_tasks';
-    protected $fillable = ['worksheet_id','eng_worksheet_id','draft_id', 'eng_draft_id', 'direction', 'site_name', 'status', 'parcels_qty', 'comments_1', 'comments_2', 'shipper_name', 'shipper_country','shipper_city','shipper_address','standard_phone','courier','pick_up_date_comments','shipper_region','order_number'];
+    protected $fillable = ['worksheet_id','eng_worksheet_id','draft_id', 'eng_draft_id', 'direction', 'site_name', 'status', 'parcels_qty', 'comments_1', 'comments_2', 'shipper_name', 'shipper_country','shipper_city','shipper_address','standard_phone','courier','pick_up_date_comments','shipper_region','order_number','packing_num'];
 
 
     /**

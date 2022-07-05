@@ -41,6 +41,7 @@ class NewWorksheet extends BaseModel
             $new_task->status = $this->status;
             $new_task->parcels_qty = 1;
             $new_task->order_number = $this->order_number;
+            $new_task->packing_num = $this->getLastDocUniq();
             $new_task->comments_1 = $this->comment_2;
             $new_task->comments_2 = $this->comments;
             $new_task->shipper_name = $this->sender_name;
@@ -60,6 +61,7 @@ class NewWorksheet extends BaseModel
             $this->courierTask->status = $this->status;
             $this->courierTask->parcels_qty = 1;
             $this->courierTask->order_number = $this->order_number;
+            $this->courierTask->packing_num = $this->getLastDocUniq();
             $this->courierTask->comments_1 = $this->comment_2;
             $this->courierTask->comments_2 = $this->comments;
             $this->courierTask->shipper_name = $this->sender_name;

@@ -78,6 +78,7 @@
 									<option value="direction">Направление/Direction</option>
 									<option value="site_name">Сайт/Site</option>
 									<option value="status">Статус/Status</option>
+									<option value="packing_num">Packing No.</option>
 									<option value="comments_1">Комментарии 1/Comments 1</option>
 									<option value="comments_2">Комментарии 2/Comments 2</option> 
 									<option value="shipper_name">Отправитель/Shipper name</option>
@@ -110,6 +111,7 @@
 										<th>Статус / Status</th>
 										<th>Qty</th>
 										<th>O/No</th>
+										<th>Packing No.</th>
 										<th>Комментарии 1 / Comments 1</th>
 										<th>Комментарии 2 / Comments 2</th>
 										<th>Отправитель / Shipper name</th> 
@@ -153,6 +155,9 @@
 										</td>
 										<td title="{{$row->order_number}}">
 											<div class="div-number">{{$row->order_number}}</div>
+										</td>
+										<td title="{{$row->packing_num}}">
+											<div class="div-3">{{$row->packing_num}}</div>
 										</td>
 										<td title="{{$row->comments_1}}">
 											<div class="div-3">{{$row->comments_1}}</div>

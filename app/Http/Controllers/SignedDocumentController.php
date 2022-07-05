@@ -263,7 +263,8 @@ class SignedDocumentController extends Controller
             $type = $this->getType($worksheet);
             if ($user_name) {
                 $this->signedToUpdatesArchive($worksheet,$user_name,$document->uniq_id);
-            }            
+            }  
+            $worksheet->checkCourierTask($worksheet->status);          
 
             return redirect('/form-success?pdf_file='.$pdf_file.'&new_document_id='.$id.'&type='.$type);
         }
@@ -277,6 +278,7 @@ class SignedDocumentController extends Controller
             if ($user_name) {
                 $this->signedToUpdatesArchive($worksheet,$user_name,$document->uniq_id);
             } 
+            $worksheet->checkCourierTask($worksheet->status);
             
             return redirect('/form-success?pdf_file='.$pdf_file.'&new_document_id='.$id.'&type='.$type);
         }
