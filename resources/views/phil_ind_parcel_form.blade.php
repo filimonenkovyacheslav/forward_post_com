@@ -170,7 +170,7 @@
                     <div class="row">
                         {!! Form::label('shipper_name','Full name*',['class' => 'col-md-12 control-label']) !!}
                         <div class="col-md-12">
-                            {!! Form::text('shipper_name',isset($data_parcel->shipper_name) ? $data_parcel->shipper_name : old('shipper_name'),['class' => 'form-control', 'required'])!!}
+                            {!! Form::text('shipper_name',isset($data_parcel->first_name) ? $data_parcel->first_name.' '.$data_parcel->last_name : old('shipper_name'),['class' => 'form-control', 'required'])!!}
                         </div>
                     </div>
                 </div>

@@ -1320,6 +1320,9 @@ class FrontController extends AdminController
             $data = PhilIndWorksheet::where('shipper_phone',$request->input('shipper_phone'))
             ->orWhere('standard_phone', 'like', '%'.$request->input('shipper_phone').'%')
             ->get()->last();
+            if (!$data) {
+                $data = CourierEngDraftWorksheet::where('standard_phone', 'like', '%'.$request->input('shipper_phone').'%')->get()->last();
+            }
         }
         
         $message = 'This phone number is not available in the system';
