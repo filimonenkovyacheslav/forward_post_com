@@ -3,10 +3,13 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
 use App\CourierTask;
 use App\UpdatesArchive;
 use App\BaseModel;
 use App\SignedDocument;
+use App\CourierDraftWorksheet;
+use App\PackingSea;
 
 
 class NewWorksheet extends BaseModel
@@ -122,6 +125,112 @@ class NewWorksheet extends BaseModel
     {
         $document = $this->getLastDoc();
         if ($document) return $document->uniq_id;
+        else return null;
+    }
+
+
+    public function deactivateWorksheet()
+    {
+        $fields = Schema::getColumnListing('courier_draft_worksheet'); 
+        $draft = new CourierDraftWorksheet();         
+
+        foreach($fields as $field){
+            if ($field !== 'created_at' && $field !== 'id'){
+                $draft->$field = $this->$field;
+            }           
+        }
+        $draft->in_trash = false;                   
+
+        if ($draft->save())
+        {           
+            $work_sheet_id = $draft->id;       
+            $draft = CourierDraftWorksheet::find($work_sheet_id);
+
+            // Packing
+            $fields_packing = ['payer', 'contract', 'type', 'track_code', 'full_shipper', 'full_consignee', 'country_code', 'postcode', 'region', 'district', 'city', 'street', 'house', 'body', 'room', 'phone', 'tariff', 'tariff_cent', 'weight_kg', 'weight_g', 'service_code', 'amount_1', 'amount_2', 'attachment_number', 'attachment_name', 'amount_3', 'weight_enclosures_kg', 'weight_enclosures_g', 'value_euro', 'value_cent', 'work_sheet_id'];
+            
+            $j=1;
+            $items = explode(";", $this->package_content);          
+            if (count($items)) {
+                $temp = '';
+                for ($i=0; $i < count($items); $i++) {  
+
+                    if (strripos($items[$i], '-') !== false) {
+                        $temp = explode("-", $items[$i]);
+                        $content = trim($temp[0]);
+                        $quantity = trim($temp[1]);
+                    }
+                    elseif (strripos($items[$i], ':') !== false) {
+                        $temp = explode(":", $items[$i]);
+                        $content = trim($temp[0]);
+                        $quantity = trim($temp[1]);
+                    }
+
+                    if ($items[$i]) {
+                        $packing_sea = new PackingSea();
+                        foreach($fields_packing as $field){
+                            if ($field === 'type') {
+                                $packing_sea->$field = $this->tariff;
+                            }
+                            else if ($field === 'full_shipper') {
+                                $packing_sea->$field = $this->sender_name;
+                            }
+                            else if ($field === 'full_consignee') {
+                                $packing_sea->$field = $this->recipient__name;
+                            }
+                            else if ($field === 'country_code') {
+                                $packing_sea->$field = $this->recipient_country;
+                            }
+                            else if ($field === 'postcode') {
+                                $packing_sea->$field = $this->recipient_postcode;
+                            }
+                            else if ($field === 'city') {
+                                $packing_sea->$field = $this->recipient_city;
+                            }
+                            else if ($field === 'street') {
+                                $packing_sea->$field = $this->recipient_street;
+                            }
+                            else if ($field === 'house') {
+                                $packing_sea->$field = $this->recipient_house;
+                            }
+                            else if ($field === 'room') {
+                                $packing_sea->$field = $this->recipient_room;
+                            }
+                            else if ($field === 'phone') {
+                                $packing_sea->$field = $this->recipient_phone;
+                            }
+                            else if ($field === 'tariff') {
+                                $packing_sea->$field = null;
+                            }
+                            else if ($field === 'work_sheet_id') {
+                                $packing_sea->$field = $work_sheet_id;
+                            }
+                            else if ($field === 'attachment_number') {
+                                $packing_sea->$field = $j;
+                            }
+                            else if ($field === 'attachment_name') {
+                                $packing_sea->$field = $content;
+                            }
+                            else if ($field === 'amount_3') {
+                                $packing_sea->$field = $quantity;
+                            }
+                            else if ($field === 'track_code') {
+                                $packing_sea->$field = $this->tracking_main;
+                            }
+                            else{
+                                $packing_sea->$field = $this->$field;
+                            }
+                        }
+                        $j++;
+                        $packing_sea->save(); 
+                    }                      
+                }
+            }
+        }
+
+        if ($draft) {
+            return $draft;
+        }
         else return null;
     }
     

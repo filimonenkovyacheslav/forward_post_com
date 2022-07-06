@@ -3,10 +3,13 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
 use App\CourierTask;
 use App\UpdatesArchive;
 use App\SignedDocument;
 use App\BaseModel;
+use App\CourierEngDraftWorksheet;
+use App\PackingEng;
 
 
 class PhilIndWorksheet extends BaseModel
@@ -122,6 +125,57 @@ class PhilIndWorksheet extends BaseModel
     {
         $document = $this->getLastDoc();
         if ($document) return $document->uniq_id;
+        else return null;
+    }
+
+
+    public function deactivateWorksheet()
+    {
+        $draft = new CourierEngDraftWorksheet();
+        $fields = Schema::getColumnListing('courier_eng_draft_worksheet');
+
+        foreach($fields as $field){
+            if ($field !== 'created_at' && $field !== 'id'){
+                $draft->$field = $this->$field;
+            }           
+        }
+        $draft->in_trash = false;                        
+
+        if ($draft->save()) {          
+            $work_sheet_id = $draft->id;
+            $draft = CourierEngDraftWorksheet::find($work_sheet_id);
+
+            // Packing
+            $fields_packing = ['tracking', 'country', 'shipper_name', 'shipper_address', 'shipper_phone', 'shipper_id', 'consignee_name', 'consignee_address', 'consignee_phone', 'consignee_id', 'length', 'width', 'height', 'weight', 'items', 'shipment_val', 'work_sheet_id'];
+            $packing = new PackingEng();
+            foreach($fields_packing as $field){
+                if ($field === 'country') {
+                    $packing->$field = $this->consignee_country;
+                    // New parcel form
+                    if (!$this->consignee_address) $packing->consignee_address = $this->consignee_country;                    
+                }
+                elseif ($field === 'shipper_phone') {
+                    $packing->$field = $this->standard_phone;
+                }
+                elseif ($field === 'work_sheet_id') {
+                    $packing->$field = $work_sheet_id;
+                }
+                else if ($field === 'items') {
+                    $packing->$field = $this->shipped_items;
+                }
+                else if ($field === 'tracking') {
+                    $packing->$field = $this->tracking_main;
+                }
+                else{
+                    $packing->$field = $this->$field;
+                } 
+            }
+            $packing->save();
+        }
+
+        if ($draft) {
+            return $draft;
+        }
         else return null;
     }
 }

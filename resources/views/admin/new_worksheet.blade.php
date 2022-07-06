@@ -145,6 +145,7 @@
 
 								<option value="cancel-pdf">Отменить PDF</option>
 								<option value="download-pdf">Скачать PDF</option>
+								<option value="return-draft">Вернуть в Черновик</option>
 																
 							</select>
 						</label>
@@ -208,6 +209,10 @@
 						@endcan
 
 						<form class="checkbox-operations-change-one" action="{{ url('/admin/new-worksheet/') }}" method="GET">
+							@csrf	
+						</form>
+
+						<form class="checkbox-operations-return-draft" action="{{ url('/admin/return-draft') }}" method="GET">
 							@csrf	
 						</form>
 

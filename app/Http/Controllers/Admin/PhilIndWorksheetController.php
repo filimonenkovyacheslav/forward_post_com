@@ -17,6 +17,7 @@ use App\ReceiptArchive;
 use App\Receipt;
 use App\Exports\PackingEngNewExport;
 use Auth;
+use App\SignedDocument;
 
 
 class PhilIndWorksheetController extends AdminController
@@ -1083,5 +1084,50 @@ class PhilIndWorksheetController extends AdminController
         }                       
         
         return view('admin.phil_ind.phil_ind_worksheet', ['title' => $title,'data' => $data,'phil_ind_worksheet_obj' => $phil_ind_worksheet_obj,'new_column_1' => $arr_columns[0],'new_column_2' => $arr_columns[1],'new_column_3' => $arr_columns[2],'new_column_4' => $arr_columns[3],'new_column_5' => $arr_columns[4]]);
+    }
+
+
+    public function deactivate($id)
+    {
+    	$worksheet = PhilIndWorksheet::find($id);
+    	$draft = $worksheet->deactivateWorksheet();
+    	$message = '';
+    	
+    	if ($draft) {
+    		
+    		if ($draft->pallet_number) {
+				$this->updateWarehouse(null, $draft->pallet_number, $draft->tracking_main);
+			}
+
+			if ($draft->tracking_main) {
+				ReceiptArchive::where([
+					['tracking_main', $draft->tracking_main],
+					['worksheet_id', null],
+					['receipt_id', null]
+				])->delete();
+				$result = Receipt::where('tracking_main', $draft->tracking_main)->first();
+				if (!$result) {
+					$message = $this->checkReceipt($draft->id, null, 'en', $draft->tracking_main);
+				}
+				$this->checkForMissingTracking($draft->tracking_main);
+			}			
+
+            // Transfer documents
+            SignedDocument::where('eng_worksheet_id',$id)
+    		->update([
+    			'eng_worksheet_id' => null,
+    			'eng_draft_id' => $draft->id
+    		]);					    		
+    		
+    		$worksheet->delete();
+    		PackingEngNew::where('work_sheet_id', $id)->delete();
+    		
+    		$draft->checkCourierTask($draft->status);
+    		
+    		return redirect()->to(session('this_previous_url'))->with('status', 'Row successfully returned to draft! '.$message);
+    	}
+    	else{
+			return redirect()->to(session('this_previous_url'))->with('status-error', 'Deactivation error!');
+		}
     }
 }

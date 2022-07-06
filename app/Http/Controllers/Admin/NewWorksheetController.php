@@ -20,6 +20,7 @@ use App\ReceiptArchive;
 use App\Receipt;
 use \Dejurin\GoogleTranslateForFree;
 use App\Warehouse;
+use App\SignedDocument;
 
 
 class NewWorksheetController extends AdminController
@@ -1320,6 +1321,53 @@ class NewWorksheetController extends AdminController
         $update_all_statuses = NewWorksheet::where('in_trash',false)->where('update_status_date','=', date('Y-m-d'))->get()->count();
         
         return view('admin.new_worksheet', ['title' => $title,'data' => $data,'new_worksheet_obj' => $new_worksheet_obj,'new_column_1' => $arr_columns[0],'new_column_2' => $arr_columns[1],'new_column_3' => $arr_columns[2],'new_column_4' => $arr_columns[3],'new_column_5' => $arr_columns[4], 'user' => $user, 'viewer_arr' => $viewer_arr, 'update_all_statuses' => $update_all_statuses]);
+    }
+
+
+    public function deactivate($id)
+    {
+    	$worksheet = NewWorksheet::find($id);
+    	$draft = $worksheet->deactivateWorksheet();
+    	$message = '';
+    	
+    	if ($draft) {
+    		
+    		if ($draft->pallet_number) {
+				$this->updateWarehouse(null, $draft->pallet_number, $draft->tracking_main);
+			}
+
+			if ($draft->tracking_main) {
+				ReceiptArchive::where([
+					['tracking_main', $draft->tracking_main],
+					['worksheet_id', null],
+					['receipt_id', null]
+				])->delete();
+				$result = Receipt::where('tracking_main', $draft->tracking_main)->first();
+				if (!$result) {
+					$message = $this->checkReceipt($draft->id, null, 'ru', $draft->tracking_main);
+				}
+				$this->checkForMissingTracking($draft->tracking_main);
+			}			
+
+            // Transfer documents
+            SignedDocument::where('worksheet_id',$id)
+    		->update([
+    			'worksheet_id' => null,
+    			'draft_id' => $draft->id
+    		]);					    		
+    		
+    		$worksheet->delete();
+    		NewPacking::where('work_sheet_id', $id)->delete();
+    		Invoice::where('work_sheet_id', $id)->delete();
+    		Manifest::where('work_sheet_id', $id)->delete();
+
+    		$draft->checkCourierTask($draft->status);
+    		
+    		return redirect()->to(session('this_previous_url'))->with('status', 'Строка успешно возвращена в черновик! '.$message);
+    	}
+    	else{
+			return redirect()->to(session('this_previous_url'))->with('status-error', 'Ошибка деактивации!');
+		}
     }
 
 }

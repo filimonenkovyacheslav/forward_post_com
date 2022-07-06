@@ -350,6 +350,8 @@ Route::group(['prefix' => 'admin','middleware' => 'auth'],function() {
 
 	Route::get('/new-worksheet-filter',['uses' => 'Admin\NewWorksheetController@newWorksheetFilter','as' => 'newWorksheetFilter']);
 
+	Route::get('/return-draft/{id}',['uses' => 'Admin\NewWorksheetController@deactivate']);
+
 	// Old Packing Sea
 	Route::get('/packing-sea',['uses' => 'Admin\NewWorksheetController@indexPackingSea','as' => 'indexPackingSea']);	
 
@@ -528,6 +530,8 @@ Route::get('/admin/phil-ind-worksheet-filter',['uses' => 'Admin\PhilIndWorksheet
 Route::post('/admin/phil-ind-worksheet-id-data',['uses' => 'Admin\PhilIndWorksheetController@addPhilIndDataById','as' => 'addPhilIndDataById']);
 
 Route::post('/admin/phil-ind-worksheet-id-data-delete',['uses' => 'Admin\PhilIndWorksheetController@deletePhilIndWorksheetById','as' => 'deletePhilIndWorksheetById']);
+
+Route::get('/admin/return-eng-draft/{id}',['uses' => 'Admin\PhilIndWorksheetController@deactivate']);
 
 // Packing Eng
 Route::get('/admin/packing-eng',['uses' => 'Admin\PhilIndWorksheetController@indexPackingEng','as' => 'indexPackingEng']);

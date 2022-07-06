@@ -1205,6 +1205,42 @@ $('[name="checkbox_operations_select"]').change((e)=>{
             alert('This option is only available with one line!')
         }
     }
+    else if (thisVal === 'return-draft'){
+        if ($('[name="row_id[]"]:checked').length == 1) {
+            const x = confirm("Are you sure you want to return it to draft?");
+            if (x)
+            {
+                let action = $('.checkbox-operations-return-draft').attr('action');
+                const rowId = $('.checkbox-operations-return-draft [name="row_id[]"]').val();
+                action += '/'+rowId; 
+                $('.checkbox-operations-return-draft').attr('action',action);
+                $('.checkbox-operations-return-draft').submit()
+            } 
+            else 
+                return false
+        }
+        else{
+            alert('This option is only available with one line!')
+        }
+    }    
+    else if (thisVal === 'return-eng-draft'){
+        if ($('[name="row_id[]"]:checked').length == 1) {
+            const x = confirm("Are you sure you want to return it to draft?");
+            if (x)
+            {
+                let action = $('.checkbox-operations-return-eng-draft').attr('action');
+                const rowId = $('.checkbox-operations-return-eng-draft [name="row_id[]"]').val();
+                action += '/'+rowId; 
+                $('.checkbox-operations-return-eng-draft').attr('action',action);
+                $('.checkbox-operations-return-eng-draft').submit()
+            } 
+            else 
+                return false
+        }
+        else{
+            alert('This option is only available with one line!')
+        }
+    } 
     else if (thisVal === 'add-pdf'){
         if ($('[name="row_id[]"]:checked').length == 1 || $('[name="row_id[]"]:checked').length == 0) {           
             let action = $('.checkbox-operations-add-pdf').attr('action');

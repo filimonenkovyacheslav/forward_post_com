@@ -136,6 +136,7 @@
 
 								<option value="cancel-pdf">Cancel PDF</option>
 								<option value="download-pdf">Download PDF</option>
+								<option value="return-eng-draft">Return to Draft</option>
 																
 							</select>
 						</label>
@@ -193,6 +194,10 @@
 						@endcan
 
 						<form class="checkbox-operations-change-one" action="{{ url('/admin/phil-ind-worksheet/') }}" method="GET">
+							@csrf	
+						</form>
+
+						<form class="checkbox-operations-return-eng-draft" action="{{ url('/admin/return-eng-draft') }}" method="GET">
 							@csrf	
 						</form>
 
