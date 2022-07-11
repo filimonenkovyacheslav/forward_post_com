@@ -374,10 +374,19 @@ class Controller extends BaseController
     }
 
 
+    protected function checkPdfId($type,$id)
+    {
+        $message_error = 'There is an unfinished process! Complete the process or recreate the order with client!';
+        if ($this->checkDocument($type,$id)) return $message_error; 
+        if (!$this->checkDocument_2($type,$id)) return $message_error; 
+        return 'success';
+    }
+
+
     public function cancelPdfId($type,$id)
     {    
-        if ($this->checkDocument($type,$id)) return redirect()->back()->with('status-error', 'There is an unfinished process!'); 
-        if (!$this->checkDocument_2($type,$id)) return redirect()->back()->with('status-error', 'There is nothing to cancel or an unfinished process! Complete the process or recreate the order!');  
+        if ($this->checkDocument($type,$id)) return redirect()->back()->with('status-error', 'There is an unfinished process! Complete the process or recreate the order with client!'); 
+        if (!$this->checkDocument_2($type,$id)) return redirect()->back()->with('status-error', 'There is nothing to cancel or an unfinished process! Complete the process or recreate the order with client!');  
         $message = $this->messageForCancelPdf($type,$id)[0];
         $worksheet = $this->messageForCancelPdf($type,$id)[1];
         return view('pdf.form_cancel_pdf',compact('worksheet','type','message'));

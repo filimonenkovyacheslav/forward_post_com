@@ -534,13 +534,6 @@
                 }
             });
         }
-
-        const button = document.querySelector('form.form-send-parcel button[type="submit"]')
-        const checkPhone = document.querySelector('form.form-send-parcel [name="phone_exist_checked"]').value
-        if (checkPhone) {
-            result = confirm("Вы хотите отправить форму ?")
-            if (result) button.click()
-        }
     },500)
 
 

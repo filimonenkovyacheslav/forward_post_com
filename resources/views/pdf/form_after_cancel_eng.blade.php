@@ -396,9 +396,9 @@
 
                 @if(Auth::user())
                 @if(Auth::user()->role === 'office_1' || Auth::user()->role === 'admin' || Auth::user()->role === 'office_eng')
-                <br>
-                <button class="btn btn-danger" id="cancel-disabled" onclick="cancelDisabled()">To cancel Disabled</button>
-                <hr>
+                <!-- <br>
+                <button class="btn btn-danger" id="cancel-disabled" onclick="cancelDisabled()">To cancel Disabled</button> -->
+                <hr> 
                 @if($type === 'eng_draft_id')
                 <a class="btn btn-success" href="{{ url('/admin/courier-eng-draft-worksheet') }}">To Admin Panel</a>
                 @else
@@ -451,9 +451,17 @@
                 alert('The consignee country field is required !');
                 return false;
             }
-            if (!document.querySelector('[name="shipper_city"]').value){
-                alert('The city field is required !');
-                return false;
+            if (document.querySelector('[name="shipper_country"]').value !== 'Germany') {
+                if (!document.querySelector('[name="shipper_city"]').value){
+                    alert('The city field is required !');
+                    return false;
+                }
+            }
+            else{
+                if (!document.querySelector('input[name="shipper_city"]').value){
+                    alert('The city field is required !');
+                    return false;
+                }
             }
 
             const recipientPhone = document.querySelector('[name="consignee_phone"]');

@@ -362,8 +362,8 @@
 
             @if(Auth::user())
             @if(Auth::user()->role === 'office_1' || Auth::user()->role === 'admin' || Auth::user()->role === 'office_ru')
-            <br>
-            <button class="btn btn-danger" id="cancel-disabled" onclick="cancelDisabled()">To cancel Disabled</button>
+            <!-- <br>
+            <button class="btn btn-danger" id="cancel-disabled" onclick="cancelDisabled()">To cancel Disabled</button> -->
             <hr>
             @if($type === 'draft_id')
             <a class="btn btn-success" href="{{ url('/admin/courier-draft-worksheet') }}">To Admin Panel</a>
@@ -407,13 +407,6 @@
                         $(el).val(tempArr[i].split(': ')[1])                    
                 }
             });
-        }
-
-        const button = document.querySelector('form.form-send-parcel button[type="submit"]')
-        const checkPhone = document.querySelector('form.form-send-parcel [name="phone_exist_checked"]').value
-        if (checkPhone) {
-            result = confirm("Вы хотите отправить форму ?")
-            if (result) button.click()
         }
     },500)
 

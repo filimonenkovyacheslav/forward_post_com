@@ -76,6 +76,12 @@ class CourierEngDraftController extends AdminController
 	private function validateUpdate($request, $id)
 	{
 		$error_message = '';
+
+		$message_pdf = $this->checkPdfId('eng_draft_id',$id);
+		if ($message_pdf !== 'success') {
+			return $message_pdf;
+		}
+		
 		if ($request->input('tracking_main')) {
 			$error_message = $this->checkTracking("courier_eng_draft_worksheet", $request->input('tracking_main'), $id);
 			return $error_message;
@@ -249,6 +255,13 @@ class CourierEngDraftController extends AdminController
     	}
 
     	if ($row_arr) {
+
+    		for ($i=0; $i < count($row_arr); $i++) { 
+    			$message_pdf = $this->checkPdfId('eng_draft_id',$row_arr[$i]);
+    			if ($message_pdf !== 'success') {
+    				return redirect()->to(session('this_previous_url'))->with('status-error', $message_pdf);
+    			}
+    		} 
 
     		if ($column === 'shipper_country') $value_by = $shipper_country_val;
     		if ($column === 'consignee_country') $value_by = $consignee_country_val;
@@ -709,6 +722,11 @@ class CourierEngDraftController extends AdminController
 		$country = '';
 		$error_message = 'Fill in required fields: ';
 		$user = Auth::user();
+
+		$message_pdf = $this->checkPdfId('eng_draft_id',$id);
+		if ($message_pdf !== 'success') {
+			return response()->json(['error' => $message_pdf]);
+		}
 
 		$country = $courier_eng_draft_worksheet->consignee_country;	
 

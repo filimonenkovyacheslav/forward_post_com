@@ -134,7 +134,7 @@
 								<option value="change">Change</option>	
 								@endcan
 
-								<option value="cancel-pdf">Cancel PDF</option>
+								<!-- <option value="cancel-pdf">Cancel PDF</option> -->
 								<option value="download-pdf">Download PDF</option>
 								<option value="return-eng-draft">Return to Draft</option>
 																

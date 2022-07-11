@@ -478,7 +478,7 @@ $('.new-form .form-send-parcel select').on('change',(e)=>{
 	availableNow = true
 })
 
-if ($('#form_cancel_disabled').val() === 'false') {
+/*if ($('#form_cancel_disabled').val() === 'false') {
 	$('.new-form .form-send-parcel input').prop('disabled',true);
 	$('.new-form .form-send-parcel select').prop('disabled',true);
 	$('.new-form .form-send-parcel button[type="submit"]').hide();
@@ -495,7 +495,7 @@ function cancelDisabled(){
 	$('.new-form .form-send-parcel select').prop('disabled',false);
 	$('.new-form .form-send-parcel button[type="submit"]').show();
 	$('#form_cancel_disabled').val('true');
-}
+}*/
 
 if ($('.new-form .form-send-parcel input').length > 0) {
 	getSignedValue()

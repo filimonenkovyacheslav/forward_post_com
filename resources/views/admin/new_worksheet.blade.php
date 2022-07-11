@@ -143,7 +143,7 @@
 								<option value="change">Изменить</option>
 								@endcan
 
-								<option value="cancel-pdf">Отменить PDF</option>
+								<!-- <option value="cancel-pdf">Отменить PDF</option> -->
 								<option value="download-pdf">Скачать PDF</option>
 								<option value="return-draft">Вернуть в Черновик</option>
 																

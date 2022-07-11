@@ -58,6 +58,12 @@ class CourierDraftController extends AdminController
 	private function validateUpdate($request, $id)
 	{
 		$error_message = '';
+
+		$message_pdf = $this->checkPdfId('draft_id',$id);
+		if ($message_pdf !== 'success') {
+			return $message_pdf;
+		}
+		
 		if ($request->input('tracking_main')) {
 			$error_message = $this->checkTracking("courier_draft_worksheet", $request->input('tracking_main'), $id);
 			return $error_message;
@@ -273,12 +279,19 @@ class CourierDraftController extends AdminController
     	$check_result = '';
 
     	if ($row_arr) {
+
+    		for ($i=0; $i < count($row_arr); $i++) { 
+    			$message_pdf = $this->checkPdfId('draft_id',$row_arr[$i]);
+    			if ($message_pdf !== 'success') {
+    				return redirect()->to(session('this_previous_url'))->with('status-error', $message_pdf);
+    			}
+    		} 
     		
     		if ($value_by && $column) {    			
 
     			$status_error = $this->checkColumns($row_arr, $value_by, $column, $check_column, 'courier_draft_worksheet');
     			if($status_error) return redirect()->to(session('this_previous_url'))->with('status-error', $status_error);
-
+    			
     			for ($i=0; $i < count($row_arr); $i++) { 
     				$worksheet = CourierDraftWorksheet::where('id',$row_arr[$i])->first();
     				$this->toUpdatesArchive($request,$worksheet);
@@ -669,6 +682,11 @@ class CourierDraftController extends AdminController
     	$courier_draft_worksheet = CourierDraftWorksheet::find($id);
 		$error_message = 'Заполните обязателные поля: ';
 		$user = Auth::user();
+
+		$message_pdf = $this->checkPdfId('draft_id',$id);
+		if ($message_pdf !== 'success') {
+			return response()->json(['error' => $message_pdf]);
+		}
 
 		if (!$courier_draft_worksheet->sender_name) $error_message .= 'Отправитель,';
 		if (!$courier_draft_worksheet->standard_phone) $error_message .= 'Телефон (стандарт),';
