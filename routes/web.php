@@ -155,6 +155,11 @@ Route::get('/home', 'HomeController@index')->name('home');
 */
 Route::group(['prefix' => 'admin','middleware' => 'auth'],function() {	
 
+	// Add data by pallet	
+	Route::get('/pallet-data',['uses' => 'Admin\AdminController@showPalletData','as' => 'showPalletData']);
+
+	Route::post('/pallet-data',['uses' => 'Admin\AdminController@addPalletData','as' => 'addPalletData']);	
+
 	// Check row color
 	Route::post('/check-row-color',['uses' => 'Admin\AdminController@checkRowColor']);
 

@@ -84,6 +84,18 @@ class UpdatesArchive extends Model
                 $new_data[] = $request->input('value-by-tracking');
             }
         }
+        elseif ($request->input('value-by-pallet')) {  
+            if ($worksheet->table === 'new_worksheet' || $worksheet->table === 'courier_draft_worksheet') 
+                $column = 'batch_number';          
+            else
+                $column = 'lot';
+
+            if (in_array($column, $this->column_arr)) {
+                $column_name[] = $column;
+                $old_data[] = $worksheet->$column;
+                $new_data[] = $request->input('value-by-pallet');
+            }
+        }
         else{
             if ((($request->row_id || $request->tracking || $request->by_lot)?$request->site_name:true) && $request->site_name !== $worksheet->site_name) {
                 $column_name[] = 'site_name';

@@ -175,6 +175,12 @@
                         <a href="{{route('tempLinks')}}"><i class="menu-icon fa fa-book "></i> Temporary links</a>
                     </li> 
                     @endcan 
+                   
+                    @can('editColumns-2')
+                    <li>
+                        <a href="{{route('showPalletData')}}"><i class="menu-icon fa fa-book "></i> Pallets </a>
+                    </li> 
+                    @endcan 
                 
                 </ul>               
             </div><!-- /.navbar-collapse -->

@@ -377,9 +377,24 @@ class Controller extends BaseController
     protected function checkPdfId($type,$id)
     {
         $message_error = 'There is an unfinished process! Complete the process or recreate the order with client!';
-        if ($this->checkDocument($type,$id)) return $message_error; 
-        if (!$this->checkDocument_2($type,$id)) return $message_error; 
-        return 'success';
+        switch ($type) {
+
+            case "draft_id":
+
+            $worksheet = CourierDraftWorksheet::find($id);
+        
+            break;
+            
+            case "eng_draft_id":
+
+            $worksheet = CourierEngDraftWorksheet::find($id);
+
+            break;
+        }
+        if (!$worksheet->getLastDoc()) return 'success';
+        elseif ($this->checkDocument($type,$id)) return $message_error; 
+        elseif (!$this->checkDocument_2($type,$id)) return $message_error; 
+        else return 'success';     
     }
 
 
@@ -1937,7 +1952,6 @@ class Controller extends BaseController
 
     public function importDraft()
     {
-
         return '<h1>Draft imported successfully !</h1>';
     }
 

@@ -25,6 +25,8 @@ class AdminController extends Controller
 	private $en_status_arr = ["Pending", "Return", "Box", "Pick up", "Specify", "Think", "Canceled", "Double","Packing list"];
 	private $ru_status_arr_2 = ["Доставляется на склад в стране отправителя", "Возврат", "Коробка", "Забрать", "Уточнить", "Думают", "Отмена", "Подготовка", "Дубль","Пакинг лист"];
 	private $en_status_arr_2 = ["Forwarding to the warehouse in the sender country", "Pending", "Return", "Box", "Pick up", "Specify", "Think", "Canceled", "Double","Packing list"];
+	private $ru_status_arr_3 = ["На таможне в стране отправителя", "На складе в стране отправителя", "Доставляется на склад в стране отправителя", "Возврат", "Коробка", "Забрать", "Уточнить", "Думают", "Отмена", "Подготовка", "Дубль","Пакинг лист"];
+	private $en_status_arr_3 = ["At the customs in the sender country", "At the warehouse in the sender country", "Forwarding to the warehouse in the sender country", "Pending", "Return", "Box", "Pick up", "Specify", "Think", "Canceled", "Double","Packing list"];
 
 
     protected function checkRowColor(Request $request)
@@ -465,6 +467,251 @@ class AdminController extends Controller
 		
 		return $status_error;
 	}
+
+
+    public function showPalletData(){
+        
+        $title = 'Mass change of data on pallets (supports mass selection of checkboxes)';
+        $pallet_arr = NewWorksheet::where([
+            ['in_trash',false],
+            ['pallet_number','<>',null]
+        ])->pluck('pallet_number');
+        $pallet_arr = $pallet_arr->merge(CourierDraftWorksheet::where([
+            ['in_trash',false],
+            ['pallet_number','<>',null]
+        ])->pluck('pallet_number'));
+        $pallet_arr = $pallet_arr->merge(PhilIndWorksheet::where([
+            ['in_trash',false],
+            ['pallet_number','<>',null]
+        ])->pluck('pallet_number'));
+        $pallet_arr = $pallet_arr->merge(CourierEngDraftWorksheet::where([
+            ['in_trash',false],
+            ['pallet_number','<>',null]
+        ])->pluck('pallet_number'));
+        $pallet_arr = $pallet_arr->toArray();
+        $pallet_arr = array_unique($pallet_arr);
+        
+        return view('admin.pallet_data', compact('title','pallet_arr'));
+    }
+
+
+    public function addPalletData(Request $request){
+        $pallet_arr = $request->input('pallet');
+        $value_by = $request->input('value-by-pallet');       
+        
+        $status_error = '';
+        $check_column = 'pallet_number';        
+        
+        if ($pallet_arr) {
+
+            $worksheet_pallet_exist = NewWorksheet::whereIn('pallet_number',$pallet_arr)->get()->count();
+            $draft_pallet_exist = CourierDraftWorksheet::whereIn('pallet_number',$pallet_arr)->get()->count();
+            $eng_worksheet_pallet_exist = PhilIndWorksheet::whereIn('pallet_number',$pallet_arr)->get()->count();
+            $eng_draft_pallet_exist = CourierEngDraftWorksheet::whereIn('pallet_number',$pallet_arr)->get()->count();
+
+            if ($worksheet_pallet_exist AND $eng_worksheet_pallet_exist) {
+            	$status_error = 'These pallets cannot be in the same lot!';
+            	return redirect()->to(session('this_previous_url'))->with('status-error', $status_error);
+            }
+            if ($worksheet_pallet_exist AND $eng_draft_pallet_exist) {
+            	$status_error = 'These pallets cannot be in the same lot!';
+            	return redirect()->to(session('this_previous_url'))->with('status-error', $status_error);
+            }
+            if ($draft_pallet_exist AND $eng_worksheet_pallet_exist) {
+            	$status_error = 'These pallets cannot be in the same lot!';
+            	return redirect()->to(session('this_previous_url'))->with('status-error', $status_error);
+            }
+            if ($draft_pallet_exist AND $eng_draft_pallet_exist) {
+            	$status_error = 'These pallets cannot be in the same lot!';
+            	return redirect()->to(session('this_previous_url'))->with('status-error', $status_error);
+            }
+            
+            if ($worksheet_pallet_exist) {
+                
+                $column = 'batch_number';
+                $old_lot_arr_tracking = [];
+                $status_error = $this->checkColumns($pallet_arr, $value_by, $column, $check_column, 'new_worksheet');                
+                if($status_error) return redirect()->to(session('this_previous_url'))->with('status-error', $status_error);
+
+                for ($i=0; $i < count($pallet_arr); $i++) { 
+                    $worksheets = NewWorksheet::where('pallet_number',$pallet_arr[$i])->get();
+                    foreach ($worksheets as $sheet) {
+                        $this->toUpdatesArchive($request,$sheet);
+                    }                   
+                } 
+
+                for ($i=0; $i < count($pallet_arr); $i++) { 
+                    $worksheets = NewWorksheet::where('pallet_number',$pallet_arr[$i])->get();
+                    foreach ($worksheets as $sheet) {
+                        if ($sheet->batch_number !== $value_by) {
+                            $old_lot_arr_tracking[] = $sheet->tracking_main;
+                        }                       
+                    }                    
+                }
+                
+                NewWorksheet::whereIn('pallet_number', $pallet_arr)
+                ->update([
+                    $column => $value_by
+                ]); 
+
+                NewWorksheet::whereIn('pallet_number', $pallet_arr)
+                ->whereIn('status',$this->ru_status_arr_3)
+                ->update([
+                    'status' => "Доставляется в страну получателя",
+                    'status_en' => "Forwarding to the receiver country",
+                    'status_he' => " נשלח למדינת המקבל",
+                    'status_ua' => "Forwarding to the receiver country",
+                    'status_date' => date('Y-m-d')
+                ]);
+
+                for ($i=0; $i < count($old_lot_arr_tracking); $i++) { 
+                    $this->updateWarehouseLot($old_lot_arr_tracking[$i], $value_by, 'ru');
+                }
+            }      
+            
+            if ($draft_pallet_exist) {
+                
+                $column = 'batch_number';
+                $old_lot_arr_tracking = [];
+                $status_error = $this->checkColumns($pallet_arr, $value_by, $column, $check_column, 'courier_draft_worksheet');                
+                if($status_error) return redirect()->to(session('this_previous_url'))->with('status-error', $status_error);
+
+                for ($i=0; $i < count($pallet_arr); $i++) { 
+                    $worksheets = CourierDraftWorksheet::where('pallet_number',$pallet_arr[$i])->get();
+                    foreach ($worksheets as $sheet) {
+                        $this->toUpdatesArchive($request,$sheet);
+                    }                   
+                } 
+
+                for ($i=0; $i < count($pallet_arr); $i++) { 
+                    $worksheets = CourierDraftWorksheet::where('pallet_number',$pallet_arr[$i])->get();
+                    foreach ($worksheets as $sheet) {
+                        if ($sheet->batch_number !== $value_by) {
+                            $old_lot_arr_tracking[] = $sheet->tracking_main;
+                        }                       
+                    }                    
+                }
+                
+                CourierDraftWorksheet::whereIn('pallet_number', $pallet_arr)
+                ->update([
+                    $column => $value_by
+                ]); 
+
+                CourierDraftWorksheet::whereIn('pallet_number', $pallet_arr)
+                ->whereIn('status',$this->ru_status_arr_3)
+                ->update([
+                    'status' => "Доставляется в страну получателя",
+                    'status_en' => "Forwarding to the receiver country",
+                    'status_he' => " נשלח למדינת המקבל",
+                    'status_ua' => "Forwarding to the receiver country",
+                    'status_date' => date('Y-m-d')
+                ]);
+
+                for ($i=0; $i < count($old_lot_arr_tracking); $i++) { 
+                    $this->updateWarehouseLot($old_lot_arr_tracking[$i], $value_by, 'ru');
+                }
+            }  
+
+            if ($eng_worksheet_pallet_exist) {
+                
+                $column = 'lot';
+                $old_lot_arr_tracking = [];
+                $status_error = $this->checkColumns($pallet_arr, $value_by, $column, $check_column, 'phil_ind_worksheet');                
+                if($status_error) return redirect()->to(session('this_previous_url'))->with('status-error', $status_error);
+
+                for ($i=0; $i < count($pallet_arr); $i++) { 
+                    $worksheets = PhilIndWorksheet::where('pallet_number',$pallet_arr[$i])->get();
+                    foreach ($worksheets as $sheet) {
+                        $this->toUpdatesArchive($request,$sheet);
+                    }                   
+                } 
+
+                for ($i=0; $i < count($pallet_arr); $i++) { 
+                    $worksheets = PhilIndWorksheet::where('pallet_number',$pallet_arr[$i])->get();
+                    foreach ($worksheets as $sheet) {
+                        if ($sheet->lot !== $value_by) {
+                            $old_lot_arr_tracking[] = $sheet->tracking_main;
+                        }                       
+                    }                    
+                }
+                
+                PhilIndWorksheet::whereIn('pallet_number', $pallet_arr)
+                ->update([
+                    $column => $value_by
+                ]); 
+
+                PhilIndWorksheet::whereIn('pallet_number', $pallet_arr)
+                ->whereIn('status',$this->en_status_arr_3)
+                ->update([
+                	'status' => "Forwarding to the receiver country",
+                	'status_ru' => "Доставляется в страну получателя",
+                	'status_he' => " נשלח למדינת המקבל",
+                    'status_date' => date('Y-m-d')
+                ]);
+
+                for ($i=0; $i < count($old_lot_arr_tracking); $i++) { 
+                    $this->updateWarehouseLot($old_lot_arr_tracking[$i], $value_by, 'en');
+                }
+            }      
+            
+            if ($eng_draft_pallet_exist) {
+                
+                $column = 'lot';
+                $old_lot_arr_tracking = [];
+                $status_error = $this->checkColumns($pallet_arr, $value_by, $column, $check_column, 'courier_eng_draft_worksheet');                
+                if($status_error) return redirect()->to(session('this_previous_url'))->with('status-error', $status_error);
+
+                for ($i=0; $i < count($pallet_arr); $i++) { 
+                    $worksheets = CourierEngDraftWorksheet::where('pallet_number',$pallet_arr[$i])->get();
+                    foreach ($worksheets as $sheet) {
+                        $this->toUpdatesArchive($request,$sheet);
+                    }                   
+                } 
+
+                for ($i=0; $i < count($pallet_arr); $i++) { 
+                    $worksheets = CourierEngDraftWorksheet::where('pallet_number',$pallet_arr[$i])->get();
+                    foreach ($worksheets as $sheet) {
+                        if ($sheet->lot !== $value_by) {
+                            $old_lot_arr_tracking[] = $sheet->tracking_main;
+                        }                       
+                    }                    
+                }
+                
+                CourierEngDraftWorksheet::whereIn('pallet_number', $pallet_arr)
+                ->update([
+                    $column => $value_by
+                ]); 
+
+                CourierEngDraftWorksheet::whereIn('pallet_number', $pallet_arr)
+                ->whereIn('status',$this->en_status_arr_3)
+                ->update([
+                	'status' => "Forwarding to the receiver country",
+                	'status_ru' => "Доставляется в страну получателя",
+                	'status_he' => " נשלח למדינת המקבל",
+                    'status_date' => date('Y-m-d')
+                ]);
+
+                for ($i=0; $i < count($old_lot_arr_tracking); $i++) { 
+                    $this->updateWarehouseLot($old_lot_arr_tracking[$i], $value_by, 'en');
+                }
+            }  
+        }
+        else
+            $status_error = "Pallets not selected!";
+        
+        if($status_error){
+            return redirect()->to(session('this_previous_url'))->with('status-error', $status_error);
+        }
+        else{
+            return redirect()->to(session('this_previous_url'))->with('status', 'Rows changed successfully!');
+        }       
+    }
+
+
+    private function updatePalletData()
+    {
+
+    }
 	
 	
 	protected function new_columns(){
