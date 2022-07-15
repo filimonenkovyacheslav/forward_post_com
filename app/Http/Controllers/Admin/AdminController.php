@@ -27,6 +27,8 @@ class AdminController extends Controller
 	private $en_status_arr_2 = ["Forwarding to the warehouse in the sender country", "Pending", "Return", "Box", "Pick up", "Specify", "Think", "Canceled", "Double","Packing list"];
 	private $ru_status_arr_3 = ["На таможне в стране отправителя", "На складе в стране отправителя", "Доставляется на склад в стране отправителя", "Возврат", "Коробка", "Забрать", "Уточнить", "Думают", "Отмена", "Подготовка", "Дубль","Пакинг лист"];
 	private $en_status_arr_3 = ["At the customs in the sender country", "At the warehouse in the sender country", "Forwarding to the warehouse in the sender country", "Pending", "Return", "Box", "Pick up", "Specify", "Think", "Canceled", "Double","Packing list"];
+	private $ru_status_arr_4 = ["На таможне в стране отправителя", "На складе в стране отправителя", "Доставляется в страну получателя", "На таможне в стране получателя"];
+	private $en_status_arr_4 = ["At the customs in the sender country", "At the warehouse in the sender country", "Forwarding to the receiver country", "At the customs in the receiver country"];
 
 
     protected function checkRowColor(Request $request)
@@ -475,21 +477,30 @@ class AdminController extends Controller
         $pallet_arr = NewWorksheet::where([
             ['in_trash',false],
             ['pallet_number','<>',null]
-        ])->pluck('pallet_number');
+        ])
+        ->whereIn('status',$this->ru_status_arr_4)
+        ->pluck('pallet_number');
         $pallet_arr = $pallet_arr->merge(CourierDraftWorksheet::where([
             ['in_trash',false],
             ['pallet_number','<>',null]
-        ])->pluck('pallet_number'));
+        ])
+        ->whereIn('status',$this->ru_status_arr_4)
+        ->pluck('pallet_number'));
         $pallet_arr = $pallet_arr->merge(PhilIndWorksheet::where([
             ['in_trash',false],
             ['pallet_number','<>',null]
-        ])->pluck('pallet_number'));
+        ])
+        ->whereIn('status',$this->en_status_arr_4)
+        ->pluck('pallet_number'));
         $pallet_arr = $pallet_arr->merge(CourierEngDraftWorksheet::where([
             ['in_trash',false],
             ['pallet_number','<>',null]
-        ])->pluck('pallet_number'));
+        ])
+        ->whereIn('status',$this->en_status_arr_4)
+        ->pluck('pallet_number'));
         $pallet_arr = $pallet_arr->toArray();
         $pallet_arr = array_unique($pallet_arr);
+        sort($pallet_arr);
         
         return view('admin.pallet_data', compact('title','pallet_arr'));
     }

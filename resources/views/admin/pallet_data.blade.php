@@ -1,7 +1,7 @@
 @extends('layouts.phil_ind_admin')
 @section('content')
 
-@can('editPost')
+@can('editColumns-2')
 <!-- <div class="breadcrumbs">
 	<div class="col-sm-4">
 		<div class="page-header float-left">
