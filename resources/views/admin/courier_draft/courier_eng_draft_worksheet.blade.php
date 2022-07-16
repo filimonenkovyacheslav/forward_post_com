@@ -141,6 +141,10 @@
 								<option value="cancel-pdf">Cancel PDF</option>
 								<option value="add-pdf">Add PDF</option>
 								<option value="download-pdf">Download PDF</option>
+
+								@can('update-user')	
+								<option value="admin-activate">Activate(Admin)</option>
+								@endcan
 								
 							</select>
 						</label>
@@ -211,6 +215,10 @@
 						</form>
 
 						<form class="checkbox-operations-activate" action="{{ url('/admin/courier-eng-draft') }}" method="GET">
+							@csrf	
+						</form>
+
+						<form class="checkbox-operations-admin-activate" action="{{ url('/admin/courier-eng-draft-admin-activate') }}" method="GET">
 							@csrf	
 						</form>
 

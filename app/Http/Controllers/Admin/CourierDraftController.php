@@ -677,6 +677,24 @@ class CourierDraftController extends AdminController
     }
 
 
+    public function adminActivate(Request $request)
+    {
+    	$row_arr = $request->row_id;
+    	$message = '';
+    	for ($i=0; $i < count($row_arr); $i++) { 
+    		$worksheet = CourierDraftWorksheet::find($row_arr[$i]);
+    		$message_pdf = $this->checkPdfId('draft_id',$row_arr[$i]);
+    		if ($message_pdf !== 'success') 
+    			return redirect()->to(session('this_previous_url'))->with('status-error', $message_pdf);
+    		if ($worksheet->tracking_main)
+    			$message .= $this->courierDraftActivate($row_arr[$i], true);
+    		else
+    			return redirect()->to(session('this_previous_url'))->with('status-error', 'Tracking number is required!');
+    	}
+    	return redirect()->to(session('this_previous_url'))->with('status', $message);
+    }
+
+
     public function courierDraftCheckActivate($id)
     {
     	$courier_draft_worksheet = CourierDraftWorksheet::find($id);
@@ -707,7 +725,7 @@ class CourierDraftController extends AdminController
     }
 
 
-    public function courierDraftActivate($id)
+    public function courierDraftActivate($id, $admin = false)
 	{
 		$courier_draft_worksheet = CourierDraftWorksheet::find($id);		
 		$new_worksheet = new NewWorksheet();
@@ -784,7 +802,10 @@ class CourierDraftController extends AdminController
 
 			$new_worksheet->checkCourierTask($new_worksheet->status);			
 			
+			if (!$admin)
 			return redirect()->to(session('this_previous_url'))->with('status', 'Строка успешно активирована!'.$message);
+			else
+				return 'Строка успешно активирована!'.$message;
 		}
 		else{
 			return redirect()->to(session('this_previous_url'))->with('status-error', 'Ошибка активации!'.$message);

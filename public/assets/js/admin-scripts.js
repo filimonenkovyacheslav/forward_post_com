@@ -1197,6 +1197,9 @@ $('[name="checkbox_operations_select"]').change((e)=>{
             alert('This option is only available with one line!')
         }
     }
+    else if (thisVal === 'admin-activate'){
+        $('.checkbox-operations-admin-activate').submit()            
+    }
     else if (thisVal === 'cancel-pdf'){
         if ($('[name="row_id[]"]:checked').length == 1) {
             $('.checkbox-operations-cancel-pdf').submit()            
