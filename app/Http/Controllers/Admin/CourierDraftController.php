@@ -243,6 +243,10 @@ class CourierDraftController extends AdminController
 					$this->updateWarehouseLot($request->input('tracking_main'), $courier_draft_worksheet->batch_number, 'ru');
 				}
 
+				// Activate PDF
+				if (!$old_tracking && $courier_draft_worksheet->getLastDocUniq()) {
+					return redirect('/admin/courier-draft-activate/'.$courier_draft_worksheet->id);
+				}
 			}
 
 			return redirect()->to(session('this_previous_url'))->with('status', 'Строка успешно обновлена!'.' '.$check_result);
@@ -351,6 +355,13 @@ class CourierDraftController extends AdminController
     			->update([
     				$column => $value_by
     			]); 
+
+    			if ($column === 'tracking_main') {    				
+    				// Activate PDF
+    				if (!$old_tracking && $worksheet->getLastDocUniq()) {
+    					return redirect('/admin/courier-draft-activate/'.$worksheet->id);
+    				}
+    			}
 
     			if ($column === 'pallet_number') {
     				for ($i=0; $i < count($row_arr); $i++) { 

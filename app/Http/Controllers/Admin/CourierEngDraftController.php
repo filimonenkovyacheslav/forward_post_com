@@ -212,6 +212,11 @@ class CourierEngDraftController extends AdminController
 				if ($old_lot !== $courier_eng_draft_worksheet->lot){
 					$this->updateWarehouseLot($request->input('tracking_main'), $courier_eng_draft_worksheet->lot, 'en');	
 				}
+
+				// Activate PDF
+				if (!$old_tracking && $courier_eng_draft_worksheet->getLastDocUniq()) {
+					return redirect('/admin/courier-eng-draft-activate/'.$courier_eng_draft_worksheet->id);
+				}
 			}
 		}	
 		
@@ -335,6 +340,13 @@ class CourierEngDraftController extends AdminController
     				]);
     			} 
 
+    			if ($column === 'tracking_main') {    				
+    				// Activate PDF
+    				if (!$old_tracking && $worksheet->getLastDocUniq()) {
+    					return redirect('/admin/courier-eng-draft-activate/'.$worksheet->id);
+    				}
+    			}
+    			
     			if ($column === 'pallet_number') {
     				for ($i=0; $i < count($row_arr); $i++) { 
     					$worksheet = CourierEngDraftWorksheet::where('id',$row_arr[$i])->first();
