@@ -621,10 +621,12 @@
 
 		function ConfirmDelete(event)
 		{
+			let href = location.href;
+			const newHref = href.split('/admin/')[0];
 			event.preventDefault();
 			const form = event.target.parentElement;
 			const data = new URLSearchParams(new FormData(form)).toString();
-			location.href = '/admin/to-trash?'+data+'&table=phil_ind_worksheet';
+			location.href = newHref+'/admin/to-trash?'+data+'&table=phil_ind_worksheet';
 		}
 
 		

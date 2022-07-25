@@ -58,8 +58,7 @@
     </script>
 
 </head>
-<body>
-    @can('eng-view-post')
+<body>   
 
     <!-- Left Panel -->
 
@@ -70,12 +69,15 @@
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-menu" aria-controls="main-menu" aria-expanded="false" aria-label="Toggle navigation">
                     <i class="fa fa-bars"></i>
                 </button>
-                <a class="navbar-brand" href="/">ORIENTAL-EXPRESS</a>
-                <a class="navbar-brand hidden" href="/">OE</a>
+                <a class="navbar-brand" href="/">DD-CARGO</a>
+                <a class="navbar-brand hidden" href="/">DD</a>
             </div>
 
             <div id="main-menu" class="main-menu collapse navbar-collapse">
                 <ul class="nav navbar-nav">
+
+                    @can('eng-view-post')
+                    
                     <li class="active">
                         <a href="{{route('adminPhilIndIndex')}}"> <i class="menu-icon fa fa-dashboard"></i>Control Panel </a>
                     </li>                 
@@ -92,6 +94,8 @@
                         <a href="{{route('adminPhilIndWorksheet')}}"><i class="menu-icon fa fa-archive "></i> Work sheet </a>
                     </li>
 
+                    @endcan
+
                     @can('editPost')
                     <li class="dropdown">
                         <a class="btn btn-dropdown dropdown-toggle" type="button" data-toggle="dropdown">Receipts
@@ -99,8 +103,8 @@
                             <i class="menu-icon fa fa-book "></i>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="{{url('/admin/receipts/dd')}}"> Receipts DD </a></li>
-                            <li><a href="{{url('/admin/receipts/ul')}}"> Receipts UL </a></li>
+                            <li><a href="{{url('/admin/receipts/dd')}}"> Квитанции ДД (Receipts DD) </a></li>
+                            <li><a href="{{url('/admin/receipts/ul')}}"> Квитанции ЮЛ (Receipts UL) </a></li>
                             <li><a href="{{route('adminReceiptsArchive')}}"></i> Notifications </a></li>
                         </ul>
                     </li>                     
@@ -123,7 +127,19 @@
                     <li>
                         <a href="{{route('adminWarehouse')}}"><i class="menu-icon fa fa-book "></i> Warehouse </a>
                     </li> 
-                    @endcan   
+                    @endcan 
+
+                    @can('view-post')
+                    <li>
+                        <a href="{{route('adminIndex')}}"><i class="menu-icon fa fa-book "></i> Russian admin </a>
+                    </li>
+                    @endcan  
+
+                    @can('china-view-post')
+                    <li>
+                        <a href="{{route('adminChinaIndex')}}"><i class="menu-icon fa fa-book "></i> China admin </a>
+                    </li>
+                    @endcan      
 
                     @can('editCourierTasks')
                     <li>
@@ -133,7 +149,7 @@
 
                     @can('changeColor')
                     <li>
-                        <a href="{{route('adminTrash')}}"><i class="menu-icon fa fa-book "></i> Trash</a>
+                        <a href="{{route('adminTrash')}}"><i class="menu-icon fa fa-book "></i> Корзина/Trash</a>
                     </li> 
                     @endcan        
 
@@ -143,16 +159,27 @@
                     </li> 
                     @endcan 
 
-                    
                     @can('editEngDraft')
                     <li>
                         <a href="{{route('tempLinks')}}"><i class="menu-icon fa fa-book "></i> Temporary links</a>
                     </li> 
                     @endcan 
-                    
+
                     @can('editColumns-2')
                     <li>
                         <a href="{{route('showPalletData')}}"><i class="menu-icon fa fa-book "></i> Pallets </a>
+                    </li> 
+                    @endcan 
+
+                    @can('changeColor')
+                    <li>
+                        <a href="{{route('adminLog')}}"><i class="menu-icon fa fa-book "></i> Logs</a>
+                    </li> 
+                    @endcan 
+
+                    @can('changeColor')
+                    <li>
+                        <a href="{{route('generalSearchShow')}}"><i class="menu-icon fa fa-book "></i> General Search</a>
                     </li> 
                     @endcan 
                 
@@ -235,7 +262,6 @@
         </div>
     </div>
 
-
 </div><!-- /#right-panel -->
 
 <!-- Right Panel -->
@@ -261,9 +287,6 @@
 
 <script src="{{ asset('assets/js/admin-scripts.js') }}"></script>
 
-@else
-<h1>You cannot view this page!</h1>
-@endcan
 </body>
 </html>
 

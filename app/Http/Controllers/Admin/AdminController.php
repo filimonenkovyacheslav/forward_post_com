@@ -116,6 +116,61 @@ class AdminController extends Controller
         
         return response()->json(['success' => 'success']);
     }
+
+
+    public function generalSearchShow()
+    {
+        $title = 'General Search';
+        return view('admin.general_search', compact('title'));
+    }
+
+
+    public function generalSearch(Request $request)
+    {
+    	$adapted_column = ['comments_1' => 'comment_2','comments_2' => 'comments','shipper_name' => 'sender_name','shipper_country' => 'sender_country','shipper_city' => 'sender_city','passport_number' => 'sender_passport','shipper_address' => 'sender_address','shipper_phone' => 'sender_phone','consignee_name' => 'recipient_name','consignee_country' => 'recipient_country','house_name' => 'recipient_house','post_office' => 'recipient_postcode','consignee_phone' => 'recipient_phone','consignee_id' => 'recipient_passport','shipped_items' => 'package_content','shipment_val' => 'package_cost','delivery_date_comments' => 'pick_up_date','lot' => 'batch_number','payment_date_comments' => 'pay_date','amount_payment' => 'pay_sum'];
+        $search = $request->table_filter_value;
+        $column = $request->table_columns;
+        $message = '';         
+
+        if ($column) {
+        	if (Schema::hasColumn('courier_draft_worksheet', $column)) {
+        		$result = CourierDraftWorksheet::where($column, 'like', '%'.$search.'%')->first();
+        		if ($result) $message .= 'Черновик содержит значение,';
+        	}
+            elseif (array_key_exists($column, $adapted_column)) {
+            	$result = CourierDraftWorksheet::where($adapted_column[$column], 'like', '%'.$search.'%')->first();
+        		if ($result) $message .= 'Черновик содержит значение,';
+            }
+
+            if (Schema::hasColumn('new_worksheet', $column)) {
+        		$result = NewWorksheet::where($column, 'like', '%'.$search.'%')->first();
+        		if ($result) $message .= ' Новый рабочий лист содержит значение,';
+        	}
+            elseif (array_key_exists($column, $adapted_column)) {
+            	$result = NewWorksheet::where($adapted_column[$column], 'like', '%'.$search.'%')->first();
+        		if ($result) $message .= ' Новый рабочий лист содержит значение,';
+            }
+
+            if (Schema::hasColumn('courier_eng_draft_worksheet', $column)) {
+        		$result = CourierEngDraftWorksheet::where($column, 'like', '%'.$search.'%')->first();
+        		if ($result) $message .= ' Draft contains value,';
+        	}
+
+        	if (Schema::hasColumn('phil_ind_worksheet', $column)) {
+        		$result = PhilIndWorksheet::where($column, 'like', '%'.$search.'%')->first();
+        		if ($result) $message .= ' Worksheet contains value';
+        	}
+
+        	if (!$message) {
+        		$message .= ' Worksheets and Drafts don\'t contain value';
+        		return redirect()->to(session('this_previous_url'))->with('status-error', $message);
+        	}
+            
+            return redirect()->to(session('this_previous_url'))->with('status', $message);
+        }
+        else
+        	return redirect()->to(session('this_previous_url'))->with('status-error', 'Choose column!');
+    }
 	
 	
 	protected function checkStatus($table, $id, $status)

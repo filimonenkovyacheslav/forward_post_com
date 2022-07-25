@@ -155,6 +155,11 @@ Route::get('/home', 'HomeController@index')->name('home');
 */
 Route::group(['prefix' => 'admin','middleware' => 'auth'],function() {	
 
+	// General Search	
+	Route::get('/general-search',['uses' => 'Admin\AdminController@generalSearchShow','as' => 'generalSearchShow']);
+
+	Route::post('/general-search',['uses' => 'Admin\AdminController@generalSearch','as' => 'generalSearch']);	
+
 	// Add data by pallet	
 	Route::get('/pallet-data',['uses' => 'Admin\AdminController@showPalletData','as' => 'showPalletData']);
 
@@ -198,6 +203,15 @@ Route::group(['prefix' => 'admin','middleware' => 'auth'],function() {
 	Route::get('/trash-filter',['uses' => 'Admin\TrashController@trashFilter','as' => 'trashFilter']);
 
 	Route::get('/trash-activate/{id}',['uses' => 'Admin\TrashController@fromTrash','as' => 'fromTrash']);
+
+	// Log of deleted orders
+	Route::get('/logs',['uses' => 'Admin\DeletedLogController@index','as' => 'adminLog']);
+
+	Route::get('/to-logs',['uses' => 'Admin\DeletedLogController@toLogs','as' => 'toLogs']);
+
+	Route::get('/logs-filter',['uses' => 'Admin\DeletedLogController@logsFilter','as' => 'logsFilter']);
+
+	Route::get('/log-show/{id}',['uses' => 'Admin\DeletedLogController@logShow','as' => 'logShow']);
 
 	// Warehouse
 	Route::get('/warehouse-import-worksheet',['uses' => 'Admin\WarehouseController@importWorksheet']);

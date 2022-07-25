@@ -18,8 +18,11 @@ class IndexController extends AdminController
         $id = Auth::user()->id;
         $role = User::find($id)->role;
 
-        if ($role !== 'user') {
+        if ($role !== 'user' && $role !== 'courier') {
             return view('admin.phil_ind.phil_ind_users', ['title' => $title,'users' => $users]);
+        }
+        elseif ($role === 'courier') {
+            return redirect()->route('adminCourierTask');
         }
         else{
             return redirect()->route('welcome');

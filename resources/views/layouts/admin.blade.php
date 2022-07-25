@@ -57,7 +57,6 @@
         var createTableUrl = "{{ url('/create-temp-table') }}"
         var userName = "{{ Auth::user()->name }}"
     </script>
-    
 </head>
 <body>
     @can('view-post')
@@ -71,8 +70,8 @@
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-menu" aria-controls="main-menu" aria-expanded="false" aria-label="Toggle navigation">
                     <i class="fa fa-bars"></i>
                 </button>
-                <a class="navbar-brand" href="/">ORIENTAL-EXPRESS</a>
-                <a class="navbar-brand hidden" href="/">OE</a>
+                <a class="navbar-brand" href="/">DD-CARGO</a>
+                <a class="navbar-brand hidden" href="/">DD</a>
             </div>
 
             <div id="main-menu" class="main-menu collapse navbar-collapse">
@@ -175,10 +174,22 @@
                         <a href="{{route('tempLinks')}}"><i class="menu-icon fa fa-book "></i> Temporary links</a>
                     </li> 
                     @endcan 
-                   
+
                     @can('editColumns-2')
                     <li>
                         <a href="{{route('showPalletData')}}"><i class="menu-icon fa fa-book "></i> Pallets </a>
+                    </li> 
+                    @endcan 
+
+                    @can('changeColor')
+                    <li>
+                        <a href="{{route('adminLog')}}"><i class="menu-icon fa fa-book "></i> Logs</a>
+                    </li> 
+                    @endcan 
+
+                    @can('changeColor')
+                    <li>
+                        <a href="{{route('generalSearchShow')}}"><i class="menu-icon fa fa-book "></i> General Search</a>
                     </li> 
                     @endcan 
                 

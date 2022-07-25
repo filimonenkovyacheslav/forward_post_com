@@ -261,7 +261,9 @@ class CourierDraftController extends AdminController
 	{
 		$id = $request->input('action');
 		$this->removeTrackingFromPalletWorksheet($id, 'ru', true);
-		$this->deleteUploadFiles('draft_id',$id);
+		/*$this->deleteUploadFiles('draft_id',$id);*/
+		$worksheet = CourierDraftWorksheet::find($id);
+		$this->deletedToUpdatesArchive($worksheet);
 
 		CourierDraftWorksheet::where('id', $id)->delete();
 		PackingSea::where('work_sheet_id', $id)->delete();
@@ -503,7 +505,9 @@ class CourierDraftController extends AdminController
 		$row_arr = $request->input('row_id');
 		for ($i=0; $i < count($row_arr); $i++) { 
 			$this->removeTrackingFromPalletWorksheet($row_arr[$i], 'ru',true);
-			$this->deleteUploadFiles('draft_id',$row_arr[$i]);
+			/*$this->deleteUploadFiles('draft_id',$row_arr[$i]);*/
+			$worksheet = CourierDraftWorksheet::find($row_arr[$i]);
+			$this->deletedToUpdatesArchive($worksheet);
 		}
 
 		CourierDraftWorksheet::whereIn('id', $row_arr)->delete();

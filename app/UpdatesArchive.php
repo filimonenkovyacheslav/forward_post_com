@@ -299,4 +299,37 @@ class UpdatesArchive extends Model
         else return false;
     }
 
+
+    public function deletedToArchive($worksheet)
+    {
+        if ($worksheet->table) {
+            $table = $worksheet->table;
+            $id = $worksheet->id;
+            $user = Auth::user();
+            $this->column_name = 'Deleted';
+            $this->user_name = $user->name;
+            $this->updates_date = date('Y-m-d');
+            switch($table) {
+                case 'new_worksheet';
+                $this->old_data = 'ru worksheet id No. '.$id;
+                break;
+                case 'phil_ind_worksheet';
+                $this->old_data = 'eng worksheet id No. '.$id;
+                break;
+                case 'courier_draft_worksheet';
+                $this->old_data = 'draft id No. '.$id;
+                break;
+                case 'courier_eng_draft_worksheet';
+                $this->old_data = 'eng draft id No. '.$id;
+                break;       
+                default:
+                break;
+            }
+            $this->save();
+            return true;
+        }
+        else
+            return false;
+    }
+
 }

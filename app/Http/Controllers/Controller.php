@@ -29,6 +29,7 @@ use PDF;
 use DB;
 use Auth;
 use App\BaseModel;
+use App\DeletedLog;
 
 
 class Controller extends BaseController
@@ -93,6 +94,14 @@ class Controller extends BaseController
     {
         $archive = new UpdatesArchive();
         $archive->signedDocumentToUpdatesArchive($worksheet,$user_name,$uniq_id,$old_uniq_id);
+        return true;
+    }
+
+
+    protected function deletedToUpdatesArchive($worksheet)
+    {
+        $archive = new UpdatesArchive();
+        $archive->deletedToArchive($worksheet);
         return true;
     }
 
@@ -172,6 +181,20 @@ class Controller extends BaseController
     {
           
         $worksheet = $this->getWorkSheet($type,$id);
+        
+        if (!$worksheet) {
+            if ($type === 'eng_draft_id') $table_name = 'courier_eng_draft_worksheet';
+            else $table_name = 'courier_draft_worksheet';
+            $items = DeletedLog::where([
+                ['worksheet_id',$id],
+                ['table_name',$table_name]
+            ])->first();
+            if ($items) {
+                return json_decode($items->packing_files);
+            }
+            else return [];
+        }
+        
         $documents = $worksheet->signedDocuments;
         $last_doc = $worksheet->getLastDoc();
         $items = [];

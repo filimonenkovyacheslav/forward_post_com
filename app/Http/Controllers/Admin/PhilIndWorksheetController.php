@@ -289,10 +289,9 @@ class PhilIndWorksheetController extends AdminController
 		$id = $request->input('action');
 		$this->removeTrackingFromPalletWorksheet($id, 'en');
 		$this->deleteUploadFiles('eng_worksheet_id',$id);
+		$worksheet = PhilIndWorksheet::find($id);
+		$this->deletedToUpdatesArchive($worksheet);
 		
-		DB::table('phil_ind_worksheet')
-		->where('id', '=', $id)
-		->delete();
 		PhilIndWorksheet::where('id', $id)->delete();
 		PackingEngNew::where('work_sheet_id', $id)->delete();
 		ReceiptArchive::where('worksheet_id', $id)->delete();
@@ -1030,6 +1029,8 @@ class PhilIndWorksheetController extends AdminController
 		for ($i=0; $i < count($row_arr); $i++) { 
 			$this->removeTrackingFromPalletWorksheet($row_arr[$i], 'en');
 			$this->deleteUploadFiles('eng_worksheet_id',$row_arr[$i]);
+			$worksheet = PhilIndWorksheet::find($row_arr[$i]);
+			$this->deletedToUpdatesArchive($worksheet);
 		}
 
 		PhilIndWorksheet::whereIn('id', $row_arr)->delete();

@@ -179,8 +179,6 @@ class AuthorizationClass extends Authorization
 				'changeColor'					
 			],
 			'courier' => [
-				'view-post',
-				'eng-view-post',
 				'editCourierTasks'
 			],
 			'viewer_eng' => [

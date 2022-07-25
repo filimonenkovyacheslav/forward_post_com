@@ -542,14 +542,32 @@
 
 		function ConfirmDelete(event)
 		{
+			let href = location.href;
+			const newHref = href.split('/admin/')[0];
 			event.preventDefault();
 			const form = event.target.parentElement;
 			const data = new URLSearchParams(new FormData(form)).toString();
 			var x = confirm("Are you sure you want to permanently delete?");
-			if (x)
-				form.submit();
+			if (x){
+				$.ajax({
+					url: newHref+'/admin/to-logs?'+data+'&table=courier_eng_draft_worksheet',
+					type: "GET",
+					headers: {
+						'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+					},
+					success: function (data) {
+						data = JSON.parse(data)
+						if (data.status) {
+							form.submit();
+						}
+					},
+					error: function (msg) {
+						alert('Error admin');
+					}
+				});				
+			}
 			else
-				location.href = '/admin/to-trash?'+data+'&table=courier_eng_draft_worksheet';
+				location.href = newHref+'/admin/to-trash?'+data+'&table=courier_eng_draft_worksheet';
 		}
 
 	</script>
