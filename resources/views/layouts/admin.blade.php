@@ -56,6 +56,7 @@
     <script type="text/javascript">
         var createTableUrl = "{{ url('/create-temp-table') }}"
         var userName = "{{ Auth::user()->name }}"
+        var couriersArr = '@php echo($couriers_arr) @endphp'
     </script>
 </head>
 <body>

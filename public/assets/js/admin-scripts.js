@@ -565,6 +565,7 @@ $('#tracking-columns').change((e)=>{
         $('[name="tariff"]').remove()
         $('[name="partner"]').remove()
         $('.city-value').remove()
+        $('[name="courier"]').remove()
         $('[name="status_date"]').remove()
         $('[name="order_date"]').remove()
         $('.value-by-tracking').append(`
@@ -615,6 +616,7 @@ $('#tracking-columns').change((e)=>{
         $('.city-value').remove()
         $('[name="status_date"]').remove()
         $('[name="order_date"]').remove()
+        $('[name="courier"]').remove()
         $('.value-by-tracking').append(`
             <select class="form-control" id="site_name" name="site_name">
                <option value="DD-C">DD-C</option>
@@ -624,6 +626,24 @@ $('#tracking-columns').change((e)=>{
             </select>
             `)
     }
+    else if(thisVal === 'courier'){
+        couriersArr = JSON.parse(couriersArr)
+        let html = '<select class="form-control" id="courier" name="courier">'
+        for (const property in couriersArr) {
+            html += '<option value="'+property+'">'+property+'</option>';
+        }
+        html += '</select>'
+        $('[name="value-by-tracking"]').remove()
+        $('[name="date"]').remove()
+        $('.status-value').remove()
+        $('[name="site_name"]').remove()
+        $('[name="tariff"]').remove()
+        $('[name="partner"]').remove()
+        $('.city-value').remove()
+        $('[name="status_date"]').remove()
+        $('[name="order_date"]').remove()
+        $('.value-by-tracking').append(html)
+    }
     else if(thisVal === 'tariff'){
         $('[name="value-by-tracking"]').remove()
         $('[name="date"]').remove()
@@ -631,6 +651,7 @@ $('#tracking-columns').change((e)=>{
         $('[name="site_name"]').remove()
         $('[name="partner"]').remove()
         $('.city-value').remove()
+        $('[name="courier"]').remove()
         $('[name="status_date"]').remove()
         $('[name="order_date"]').remove()
         $('.value-by-tracking').append(`
@@ -651,6 +672,7 @@ $('#tracking-columns').change((e)=>{
         $('[name="site_name"]').remove()
         $('[name="tariff"]').remove()
         $('.city-value').remove()
+        $('[name="courier"]').remove()
         $('[name="status_date"]').remove()
         $('[name="order_date"]').remove()
         $('.value-by-tracking').append(`
@@ -677,6 +699,7 @@ $('#tracking-columns').change((e)=>{
         $('[name="site_name"]').remove()
         $('[name="tariff"]').remove()
         $('[name="partner"]').remove()
+        $('[name="courier"]').remove()
         $('[name="status_date"]').remove()
         $('[name="order_date"]').remove()
         $('.value-by-tracking').append(`
@@ -781,6 +804,7 @@ $('#tracking-columns').change((e)=>{
         $('[name="site_name"]').remove()
         $('.status-value').remove()
         $('[name="tariff"]').remove()
+        $('[name="courier"]').remove()
         $('[name="partner"]').remove()
         $('.city-value').remove()
         $('.value-by-tracking').append(`
@@ -792,6 +816,7 @@ $('#tracking-columns').change((e)=>{
         $('[name="date"]').remove()
         $('[name="site_name"]').remove()
         $('.status-value').remove()
+        $('[name="courier"]').remove()
         $('[name="tariff"]').remove()
         $('[name="partner"]').remove()
         $('[name="status_date"]').remove()
@@ -806,6 +831,7 @@ $('#tracking-columns').change((e)=>{
         $('.status-value').remove()
         $('[name="tariff"]').remove()
         $('[name="partner"]').remove()
+        $('[name="courier"]').remove()
         $('.city-value').remove()
         $('[name="status_date"]').remove()
         $('[name="order_date"]').remove()
@@ -819,6 +845,7 @@ $('#tracking-columns').change((e)=>{
         $('[name="site_name"]').remove()
         $('[name="status_date"]').remove()
         $('[name="order_date"]').remove()
+        $('[name="courier"]').remove()
         $('[name="tariff"]').remove()
         $('[name="partner"]').remove()
         $('.city-value').remove()
@@ -846,6 +873,7 @@ $('#phil-ind-tracking-columns').change((e)=>{
         $('.consignee-country-value').remove()
         $('[name="status_date"]').remove()
         $('[name="order_date"]').remove()
+        $('[name="courier"]').remove()
         $('.shipper-country-value').remove()
         $('.city-value').remove()
         $('.phil-ind-value-by-tracking').append(`
@@ -892,6 +920,7 @@ $('#phil-ind-tracking-columns').change((e)=>{
         $('[name="date"]').remove()
         $('.phil-ind-status-value').remove()
         $('.consignee-country-value').remove()
+        $('[name="courier"]').remove()
         $('[name="status_date"]').remove()
         $('[name="order_date"]').remove()
         $('.city-value').remove()
@@ -914,6 +943,7 @@ $('#phil-ind-tracking-columns').change((e)=>{
         $('.phil-ind-status-value').remove()
         $('.shipper-country-value').remove()
         $('[name="status_date"]').remove()
+        $('[name="courier"]').remove()
         $('[name="order_date"]').remove()
         $('.city-value').remove()
         $('.phil-ind-value-by-tracking').append(`
@@ -942,6 +972,7 @@ $('#phil-ind-tracking-columns').change((e)=>{
         $('.phil-ind-status-value').remove()
         $('.shipper-country-value').remove()
         $('.consignee-country-value').remove()
+        $('[name="courier"]').remove()
         $('[name="status_date"]').remove()
         $('[name="order_date"]').remove()
         $('.phil-ind-value-by-tracking').append(`
@@ -1043,6 +1074,7 @@ $('#phil-ind-tracking-columns').change((e)=>{
         $('[name="value-by-tracking"]').remove()
         $('[name="date"]').remove()
         $('.phil-ind-status-value').remove()
+        $('[name="courier"]').remove()
         $('.shipper-country-value').remove()
         $('.consignee-country-value').remove()
         $('.city-value').remove()
@@ -1055,6 +1087,7 @@ $('#phil-ind-tracking-columns').change((e)=>{
         $('[name="date"]').remove()
         $('.phil-ind-status-value').remove()
         $('.shipper-country-value').remove()
+        $('[name="courier"]').remove()
         $('.consignee-country-value').remove()
         $('[name="status_date"]').remove()
         $('.city-value').remove()
@@ -1067,6 +1100,7 @@ $('#phil-ind-tracking-columns').change((e)=>{
         $('[name="status_date"]').remove()
         $('[name="order_date"]').remove()
         $('.phil-ind-status-value').remove()
+        $('[name="courier"]').remove()
         $('.shipper-country-value').remove()
         $('.consignee-country-value').remove()
         $('.city-value').remove()
@@ -1074,12 +1108,30 @@ $('#phil-ind-tracking-columns').change((e)=>{
             <input class="form-control" type="date" name="date">
             `)
     }
+    else if (thisVal === 'courier') {      
+        couriersArr = JSON.parse(couriersArr)
+        let html = '<select class="form-control" id="courier" name="courier">'
+        for (const property in couriersArr) {
+            html += '<option value="'+property+'">'+property+'</option>';
+        }
+        html += '</select>' 
+        $('[name="value-by-tracking"]').remove()
+        $('[name="status_date"]').remove()
+        $('[name="date"]').remove()
+        $('[name="order_date"]').remove()
+        $('.phil-ind-status-value').remove()
+        $('.shipper-country-value').remove()
+        $('.consignee-country-value').remove()
+        $('.city-value').remove()
+        $('.phil-ind-value-by-tracking').append(html)
+    }
     else {
         $('.phil-ind-status-value').remove()
         $('[name="date"]').remove()
         $('.consignee-country-value').remove()
         $('.shipper-country-value').remove()
         $('[name="status_date"]').remove()
+        $('[name="courier"]').remove()
         $('[name="order_date"]').remove()
         $('[name="value-by-tracking"]').remove()
         $('.city-value').remove()

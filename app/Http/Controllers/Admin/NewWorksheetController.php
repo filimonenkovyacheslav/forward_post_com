@@ -889,6 +889,22 @@ class NewWorksheetController extends AdminController
     					'shipper_region' => $this->israel_cities[$request->input('sender_city')]
     				]);
     			}
+    		} 
+    		else if ($request->input('courier')) {
+    			for ($i=0; $i < count($track_arr); $i++) { 
+    				$worksheet = NewWorksheet::where('tracking_main',$track_arr[$i])->first();
+    				$this->toUpdatesArchive($request,$worksheet);
+    			}
+    			
+    			NewWorksheet::whereIn('tracking_main', $track_arr)
+    			->update([
+    				'courier' => $request->input('courier')
+    			]);  
+
+    			for ($i=0; $i < count($track_arr); $i++) { 
+    				$worksheet = NewWorksheet::where('tracking_main',$track_arr[$i])->first();
+    				$worksheet->checkCourierTask($worksheet->status);
+    			}
     		} 		
     	}
         
@@ -1223,6 +1239,17 @@ class NewWorksheetController extends AdminController
     				$worksheet = NewWorksheet::find($row_arr[$i]);
     				$worksheet->checkCourierTask($worksheet->status);
     			}
+    		}
+    		else if ($request->input('courier')) {
+    			for ($i=0; $i < count($row_arr); $i++) { 
+    				$worksheet = NewWorksheet::where('id',$row_arr[$i])->first();
+    				$this->toUpdatesArchive($request,$worksheet);
+    			}
+    			
+    			NewWorksheet::whereIn('id', $row_arr)
+    			->update([
+    				'courier' => $request->input('courier')
+    			]);  
     		}
 
     		for ($i=0; $i < count($row_arr); $i++) { 

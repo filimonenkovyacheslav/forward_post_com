@@ -145,9 +145,9 @@ class DeletedLog extends BaseModel
         $items = json_decode($this->packing_files);
         if ($items) {
             foreach($items as $item) {
-                if (file_exists($item['path'])) unlink($item['path']);
-                if (file_exists($item['signature'])) unlink($item['signature']);
-                if (file_exists($item['signature_for_cancel'])) unlink($item['signature_for_cancel']);
+                if (file_exists($item->path)) unlink($item->path);
+                if (file_exists($item->signature)) unlink($item->signature);
+                if (file_exists($item->signature_for_cancel)) unlink($item->signature_for_cancel);
             } 
         }
         return $this->delete();

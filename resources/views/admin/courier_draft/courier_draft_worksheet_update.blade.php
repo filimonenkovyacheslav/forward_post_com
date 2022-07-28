@@ -115,7 +115,7 @@
 						<div class="form-group">
 							{!! Form::label('parcels_qty','Кол-во посылок',['class' => 'col-md-2 control-label'])   !!}
 							<div class="col-md-8">
-								{!! Form::number('parcels_qty',$courier_draft_worksheet->parcels_qty,['class' => 'form-control'])!!}
+								{!! Form::text('parcels_qty',$courier_draft_worksheet->parcels_qty,['class' => 'form-control', 'required'])!!}
 							</div>
 						</div>
 						
@@ -324,7 +324,7 @@
 						<div class="form-group">
 							{!! Form::label('courier','Курьер',['class' => 'col-md-2 control-label'])   !!}
 							<div class="col-md-8">
-								{!! Form::text('courier',$courier_draft_worksheet->courier,['class' => 'form-control'])!!}
+								{!! Form::select('courier',json_decode($couriers_arr),$courier_draft_worksheet->courier,['class' => 'form-control'])!!}
 							</div>
 						</div>
 						
@@ -611,6 +611,7 @@
         </div>
     </div><!-- .animated -->
 </div><!-- .content -->
+
 
 @else
 <h1>Вы не можете просматривать эту страницу!</h1>

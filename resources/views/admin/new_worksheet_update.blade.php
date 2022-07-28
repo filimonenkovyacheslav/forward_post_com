@@ -472,7 +472,7 @@
 						<div class="form-group">
 							{!! Form::label('courier','Курьер',['class' => 'col-md-2 control-label'])   !!}
 							<div class="col-md-8">
-								{!! Form::text('courier',$new_worksheet->courier,['class' => 'form-control'])!!}
+								{!! Form::select('courier', json_decode($couriers_arr),$new_worksheet->courier,['class' => 'form-control'])!!}
 							</div>
 						</div>						
 						

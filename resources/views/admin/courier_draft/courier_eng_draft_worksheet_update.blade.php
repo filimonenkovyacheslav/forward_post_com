@@ -84,7 +84,7 @@
 						<div class="form-group">
 							{!! Form::label('parcels_qty','Parcels qty',['class' => 'col-md-2 control-label'])   !!}
 							<div class="col-md-8">
-								{!! Form::number('parcels_qty',$courier_eng_draft_worksheet->parcels_qty,['class' => 'form-control'])!!}
+								{!! Form::text('parcels_qty',$courier_eng_draft_worksheet->parcels_qty,['class' => 'form-control', 'required'])!!}
 							</div>
 						</div>
 						
@@ -328,7 +328,7 @@
 						<div class="form-group">
 							{!! Form::label('courier','Courier',['class' => 'col-md-2 control-label'])   !!}
 							<div class="col-md-8">
-								{!! Form::text('courier',$courier_eng_draft_worksheet->courier,['class' => 'form-control'])!!}
+								{!! Form::select('courier',json_decode($couriers_arr),$courier_eng_draft_worksheet->courier,['class' => 'form-control'])!!}
 							</div>
 						</div>
 

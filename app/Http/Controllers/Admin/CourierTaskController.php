@@ -42,7 +42,8 @@ class CourierTaskController extends AdminController
 	public function index()
 	{
 		$title = 'Задания Курьерам/Couriers Tasks';
-		$couriers_tasks_obj = CourierTask::paginate(10);
+		$couriers_tasks_obj = CourierTask::paginate(10);		
+		
 		return view('admin.couriers_tasks.couriers_tasks', compact('title', 'couriers_tasks_obj'));
 	}
 
@@ -52,7 +53,7 @@ class CourierTaskController extends AdminController
         $title = 'Couriers Tasks Filter';
         $search = $request->table_filter_value;
         $filter_arr = [];
-        $attributes = CourierTask::first()->attributesToArray();
+        $attributes = CourierTask::first()->attributesToArray();        
 
         $id_arr = [];
         $new_arr = [];      

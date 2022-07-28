@@ -661,7 +661,23 @@ class PhilIndWorksheetController extends AdminController
     					'shipper_region' => $this->israel_cities[$request->input('shipper_city')]
     				]);
     			}
-    		}    		
+    		}  
+    		else if ($request->input('courier')) {
+    			for ($i=0; $i < count($track_arr); $i++) { 
+    				$worksheet = PhilIndWorksheet::where('tracking_main',$track_arr[$i])->first();
+    				$this->toUpdatesArchive($request,$worksheet);
+    			}
+    			
+    			PhilIndWorksheet::whereIn('tracking_main', $track_arr)
+    			->update([
+    				'courier' => $request->input('courier')
+    			]);  
+
+    			for ($i=0; $i < count($track_arr); $i++) { 
+    				$worksheet = PhilIndWorksheet::where('tracking_main',$track_arr[$i])->first();
+    				$worksheet->checkCourierTask($worksheet->status);
+    			}
+    		}  		
     	}
 
     	if($status_error){
@@ -1004,6 +1020,22 @@ class PhilIndWorksheetController extends AdminController
     					'shipper_region' => $this->israel_cities[$request->input('shipper_city')]
     				]);
     			}
+
+    			for ($i=0; $i < count($row_arr); $i++) { 
+    				$worksheet = PhilIndWorksheet::find($row_arr[$i]);
+    				$worksheet->checkCourierTask($worksheet->status);
+    			}
+    		}
+    		else if ($request->input('courier')) {
+    			for ($i=0; $i < count($row_arr); $i++) { 
+    				$worksheet = PhilIndWorksheet::where('id',$row_arr[$i])->first();
+    				$this->toUpdatesArchive($request,$worksheet);
+    			}
+    			
+    			PhilIndWorksheet::whereIn('id', $row_arr)
+    			->update([
+    				'courier' => $request->input('courier')
+    			]);  
 
     			for ($i=0; $i < count($row_arr); $i++) { 
     				$worksheet = PhilIndWorksheet::find($row_arr[$i]);

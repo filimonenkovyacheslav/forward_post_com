@@ -478,11 +478,17 @@ class CourierDraftController extends AdminController
     					'shipper_region' => $this->israel_cities[$request->input('sender_city')]
     				]);
     			}
-
+    		}
+    		else if ($request->input('courier')) {
     			for ($i=0; $i < count($row_arr); $i++) { 
-    				$worksheet = CourierDraftWorksheet::find($row_arr[$i]);
-    				$worksheet->checkCourierTask($worksheet->status);
+    				$worksheet = CourierDraftWorksheet::where('id',$row_arr[$i])->first();
+    				$this->toUpdatesArchive($request,$worksheet);
     			}
+    			
+    			CourierDraftWorksheet::whereIn('id', $row_arr)
+    			->update([
+    				'courier' => $request->input('courier')
+    			]);  
     		}
 
     		for ($i=0; $i < count($row_arr); $i++) { 

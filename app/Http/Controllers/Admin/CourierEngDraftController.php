@@ -526,14 +526,26 @@ class CourierEngDraftController extends AdminController
     				->update([
     					'shipper_region' => $this->israel_cities[$request->input('shipper_city')]
     				]);
-    			}
-
+    			}   			
+    		}
+    		else if ($request->input('courier')) {
     			for ($i=0; $i < count($row_arr); $i++) { 
-    				$worksheet = CourierEngDraftWorksheet::find($row_arr[$i]);
-    				$worksheet->checkCourierTask($worksheet->status);
+    				$worksheet = CourierEngDraftWorksheet::where('id',$row_arr[$i])->first();
+    				$this->toUpdatesArchive($request,$worksheet);
     			}
+    			
+    			CourierEngDraftWorksheet::whereIn('id', $row_arr)
+    			->update([
+    				'courier' => $request->input('courier')
+    			]);  
     		}
     		else $status_error = 'New fields error!';
+
+    		for ($i=0; $i < count($row_arr); $i++) { 
+    			$worksheet = CourierEngDraftWorksheet::find($row_arr[$i]);
+    			$worksheet->checkCourierTask($worksheet->status);
+    		}
+    		
     	}
         
         if($status_error){
