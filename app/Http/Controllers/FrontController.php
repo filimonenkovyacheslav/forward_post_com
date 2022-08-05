@@ -785,7 +785,8 @@ class FrontController extends AdminController
                 }
             }
         }
-        elseif (!$row->count()) {
+        
+        if (!$row->count()) {
             $row = CourierEngDraftWorksheet::select('status')
             ->where('tracking_main', $tracking)
             ->get();
@@ -797,6 +798,32 @@ class FrontController extends AdminController
                 }
             }
         }  
+        
+        if (!$row->count()) {
+            $row = PhilIndWorksheet::select('status')
+            ->where('packing_number', $tracking)
+            ->get();
+            if ($row->count()) {
+                foreach ($row as $val) {
+                    if ($val->status) {
+                        $message_arr['en'] = $val->status;
+                    }
+                }
+            }
+        }
+        
+        if (!$row->count()) {
+            $row = CourierEngDraftWorksheet::select('status')
+            ->where('packing_number', $tracking)
+            ->get();
+            if ($row->count()) {
+                foreach ($row as $val) {
+                    if ($val->status) {
+                        $message_arr['en'] = $val->status;
+                    }
+                }
+            }
+        }
         
         return redirect()->route('trackingForm')
         ->with( 'message_en', $message_arr['en'] )
@@ -814,19 +841,43 @@ class FrontController extends AdminController
         $message_arr['ua'] = '';
         $message = 'Не найдено !';
 
-        $update_status_date = NewWorksheet::where('update_status_date','=', date('Y-m-d'))->get()->count();
+        /*$update_status_date = NewWorksheet::where('update_status_date','=', date('Y-m-d'))->get()->count();
 
         if ($update_status_date === 0) {
             app()->call('App\Http\Controllers\RuPostalTrackingController@updateStatusFromUser', [$tracking]);
-        }
+        }*/
         
         $row = DB::table('new_worksheet')
         ->select('status','status_en','status_he','status_ua')
         ->where([
-            ['tracking_main', '=', $tracking],
-            ['site_name', '=', 'For']
+            ['tracking_main', '=', $tracking]
         ])
         ->get();
+
+        if (!$row->count()){
+            $row = DB::table('courier_draft_worksheet')
+            ->select('status','status_en','status_he','status_ua')
+            ->where([
+                ['tracking_main', '=', $tracking]
+            ])->get();
+        }
+
+        if (!$row->count()){
+            $row = DB::table('new_worksheet')
+            ->select('status','status_en','status_he','status_ua')
+            ->where([
+                ['packing_number', '=', $tracking]
+            ])->get();
+        }
+
+        if (!$row->count()){
+            $row = DB::table('courier_draft_worksheet')
+            ->select('status','status_en','status_he','status_ua')
+            ->where([
+                ['packing_number', '=', $tracking]
+            ])->get();
+        }
+        
         if ($row->count()) {
             foreach ($row as $val) {
                 if ($val->status) {

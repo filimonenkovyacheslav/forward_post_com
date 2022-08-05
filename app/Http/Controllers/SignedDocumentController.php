@@ -187,6 +187,9 @@ class SignedDocumentController extends Controller
         $tracking = $worksheet->tracking_main;       
         $cancel = 'cancel';
         
+        $worksheet->packing_number = null;
+        $worksheet->save();
+
         $old_document = SignedDocument::find($document->old_document_id);
         $file_name = $old_document->pdf_file;
         if (file_exists($oldPath.$file_name)) unlink($oldPath.$file_name);
@@ -263,7 +266,9 @@ class SignedDocumentController extends Controller
             $type = $this->getType($worksheet);
             if ($user_name) {
                 $this->signedToUpdatesArchive($worksheet,$user_name,$document->uniq_id);
-            }  
+            } 
+            $worksheet->packing_number = $document->uniq_id;
+            $worksheet->save(); 
             $worksheet->checkCourierTask($worksheet->status);          
 
             return redirect('/form-success?pdf_file='.$pdf_file.'&new_document_id='.$id.'&type='.$type);
@@ -278,8 +283,10 @@ class SignedDocumentController extends Controller
             if ($user_name) {
                 $this->signedToUpdatesArchive($worksheet,$user_name,$document->uniq_id);
             } 
+            $worksheet->packing_number = $document->uniq_id;
+            $worksheet->save();           
             $worksheet->checkCourierTask($worksheet->status);
-            
+          
             return redirect('/form-success?pdf_file='.$pdf_file.'&new_document_id='.$id.'&type='.$type);
         }
         elseif ($request->cancel){    
@@ -795,7 +802,7 @@ class SignedDocumentController extends Controller
         if (isset($request->order_date))
             $new_worksheet->order_date = $request->order_date;
         else
-            $new_worksheet->order_date = date('Y-m-d');     
+            $new_worksheet->order_date = date('Y-m-d');    
 
         if ($new_worksheet->save()){           
 
@@ -1052,7 +1059,7 @@ class SignedDocumentController extends Controller
             else{
                 $worksheet->status = 'Box';
             }
-        }                               
+        }  
 
         if ($worksheet->save()) {          
 

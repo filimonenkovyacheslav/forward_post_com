@@ -15,6 +15,7 @@ class CreatePhilIndWorksheetTable extends Migration
     {
         Schema::create('phil_ind_worksheet', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('packing_number')->nullable();
             $table->string('date')->nullable(); 
             $table->string('direction')->nullable();
             $table->string('status')->nullable(); 

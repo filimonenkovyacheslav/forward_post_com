@@ -59,6 +59,7 @@
 									<option value="" selected="selected"></option>
 									<option value="id">Id</option>
 									<option value="site_name">Сайт</option>
+									<option value="packing_number">Packing No.</option>
 									<option value="date">Дата</option>
 									<option value="direction">Направление</option>
 									<option value="tariff">Тариф</option>

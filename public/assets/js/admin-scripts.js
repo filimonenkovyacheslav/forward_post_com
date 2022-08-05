@@ -1666,6 +1666,7 @@ $('table td.allowed-update').not('.td-checkbox, .td-button, .pdf-file').click((e
     $('#updateCellModal [name="phil-ind-tracking-columns"]').remove()
     $('#updateCellModal select').remove()
     $('#updateCellModal [type="date"]').remove()
+    $('#updateCellModal .pdf-info').remove()
     let id = ''
     let name = ''
     let table = ''
@@ -1708,6 +1709,45 @@ $('table td.allowed-update').not('.td-checkbox, .td-button, .pdf-file').click((e
             <input type="hidden" name="phil-ind-tracking-columns" value="`+name+`">
             `)
         
+    }   
+})
+
+$('table td.allowed-update.pdf-file').not('.td-checkbox, .td-button').click((e)=>{
+    $('#updateCellModal [name="row_id[]"]').remove()
+    $('#updateCellModal [name="tracking-columns"]').remove()
+    $('#updateCellModal [name="phil-ind-tracking-columns"]').remove()
+    $('#updateCellModal select').remove()
+    $('#updateCellModal [type="date"]').remove()
+    $('#updateCellModal button[type="submit"]').remove()
+    $('#updateCellModal .pdf-info').remove()
+    let id = ''
+    let name = ''
+    let table = ''
+    let value = ''
+    if ($(e.target).prop("tagName") === 'DIV') {
+        id = $(e.target).attr('data-id')
+        name = $(e.target).attr('data-name')
+        value = $(e.target).text()
     }
-    
+    else if ($(e.target).prop("tagName") === 'TD') {
+        id = $(e.target).children('div').attr('data-id')
+        name = $(e.target).children('div').attr('data-name')
+    }
+    if (id) {       
+        $('#update-cell').click()
+        $('#updateCellModal').addClass('show')
+        $('#updateCellModal').removeAttr('aria-hidden')
+        $('body').addClass('modal-open')
+        $('#tracking-columns').val(name).change()
+        $('#phil-ind-tracking-columns').val(name).change()
+        $('#updateCellModal select').remove()
+        $('#updateCellModal [name="value-by-tracking"]').remove()
+
+        $('#updateCellModal .value-by-tracking').append(`
+            <p class="pdf-info">`+value+`<p>
+            `)
+        $('#updateCellModal .phil-ind-value-by-tracking').append(`
+            <p class="pdf-info">`+value+`<p>
+            `)       
+    }   
 })

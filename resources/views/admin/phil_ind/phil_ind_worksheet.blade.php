@@ -60,6 +60,7 @@
 								<select class="form-control" id="table_columns" name="table_columns">
 									<option value="" selected="selected"></option>
 									<option value="id">Id</option>
+									<option value="packing_number">Packing No.</option>
 									<option value="date">Date</option>
 									<option value="direction">Direction</option>
 									<option value="status">Status</option>

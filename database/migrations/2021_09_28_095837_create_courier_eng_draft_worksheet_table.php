@@ -15,6 +15,7 @@ class CreateCourierEngDraftWorksheetTable extends Migration
     {
         Schema::create('courier_eng_draft_worksheet', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('packing_number')->nullable();
             $table->string('date')->nullable(); 
             $table->string('direction')->nullable();
             $table->string('status')->nullable();    
