@@ -44,7 +44,7 @@ class Controller extends BaseController
 
     
 
-    public function updateAllPacking()
+    public function updateAllPdfPacking()
     {
         $arr = [];
         $packing = SignedDocument::all();

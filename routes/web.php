@@ -22,7 +22,7 @@ Route::group(['prefix' => App\Http\Middleware\LocaleMiddleware::getLocale()], fu
 	})->name('welcome');
 
 	// Update all packing numbers
-	Route::get('/all-packing-numbers', 'Controller@updateAllPacking');
+	Route::get('/all-packing-numbers', 'Controller@updateAllPdfPacking');
 
 	// Form with signature
 	Route::get('/form-with-signature/{id}/{token}/{user_name}', 'SignedDocumentController@formWithSignature')->name('formWithSignature');
