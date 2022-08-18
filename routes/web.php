@@ -21,6 +21,12 @@ Route::group(['prefix' => App\Http\Middleware\LocaleMiddleware::getLocale()], fu
 		return view('welcome');
 	})->name('welcome');
 
+	// Import csv
+	Route::post('/import-trackings','TrackingController@importTrackings')->name('importTrackings');
+	Route::get('/export-trackings',['uses' => 'TrackingController@exportTrackings','as' => 'exportTrackings']);
+	Route::post('/import-trackings-eng','TrackingController@importTrackingsEng')->name('importTrackingsEng');
+	Route::get('/export-trackings-eng',['uses' => 'TrackingController@exportTrackingsEng','as' => 'exportTrackingsEng']);
+
 	// Update all packing numbers
 	Route::get('/all-packing-numbers', 'Controller@updateAllPdfPacking');
 

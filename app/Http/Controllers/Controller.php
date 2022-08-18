@@ -30,6 +30,8 @@ use DB;
 use Auth;
 use App\BaseModel;
 use App\DeletedLog;
+use App\Tracking;
+use App\TrackingEng;
 
 
 class Controller extends BaseController
@@ -498,10 +500,26 @@ class Controller extends BaseController
     
     protected function trackingValidate($tracking)
     {
+        $admin = $this->checkWhichAdmin($tracking);
         $pattern = '/^[a-z0-9]+$/i';
         $tracking = str_replace("-", "", $tracking);
         if (preg_match($pattern, $tracking) && (strlen($tracking) >= 4 && strlen($tracking) <= 18)) {
-            return true;
+            if ($admin === 'ru') {
+                if (Schema::hasTable('trackings')){
+                    if (Tracking::where('tracking_main',$tracking)->first()) return true;
+                    else return false;
+                }
+                else
+                    return true;
+            }
+            elseif ($admin === 'en') {
+                if (Schema::hasTable('trackings_eng')){
+                    if (TrackingEng::where('tracking_main',$tracking)->first()) return true;
+                    else return false;
+                }
+                else
+                    return true;
+            }            
         } else {
             return false;
         }

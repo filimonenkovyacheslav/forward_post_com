@@ -96,13 +96,65 @@
 							<input type="hidden" name="for_active">
 							
 							<button type="button" id="table_filter_button" style="margin-left:30px" class="btn btn-default">Search</button>
-						</form>
-					
-					</div>
-					
+						</form>											
+					</div>										
 				</div>
 			</div><!-- .col-md-12 -->
-		</div><!-- .row -->		
+		</div><!-- .row -->	
+
+		@can('editPost')
+
+		<div class="row">
+			<div class="card" style="margin:15px">	
+				<div class="card-header">
+					<strong class="card-title">Tracking numbers RU</strong>
+				</div>
+				<div style="display:flex">
+
+					<div class="col-md-6">
+						<form action="{{ route('importTrackings') }}" method="POST" enctype="multipart/form-data">
+							@csrf
+							<label>Import to base
+								<input type="file" name="import_file">
+							</label>
+
+							<button type="submit" style="margin-right:30px" class="btn btn-success">Upload</button>
+						</form>
+					</div>
+
+					<div class="col-md-6">
+						<a href="{{ route('exportTrackings') }}" style="margin-top: 20px;" class="btn btn-success">Export tracking numbers</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="card" style="margin:15px">	
+				<div class="card-header">
+					<strong class="card-title">Tracking numbers ENG</strong>
+				</div>
+				<div style="display:flex">
+
+					<div class="col-md-6">
+						<form action="{{ route('importTrackingsEng') }}" method="POST" enctype="multipart/form-data">
+							@csrf
+							<label>Import to base
+								<input type="file" name="import_file">
+							</label>
+
+							<button type="submit" style="margin-right:30px" class="btn btn-primary">Upload</button>
+						</form>
+					</div>
+
+					<div class="col-md-6">
+						<a href="{{ route('exportTrackingsEng') }}" style="margin-top: 20px;" class="btn btn-primary">Export tracking numbers</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		@endcan
 		
 	</div><!-- .animated -->
 </div><!-- .content -->

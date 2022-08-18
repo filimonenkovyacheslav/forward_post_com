@@ -248,7 +248,7 @@ class AdminController extends Controller
 	{
 		$status_error = '';
 		if (!$this->trackingValidate($tracking)){
-			$status_error = "Tracking number is not correct.";
+			$status_error = "The tracking number is invalid. Please try again.";
 			return $status_error;
 		}
 		
@@ -1011,7 +1011,7 @@ class AdminController extends Controller
 			}								
 
 			if ($data['tracking_main']) {
-				if (!$this->trackingValidate($data['tracking_main'])) return redirect()->to(session('this_previous_url'))->with('status-error', 'Tracking number is not correct.');
+				if (!$this->trackingValidate($data['tracking_main'])) return redirect()->to(session('this_previous_url'))->with('status-error', 'The tracking number is invalid. Please try again.');
 				
 				if ($receipt->tracking_main) {
 					ReceiptArchive::where('tracking_main', $receipt->tracking_main)->delete();
@@ -1030,7 +1030,7 @@ class AdminController extends Controller
 				return redirect()->to(session('this_previous_url'))->with('status-error', $message);
 			}
 
-			if (!$this->trackingValidate($data['tracking_main'])) return redirect()->to(session('this_previous_url'))->with('status-error', 'Tracking number is not correct.');
+			if (!$this->trackingValidate($data['tracking_main'])) return redirect()->to(session('this_previous_url'))->with('status-error', 'The tracking number is invalid. Please try again.');
 
 			$origin = Receipt::where([
 				['receipt_number',$number],

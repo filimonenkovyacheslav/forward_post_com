@@ -128,12 +128,12 @@ class WarehouseController extends AdminController
 		$tracking = $request->input('tracking');
 
 		if ($tracking) {
-			if (!$this->trackingValidate($tracking)) return redirect()->to(session('this_previous_url'))->with('status-error', 'Tracking number is not correct.');
+			if (!$this->trackingValidate($tracking)) return redirect()->to(session('this_previous_url'))->with('status-error', 'The tracking number is invalid. Please try again.');
 		}
 
 		$which_admin = $this->checkWhichAdmin($tracking);
 		if (!$which_admin) {
-			return redirect()->to(session('this_previous_url'))->with('status-error', 'Tracking number is not correct!');
+			return redirect()->to(session('this_previous_url'))->with('status-error', 'The tracking number is invalid. Please try again!');
 		}
 
         $exist_tracking = Warehouse::where('tracking_numbers', 'like', '%'.$tracking.'%')->first();
@@ -144,7 +144,7 @@ class WarehouseController extends AdminController
         $notifications = (object)['pallet'=>'','tracking'=>''];
         $warehouse = Warehouse::find($id);
         if ($which_admin !== $warehouse->which_admin) {
-        	return redirect()->to(session('this_previous_url'))->with('status-error', 'Tracking number is not correct!');
+        	return redirect()->to(session('this_previous_url'))->with('status-error', 'The tracking number is invalid. Please try again!');
         }
         $worksheet_ru = NewWorksheet::where('in_trash',false)->where('tracking_main', $tracking)->first();
         if (!$worksheet_ru) $worksheet_ru = CourierDraftWorksheet::where('in_trash',false)->where('tracking_main', $tracking)->first();
@@ -213,7 +213,7 @@ class WarehouseController extends AdminController
 			$warehouse_to = Warehouse::where('pallet', $request->input('pallet'))->first();
 			$warehouse = Warehouse::where('tracking_numbers', 'like', '%'.$tracking.'%')->first();
 			if ($which_admin !== $warehouse_to->which_admin) {
-				return redirect()->to(session('this_previous_url'))->with('status-error', 'Tracking number is not correct!');
+				return redirect()->to(session('this_previous_url'))->with('status-error', 'The tracking number is invalid. Please try again!');
 			}
 			$this->updateWarehouse($warehouse->pallet, $request->input('pallet'), $tracking);			
 			$this->updateWarehouseWorksheet($warehouse->pallet, $tracking, $request->input('pallet'));

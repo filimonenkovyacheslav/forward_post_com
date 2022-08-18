@@ -131,10 +131,17 @@
                     @endcan
 
                     @can('editColumns-2')
-                    <li>
-                        <a href="{{route('adminWarehouse')}}"><i class="menu-icon fa fa-book "></i> Warehouse </a>
-                    </li> 
-                    @endcan 
+                    <li class="dropdown">
+                        <a class="btn btn-dropdown dropdown-toggle" type="button" data-toggle="dropdown">Warehouse
+                            <span class="caret"></span>
+                            <i class="menu-icon fa fa-book "></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{{route('adminWarehouse')}}"> Warehouse </a></li>
+                            <li><a href="{{route('showPalletData')}}"> Pallets </a></li>
+                        </ul>
+                    </li>                     
+                    @endcan
                     
                     <li>
                         <a href="{{route('frontPages')}}"><i class="menu-icon fa fa-book "></i> Страницы сайта </a>
@@ -173,12 +180,6 @@
                     @can('editDraft')
                     <li>
                         <a href="{{route('tempLinks')}}"><i class="menu-icon fa fa-book "></i> Temporary links</a>
-                    </li> 
-                    @endcan 
-
-                    @can('editColumns-2')
-                    <li>
-                        <a href="{{route('showPalletData')}}"><i class="menu-icon fa fa-book "></i> Pallets </a>
                     </li> 
                     @endcan 
 

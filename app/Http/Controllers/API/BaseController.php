@@ -244,7 +244,7 @@ class BaseController extends Controller
             $tracking = $input['tracking_main'];
             $site_name = isset($input['site_name'])?(($input['site_name'] === 'DD')?'DD-C':'For'):'For';
 
-            if (!$this->trackingValidate($tracking)) return $this->sendError('Tracking number is not correct.');
+            if (!$this->trackingValidate($tracking)) return $this->sendError('The tracking number is invalid. Please try again.');
 
             if ($this->checkWhichAdmin($tracking) === 'ru') {
                 
@@ -325,7 +325,7 @@ class BaseController extends Controller
                 if (!$notification) $this->checkReceipt($work_sheet_id, null, 'en', $tracking);
             }
             else{
-                return $this->sendError('Tracking number is not correct.');
+                return $this->sendError('The tracking number is invalid. Please try again.');
             }
 
             return $this->sendResponse(['tracking_main' => $tracking], 'Post added successfully.');
