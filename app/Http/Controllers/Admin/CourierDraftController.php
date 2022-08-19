@@ -86,8 +86,7 @@ class CourierDraftController extends AdminController
 
 	public function update(Request $request, $id)
 	{
-		$courier_draft_worksheet = CourierDraftWorksheet::find($id);
-		$this->toUpdatesArchive($request,$courier_draft_worksheet);
+		$courier_draft_worksheet = CourierDraftWorksheet::find($id);		
 		$old_status = $courier_draft_worksheet->status;
 		$old_tracking = $courier_draft_worksheet->tracking_main;
 		$old_pallet = $courier_draft_worksheet->pallet_number;
@@ -102,6 +101,8 @@ class CourierDraftController extends AdminController
 			$status_error = $this->checkStatus('courier_draft_worksheet', $id, $request->input('status'));
 		}		
 		if($status_error) return redirect()->to(session('this_previous_url'))->with('status-error', $status_error);
+
+		$this->toUpdatesArchive($request,$courier_draft_worksheet);
 
 		foreach($fields as $field){						
 			if ($field !== 'created_at' && $field !== 'tracking_main') {
@@ -296,12 +297,7 @@ class CourierDraftController extends AdminController
     		if ($value_by && $column) {    			
 
     			$status_error = $this->checkColumns($row_arr, $value_by, $column, $check_column, 'courier_draft_worksheet');
-    			if($status_error) return redirect()->to(session('this_previous_url'))->with('status-error', $status_error);
-    			
-    			for ($i=0; $i < count($row_arr); $i++) { 
-    				$worksheet = CourierDraftWorksheet::where('id',$row_arr[$i])->first();
-    				$this->toUpdatesArchive($request,$worksheet);
-    			} 
+    			if($status_error) return redirect()->to(session('this_previous_url'))->with('status-error', $status_error);   			
     			
     			if ($column === 'batch_number') {
     				for ($i=0; $i < count($row_arr); $i++) { 
@@ -352,6 +348,11 @@ class CourierDraftController extends AdminController
     					return redirect()->to(session('this_previous_url'))->with('status-error', 'Pallet number is not correct!');
     				}	   								
     			}
+
+    			for ($i=0; $i < count($row_arr); $i++) { 
+    				$worksheet = CourierDraftWorksheet::where('id',$row_arr[$i])->first();
+    				$this->toUpdatesArchive($request,$worksheet);
+    			} 
     			
     			CourierDraftWorksheet::whereIn('id', $row_arr)
     			->update([
@@ -490,6 +491,30 @@ class CourierDraftController extends AdminController
     				'courier' => $request->input('courier')
     			]);  
     		}
+    		else if ($user->role === 'admin' && !$value_by && $column === 'tracking_main') {
+    			for ($i=0; $i < count($row_arr); $i++) { 
+    				$worksheet = CourierDraftWorksheet::find($row_arr[$i]);
+    				$old_tracking = $worksheet->tracking_main;
+    				$this->removeTrackingFromPalletWorksheet($row_arr[$i], 'ru',true);
+    				$this->toUpdatesArchive($request,$worksheet);
+    				ReceiptArchive::where('tracking_main', $old_tracking)->delete();
+    				Receipt::where('tracking_main', $old_tracking)->update(
+    					['tracking_main' => null]
+    				);
+    				$this->setTrackingToDocument($worksheet,$value_by);
+    				PackingSea::where('work_sheet_id',$worksheet->id)->update([
+    					'track_code' => null
+    				]);
+    				$worksheet->status = 'Подготовка';
+					$worksheet->status_en = null;	
+    				$worksheet->status_ua = null;
+    				$worksheet->status_he = null;
+    				$worksheet->status_date = date('Y-m-d');
+    				$worksheet->tracking_main = null;    				
+    				$worksheet->save();
+    			}    			
+    		}
+    		else $status_error = 'New fields error!';
 
     		for ($i=0; $i < count($row_arr); $i++) { 
     			$worksheet = CourierDraftWorksheet::find($row_arr[$i]);

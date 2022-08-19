@@ -207,6 +207,14 @@ class UpdatesArchive extends Model
                 $old_data[] = $worksheet->pay_sum;
                 $new_data[] = $request->pay_sum;
             }
+
+            $temp_name = $request->input('phil-ind-tracking-columns');
+            if (!$temp_name) $temp_name = $request->input('tracking-columns');
+            if ($request->row_id && $temp_name && $temp_name === 'tracking_main' && $worksheet->tracking_main && !$request->input('value-by-tracking')) {
+                $column_name[] = 'tracking_main';
+                $old_data[] = $worksheet->tracking_main;
+                $new_data[] = null;
+            }
         }                
         
         if (count($column_name)) {

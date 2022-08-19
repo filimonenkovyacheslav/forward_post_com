@@ -108,8 +108,7 @@ class PhilIndWorksheetController extends AdminController
 
 	public function update(Request $request, $id)
 	{
-		$phil_ind_worksheet = PhilIndWorksheet::find($id);
-		$this->toUpdatesArchive($request,$phil_ind_worksheet);
+		$phil_ind_worksheet = PhilIndWorksheet::find($id);		
 		$old_tracking = $phil_ind_worksheet->tracking_main;
 		$old_pallet = $phil_ind_worksheet->pallet_number;
 		$old_lot = $phil_ind_worksheet->lot;
@@ -132,6 +131,8 @@ class PhilIndWorksheetController extends AdminController
 		if($status_error) return redirect()->to(session('this_previous_url'))->with('status-error', $status_error);	
 
 		if ($phil_ind_worksheet->operator) $operator_change = false;
+
+		$this->toUpdatesArchive($request,$phil_ind_worksheet);
 
 		foreach($fields as $field){
 			if ($field !== 'created_at' && $field !== 'operator'){
@@ -782,6 +783,12 @@ class PhilIndWorksheetController extends AdminController
     		->update([
     			'country' => $address[0],
     			$column => $value_by
+    		]);
+    	}
+    	if ($column === 'tracking_main') {
+    		PackingEngNew::whereIn($check_column, $arr)
+    		->update([
+    			'tracking' => $value_by
     		]);
     	}
     	if (in_array($column, $params_arr)) {

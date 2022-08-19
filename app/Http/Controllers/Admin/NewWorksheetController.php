@@ -121,8 +121,7 @@ class NewWorksheetController extends AdminController
 
 	public function update(Request $request, $id)
 	{
-		$new_worksheet = NewWorksheet::find($id);	
-		$this->toUpdatesArchive($request,$new_worksheet);	
+		$new_worksheet = NewWorksheet::find($id);				
 		$old_tracking = $new_worksheet->tracking_main;
 		$old_pallet = $new_worksheet->pallet_number;
 		$old_batch_number = $new_worksheet->batch_number;
@@ -141,6 +140,8 @@ class NewWorksheetController extends AdminController
 
 		$status_error = $this->validateUpdate($request, $id, $new_worksheet);
 		if($status_error) return redirect()->to(session('this_previous_url'))->with('status-error', $status_error);	
+
+		$this->toUpdatesArchive($request,$new_worksheet);
 
 		foreach($fields as $field){	
 			if ($field !== 'created_at') {
@@ -1251,6 +1252,7 @@ class NewWorksheetController extends AdminController
     				'courier' => $request->input('courier')
     			]);  
     		}
+    		else $status_error = 'New fields error!';
 
     		for ($i=0; $i < count($row_arr); $i++) { 
     			$worksheet = NewWorksheet::find($row_arr[$i]);

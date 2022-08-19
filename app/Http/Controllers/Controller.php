@@ -501,8 +501,7 @@ class Controller extends BaseController
     protected function trackingValidate($tracking)
     {
         $admin = $this->checkWhichAdmin($tracking);
-        $pattern = '/^[a-z0-9]+$/i';
-        $tracking = str_replace("-", "", $tracking);
+        $pattern = '/^([a-z0-9])|([a-z]\-[a-z0-9])+$/i';
         if (preg_match($pattern, $tracking) && (strlen($tracking) >= 4 && strlen($tracking) <= 18)) {
             if ($admin === 'ru') {
                 if (Schema::hasTable('trackings')){
