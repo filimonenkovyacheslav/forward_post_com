@@ -26,8 +26,8 @@ class CreateUpdatesArchiveTable extends Migration
             $table->date('updates_date');
             $table->string('user_name', 100);
             $table->string('column_name', 50);
-            $table->string('old_data', 150)->nullable();
-            $table->string('new_data', 150)->nullable();
+            $table->text('old_data')->nullable();
+            $table->text('new_data')->nullable();
             $table->timestamps();
         });
     }

@@ -104,7 +104,7 @@
 
 		@can('editPost')
 
-		<div class="row">
+		<!-- <div class="row">
 			<div class="card" style="margin:15px">	
 				<div class="card-header">
 					<strong class="card-title">Tracking numbers RU</strong>
@@ -152,7 +152,7 @@
 					</div>
 				</div>
 			</div>
-		</div>
+		</div> -->
 
 		@endcan
 		

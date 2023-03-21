@@ -45,7 +45,7 @@
 					@endphp
 
 					<div class="btn-move-wrapper" style="display:flex">
-						<form action="{{ route('trashFilter') }}" method="GET" id="form-worksheet-table-filter" enctype="multipart/form-data">
+						<form action="{{ route('logsFilter') }}" method="GET" id="form-worksheet-table-filter" enctype="multipart/form-data">
 							@csrf
 							<label class="table_columns" style="margin: 0 15px">Choose column:
 								<select class="form-control" id="table_columns" name="table_columns">

@@ -12,7 +12,7 @@ use App\BaseModel;
 class CourierDraftWorksheet extends BaseModel
 {   
     public $table = 'courier_draft_worksheet';
-    protected $fillable = ['order_number', 'tracking_main', 'status', 'status_en', 'status_he', 'status_ua', 'update_status_date', 'date', 'standard_phone', 'site_name', 'package_content', 'direction', 'tariff', 'comment_2','comments','sender_name','sender_country','sender_city','sender_postcode','sender_address','sender_phone','sender_passport','recipient_name','recipient_country','region','district','recipient_city','recipient_postcode','recipient_street','recipient_house','body','recipient_room','recipient_phone','recipient_passport','recipient_email','courier','pick_up_date','weight','width','height','length','volume_weight','quantity_things','status_date','parcels_qty','in_trash','shipper_region','order_date','packing_number'];
+    protected $fillable = ['order_number', 'tracking_main', 'status', 'status_en', 'status_he', 'status_ua', 'update_status_date', 'date', 'standard_phone', 'site_name', 'package_content', 'direction', 'tariff', 'comment_2','comments','sender_name','sender_country','sender_city','sender_postcode','sender_address','sender_phone','sender_passport','recipient_name','recipient_country','region','district','recipient_city','recipient_postcode','recipient_street','recipient_house','body','recipient_room','recipient_phone','recipient_passport','recipient_email','courier','pick_up_date','weight','width','height','length','volume_weight','quantity_things','status_date','parcels_qty','in_trash','shipper_region','order_date','packing_number','index_number'];
 
 
     /**
@@ -123,5 +123,57 @@ class CourierDraftWorksheet extends BaseModel
         $document = $this->getLastDoc();
         if ($document) return $document->uniq_id;
         else return null;
+    }
+
+
+    public function setIndexNumber()
+    {
+        $max = 0;
+        if(!$this->index_number){
+            $max = CourierDraftWorksheet::max('index_number');
+            $max++;
+            $this->index_number = $max;
+            $this->save();
+        }
+
+        $worksheets = CourierDraftWorksheet::orderBy('index_number')->get();
+        $number = 1;
+        foreach ($worksheets as $item) {
+            $item->index_number = $number;
+            $item->save();               
+            $number++;
+        }
+        
+        return $max;
+    } 
+
+
+    public function reIndex($index)
+    {
+        $number = 1;       
+        $old = CourierDraftWorksheet::where('index_number', $index)->first();
+        if ($old) {
+            if ($this->index_number < $index) {
+                $old->index_number = $index-1;
+            }
+            elseif ($this->index_number > $index) {
+                $old->index_number = $index+1;
+            }
+            elseif ($this->index_number === $index) {
+                return false;
+            }
+            $old->save();
+        }       
+        $this->index_number = $index;
+        $this->save();        
+        $worksheets = CourierDraftWorksheet::orderBy('index_number')->get();
+        
+        foreach ($worksheets as $item) {
+            if ($item->index_number !== $index) {
+                $item->index_number = $number;
+                $item->save();               
+            } 
+            $number++;
+        }
     }
 }

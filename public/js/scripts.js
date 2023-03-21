@@ -471,6 +471,8 @@ $('select[name="shipper_city"]').on('change', function(){
 
 // Operator with Client forms
 var availableNow = false
+let intervalID_1
+let intervalID_2
 $('.new-form .form-send-parcel input').on('input',(e)=>{
 	availableNow = true
 })
@@ -500,19 +502,31 @@ function cancelDisabled(){
 if ($('.new-form .form-send-parcel input').length > 0) {
 	getSignedValue()
 
-	setInterval(()=>{
-		if (availableNow) {
-			updateSignedValue()
-			setTimeout(()=>{
-				availableNow = false
-			},2000)			
-		}
-	}, 2000);
+	if (!intervalID_1) {
+		intervalID_1 = setInterval(()=>{
+			if (availableNow) {
+				updateSignedValue()
+				setTimeout(()=>{
+					availableNow = false
+				},2000)			
+			}
+		}, 2000);
+	}	
 
-	setInterval(()=>{
-		if (!availableNow) getSignedValue()
-	}, 5000);	
+	if (!intervalID_2) {
+		intervalID_2 = setInterval(()=>{
+			if (!availableNow) getSignedValue()
+		}, 5000);
+	}
+		
 }
+
+$('.new-form .form-send-parcel button[type=submit]').click(()=>{
+	clearInterval(intervalID_1)
+	clearInterval(intervalID_2)
+	intervalID_1 = null
+	intervalID_2 = null
+})
 
 function isJson(str) {
     try {

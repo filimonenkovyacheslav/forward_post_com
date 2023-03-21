@@ -55,7 +55,7 @@ class NewWorksheetController extends AdminController
         	'status_date' => date('Y-m-d')
         ]);
         
-        $new_worksheet_obj = NewWorksheet::where('in_trash',false)->paginate(10);     
+        $new_worksheet_obj = NewWorksheet::where('in_trash',false)->orderBy('index_number')->paginate(10);     
 
         $arr_columns = parent::new_columns();
 
@@ -195,6 +195,8 @@ class NewWorksheetController extends AdminController
 				}
 			}			
 		}	
+
+		$new_worksheet->direction = $this->createRuDirection($request->input('sender_country'), $request->input('recipient_country'));
 
 		if ($old_status !== $new_worksheet->status) {
 			NewWorksheet::where('id', $id)
@@ -831,6 +833,46 @@ class NewWorksheetController extends AdminController
     					}
     				}
     			} 
+
+    			if ($column === 'sender_country') {
+    				for ($i=0; $i < count($track_arr); $i++) { 
+    					$worksheet = NewWorksheet::where('id',$track_arr[$i])->first();
+    					if (!$worksheet->direction) {
+    						$worksheet->direction = $this->from_country_dir[$value_by].'-';
+    						$worksheet->save();
+    					}
+    					else{
+    						$temp = explode('-', $worksheet->direction);
+    						if (count($temp) == 2) {
+    							$worksheet->direction = $this->from_country_dir[$value_by].'-'.$temp[1];
+    						}
+    						else{
+    							$worksheet->direction = $this->from_country_dir[$value_by].'-';
+    						} 
+    						$worksheet->save();  						
+    					}
+    				}
+    			}
+
+    			if ($column === 'recipient_country') {
+    				for ($i=0; $i < count($track_arr); $i++) { 
+    					$worksheet = NewWorksheet::where('id',$track_arr[$i])->first();
+    					if (!$worksheet->direction) {
+    						$worksheet->direction = '-'.$value_by;
+    						$worksheet->save();
+    					}
+    					else{
+    						$temp = explode('-', $worksheet->direction);
+    						if (count($temp) == 2) {
+    							$worksheet->direction = $temp[0].'-'.$value_by;
+    						}
+    						else{
+    							$worksheet->direction = '-'.$value_by;
+    						} 
+    						$worksheet->save();  						
+    					}
+    				}
+    			}
 				
 				$this->updateAllPackingByTracking($track_arr, $value_by, $column);
 
@@ -1126,10 +1168,16 @@ class NewWorksheetController extends AdminController
     				}					
     			}
     			
-    			NewWorksheet::whereIn('id', $row_arr)
-    			->update([
-    				$column => $value_by
-    			]); 
+    			if ($column !== 'index_number') {
+    				NewWorksheet::whereIn('id', $row_arr)
+    				->update([
+    					$column => $value_by
+    				]); 
+    			}   			
+    			elseif ((int)$value_by > 0 && count($row_arr) === 1) {
+    				$worksheet = NewWorksheet::find($row_arr[0]);
+    				$worksheet->reIndex((int)$value_by);       	
+    			}
 
     			if ($column === 'pallet_number') {
     				for ($i=0; $i < count($row_arr); $i++) { 
@@ -1162,6 +1210,46 @@ class NewWorksheetController extends AdminController
     					}
     				}
     			} 
+
+    			if ($column === 'sender_country') {
+    				for ($i=0; $i < count($row_arr); $i++) { 
+    					$worksheet = NewWorksheet::where('id',$row_arr[$i])->first();
+    					if (!$worksheet->direction) {
+    						$worksheet->direction = $this->from_country_dir[$value_by].'-';
+    						$worksheet->save();
+    					}
+    					else{
+    						$temp = explode('-', $worksheet->direction);
+    						if (count($temp) == 2) {
+    							$worksheet->direction = $this->from_country_dir[$value_by].'-'.$temp[1];
+    						}
+    						else{
+    							$worksheet->direction = $this->from_country_dir[$value_by].'-';
+    						} 
+    						$worksheet->save();  						
+    					}
+    				}
+    			}
+
+    			if ($column === 'recipient_country') {
+    				for ($i=0; $i < count($row_arr); $i++) { 
+    					$worksheet = NewWorksheet::where('id',$row_arr[$i])->first();
+    					if (!$worksheet->direction) {
+    						$worksheet->direction = '-'.$value_by;
+    						$worksheet->save();
+    					}
+    					else{
+    						$temp = explode('-', $worksheet->direction);
+    						if (count($temp) == 2) {
+    							$worksheet->direction = $temp[0].'-'.$value_by;
+    						}
+    						else{
+    							$worksheet->direction = '-'.$value_by;
+    						} 
+    						$worksheet->save();  						
+    					}
+    				}
+    			}
 
     			$this->updateAllPackingById($row_arr, $value_by, $column);    	
     		}
@@ -1205,6 +1293,24 @@ class NewWorksheetController extends AdminController
     				$worksheet->checkCourierTask($worksheet->status);
     			}    	
     		}
+    		else if ($request->input('status_date')) {
+    			NewWorksheet::whereIn('id', $row_arr)
+    			->update([
+    				'status_date' => $request->input('status_date')
+    			]);       	
+    		}
+    		else if ($request->input('order_date')) {
+    			NewWorksheet::whereIn('id', $row_arr)
+    			->update([
+    				'order_date' => $request->input('order_date')
+    			]);       	
+    		}
+    		else if ($request->input('date')) {
+    			NewWorksheet::whereIn('id', $row_arr)
+    			->update([
+    				'date' => $request->input('date')
+    			]);       	
+    		}   		
     		else if ($request->input('tariff')) {
     			NewWorksheet::whereIn('id', $row_arr)
     			->update([
@@ -1327,7 +1433,7 @@ class NewWorksheetController extends AdminController
 
         if ($request->table_columns) {
         	$new_worksheet_obj = NewWorksheet::where('in_trash',false)->where($request->table_columns, 'like', '%'.$search.'%')
-        	->paginate(10);
+        	->orderBy('index_number')->paginate(10);
         }
         else{
         	foreach($attributes as $key => $value)
@@ -1401,6 +1507,15 @@ class NewWorksheetController extends AdminController
     	else{
 			return redirect()->to(session('this_previous_url'))->with('status-error', 'Ошибка деактивации!');
 		}
+    }
+
+
+    public function setIndexes()
+    {
+    	$worksheets = NewWorksheet::all();
+    	foreach ($worksheets as $item) {
+    		$item->setIndexNumber();
+    	}
     }
 
 }

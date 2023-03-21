@@ -438,8 +438,12 @@
             const form = event.target;
 
             const phone = document.querySelector('[name="standard_phone"]'); 
-            if (phone.value.length < 10 || phone.value.length > 24) {
-                alert('The number of characters in the standard phone must be from 10 to 24 !');
+            if (phone.value.length !== 13 && countryCode === "+972") {
+                alert('The number of characters in the standard phone must be 13 !');
+                return false;
+            }
+            if (phone.value.length !== 14 && countryCode === "+49") {
+                alert('The number of characters in the standard phone must be 14 !');
                 return false;
             }
 

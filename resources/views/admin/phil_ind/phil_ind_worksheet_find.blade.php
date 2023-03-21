@@ -23,11 +23,13 @@
 
 <div class="content mt-3">
 	<div class="animated fadeIn">
+		@can('eng-update-post')
 		<div class="row">
 			<div class="col-md-12">
 				<a href="{{ route('exportExcelPhilInd') }}" style="margin-bottom: 20px;" class="btn btn-success btn-move">Export to Excel</a>
 			</div>
 		</div>
+		@endcan
 		<div class="row">
 			<div class="col-md-12">
 				<div class="card">

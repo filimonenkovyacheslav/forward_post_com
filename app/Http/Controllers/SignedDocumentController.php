@@ -17,6 +17,7 @@ use Illuminate\Database\Schema\Blueprint;
 use PDF;
 use DB;
 use Auth;
+use App\User;
 
 
 class SignedDocumentController extends Controller
@@ -91,7 +92,12 @@ class SignedDocumentController extends Controller
                         ->insert([
                             'data' => $data_parcel
                         ]);
-                    }           
+                    }  
+                    elseif ($request->api === 'true') {
+                        $result->update([
+                            'data' => $data_parcel
+                        ]);
+                    }         
                 } 
             } 
             else{
@@ -108,7 +114,7 @@ class SignedDocumentController extends Controller
             $israel_cities = $this->israelCities();
             $israel_cities['other'] = 'Другой город';                   
 
-            return view('pdf.form_with_signature',compact('israel_cities','data_parcel','token','worksheet','user_name'));
+            return view('pdf.form_with_signature',compact('israel_cities','data_parcel','token','worksheet','user_name','id'));
         }    
         else return '<h1>Session ended!</h1>';
     }
@@ -143,7 +149,12 @@ class SignedDocumentController extends Controller
                         ->insert([
                             'data' => $data_parcel
                         ]);
-                    }           
+                    }  
+                    elseif ($request->api === 'true') {
+                        $result->update([
+                            'data' => $data_parcel
+                        ]);
+                    }         
                 } 
                 $this->signedToUpdatesArchive($worksheet);
             }   
@@ -163,7 +174,7 @@ class SignedDocumentController extends Controller
             $to_country = $this->to_country_arr;          
             $domain = $this->getDomainRule();
 
-            return view('pdf.form_with_signature_eng',compact('israel_cities','data_parcel','domain','token','worksheet','to_country','user_name')); 
+            return view('pdf.form_with_signature_eng',compact('israel_cities','data_parcel','domain','token','worksheet','to_country','user_name','id')); 
         }
         else return '<h1>Session ended!</h1>';     
     }
@@ -269,7 +280,10 @@ class SignedDocumentController extends Controller
             } 
             $worksheet->packing_number = $document->uniq_id;
             $worksheet->save(); 
-            $worksheet->checkCourierTask($worksheet->status);          
+            $worksheet->checkCourierTask($worksheet->status);      
+            CourierEngDraftWorksheet::where('standard_phone',$worksheet->standard_phone)
+            ->whereIn('status',['Box','Pending','Packing list'])->delete();   
+            $this->deleteTempTable($request->session_token); 
 
             return redirect('/form-success?pdf_file='.$pdf_file.'&new_document_id='.$id.'&type='.$type);
         }
@@ -284,8 +298,12 @@ class SignedDocumentController extends Controller
                 $this->signedToUpdatesArchive($worksheet,$user_name,$document->uniq_id);
             } 
             $worksheet->packing_number = $document->uniq_id;
-            $worksheet->save();           
+            $worksheet->save();   
+            $worksheet->setIndexNumber();        
             $worksheet->checkCourierTask($worksheet->status);
+            CourierDraftWorksheet::where('standard_phone',$worksheet->standard_phone)
+            ->whereIn('status',['Коробка','Подготовка','Пакинг лист'])->delete();
+            $this->deleteTempTable($request->session_token);
           
             return redirect('/form-success?pdf_file='.$pdf_file.'&new_document_id='.$id.'&type='.$type);
         }
@@ -394,7 +412,7 @@ class SignedDocumentController extends Controller
         
         $document = SignedDocument::find($request->document_id);
         $result = $document->updateWorksheet($request);
-        $this->deleteTempTable($request->session_token);
+        //$this->deleteTempTable($request->session_token);
         
         if ($result) {
 
@@ -403,26 +421,26 @@ class SignedDocumentController extends Controller
                 case "draft_id":
 
                 $form_screen = $this->formToImg($request);
-                return redirect('/signature-page?draft_id='.$result->id.'&form_screen='.$form_screen.'&document_id='.$request->document_id);
+                return redirect('/signature-page?draft_id='.$result->id.'&form_screen='.$form_screen.'&document_id='.$request->document_id.'&session_token='.$request->session_token);
 
                 break;
 
                 case "eng_draft_id":
 
-                return redirect('/signature-page?eng_draft_id='.$result->id.'&document_id='.$request->document_id);
+                return redirect('/signature-page?eng_draft_id='.$result->id.'&document_id='.$request->document_id.'&session_token='.$request->session_token);
 
                 break;
 
                 case "worksheet_id":
 
                 $form_screen = $this->formToImg($request);
-                return redirect('/signature-page?worksheet_id='.$result->id.'&form_screen='.$form_screen.'&document_id='.$request->document_id);
+                return redirect('/signature-page?worksheet_id='.$result->id.'&form_screen='.$form_screen.'&document_id='.$request->document_id.'&session_token='.$request->session_token);
 
                 break;
 
                 case "eng_worksheet_id":
 
-                return redirect('/signature-page?eng_worksheet_id='.$result->id.'&document_id='.$request->document_id);
+                return redirect('/signature-page?eng_worksheet_id='.$result->id.'&document_id='.$request->document_id.'&session_token='.$request->session_token);
 
                 break;
             }                      
@@ -532,9 +550,10 @@ class SignedDocumentController extends Controller
     }
 
 
-    public function downloadPdf($id)
+    public function downloadPdf($id, $api = null)
     {
         $document = SignedDocument::find($id);
+        if (!$document && $api) $document = SignedDocument::where('uniq_id',$id)->first();
         $worksheet = $document->getWorksheet();
         $tracking = $worksheet->tracking_main;
         $cancel = null;
@@ -593,6 +612,17 @@ class SignedDocumentController extends Controller
         $document = SignedDocument::find($request->document_id);
         $document = $document->updateSignedDocument($request,$file_name);
         return $document;
+    }
+
+
+    public function checkTempTable(Request $request)
+    {
+        // For signed forms
+        if (!$request->session_token) {
+            $request = $this->contentToObj($request);
+        }
+        if (Schema::hasTable('table_'.$request->session_token)) return 'true';
+        else return 'false';       
     }
 
 
@@ -701,9 +731,9 @@ class SignedDocumentController extends Controller
                     if (isset($request->worksheet_id))
                         $this->deleteOldWorksheet($request->worksheet_id,'ru');
                     if ($request->session_token)
-                        $this->deleteTempTable($request->session_token);
+                        //$this->deleteTempTable($request->session_token);
                     $form_screen = $this->formToImg($request);
-                    return redirect('/signature-page?draft_id='.$message['id'].'&form_screen='.$form_screen.'&user_name='.$user_name);
+                    return redirect('/signature-page?draft_id='.$message['id'].'&form_screen='.$form_screen.'&user_name='.$user_name.'&session_token='.$request->session_token);
                 }
                 else{
                     return redirect()->route('formWithSignature')->with('status', $message['message']);
@@ -718,9 +748,9 @@ class SignedDocumentController extends Controller
                 if (isset($request->worksheet_id))
                     $this->deleteOldWorksheet($request->worksheet_id,'ru');
                 if ($request->session_token)
-                    $this->deleteTempTable($request->session_token);
+                    //$this->deleteTempTable($request->session_token);
                 $form_screen = $this->formToImg($request);
-                return redirect('/signature-page?draft_id='.$message['id'].'&form_screen='.$form_screen.'&user_name='.$user_name);
+                return redirect('/signature-page?draft_id='.$message['id'].'&form_screen='.$form_screen.'&user_name='.$user_name.'&session_token='.$request->session_token);
             }
             else{
                 return redirect()->route('formWithSignature')->with('status', $message['message']);
@@ -745,6 +775,14 @@ class SignedDocumentController extends Controller
             else if($field === 'recipient_name'){
                 $new_worksheet->$field = $request->recipient_first_name.' '.$request->recipient_last_name;
             }
+            else if($field === 'courier'){
+                $user = User::where('name',$request->user_name)->first();
+                $role_arr = ['agent','courier'];
+                if ($user && in_array($user->role, $role_arr)) {
+                    $user_name = explode('@', $user->email)[0];
+                    $new_worksheet->$field = $user_name;
+                }               
+            }
             else if($field === 'package_content'){
                 $content = '';       
                 
@@ -765,6 +803,9 @@ class SignedDocumentController extends Controller
             else if ($field === 'comment_2'){
                 if (isset($request->need_box)) $new_worksheet->$field = $request->need_box;
                 if (isset($request->comment_2)) $new_worksheet->$field = $request->comment_2;
+            }
+            else if ($field === 'direction') {
+                $new_worksheet->$field = $this->createRuDirection($request->sender_country, $request->recipient_country);
             }
             else if ($field !== 'created_at'){
                 if (isset($request->$field)) {
@@ -975,8 +1016,8 @@ class SignedDocumentController extends Controller
                     if (isset($request->worksheet_id))
                         $this->deleteOldWorksheet($request->worksheet_id,'eng');
                     if ($request->session_token)
-                        $this->deleteTempTable($request->session_token);
-                    return redirect('/signature-page?eng_draft_id='.$message['id'].'&user_name='.$user_name);
+                        //$this->deleteTempTable($request->session_token);
+                    return redirect('/signature-page?eng_draft_id='.$message['id'].'&user_name='.$user_name.'&session_token='.$request->session_token);
                 }
                 else{
                     return redirect()->route('formWithSignatureEng')->with('status', $message['message']);
@@ -991,8 +1032,8 @@ class SignedDocumentController extends Controller
                 if (isset($request->worksheet_id))
                     $this->deleteOldWorksheet($request->worksheet_id,'eng');
                 if ($request->session_token)
-                    $this->deleteTempTable($request->session_token);               
-                return redirect('/signature-page?eng_draft_id='.$message['id'].'&user_name='.$user_name);
+                    //$this->deleteTempTable($request->session_token);               
+                return redirect('/signature-page?eng_draft_id='.$message['id'].'&user_name='.$user_name.'&session_token='.$request->session_token);
             }
             else{
                 return redirect()->route('formWithSignatureEng')->with('status', $message['message']);
@@ -1016,6 +1057,14 @@ class SignedDocumentController extends Controller
             }
             else if ($field === 'consignee_address') {
                 $worksheet->$field = $request->consignee_country.' '.$request->consignee_address;
+            }
+            else if($field === 'courier'){
+                $user = User::where('name',$request->user_name)->first();
+                $role_arr = ['agent','courier'];
+                if ($user && in_array($user->role, $role_arr)) {
+                    $user_name = explode('@', $user->email)[0];
+                    $worksheet->$field = $user_name;
+                }               
             }
             else if ($field === 'shipped_items') {
                 $temp = '';

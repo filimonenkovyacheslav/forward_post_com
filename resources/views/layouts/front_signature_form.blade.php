@@ -39,6 +39,7 @@
     <script type="text/javascript">
         var addToTableUrl = "{{ url('/api/add-to-temp-table') }}"
         var getFromTableUrl = "{{ url('/api/get-from-temp-table') }}"
+        var checkTempTableUrl = "{{ url('/api/check-temp-table') }}"
     </script>
     
     <script src="{{ asset('js/app.js') }}" defer></script>

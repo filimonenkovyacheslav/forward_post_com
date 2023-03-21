@@ -54,20 +54,13 @@
 							</div>
 						</div>
 						@endcan
-						
-						<div class="form-group">
-							{!! Form::label('direction','Направление',['class' => 'col-md-2 control-label'])   !!}
-							<div class="col-md-8">
-								{!! Form::text('direction',$courier_draft_worksheet->direction,['class' => 'form-control'])!!}
-							</div>
-						</div>
 
 						@if (!$courier_draft_worksheet->getLastDocUniq())
 						
 						<div class="form-group">
 							{!! Form::label('tariff','Тариф',['class' => 'col-md-2 control-label'])   !!}
 							<div class="col-md-8">
-								{!! Form::select('tariff', array('' => '', 'Море' => 'Море', 'Авиа' => 'Авиа'), $courier_draft_worksheet->tariff,['class' => 'form-control']) !!}
+								{!! Form::select('tariff', array('' => '', 'Обычный' => 'Обычный', 'Экспресс' => 'Экспресс'), $courier_draft_worksheet->tariff,['class' => 'form-control']) !!}
 							</div>
 						</div>
 						
@@ -165,7 +158,7 @@
 						<div class="form-group">
 							{!! Form::label('sender_country','Страна отправителя',['class' => 'col-md-2 control-label'])   !!}
 							<div class="col-md-8">
-								{!! Form::text('sender_country',$courier_draft_worksheet->sender_country,['class' => 'form-control'])!!}
+								{!! Form::select('sender_country', array('Israel' => 'Israel', 'Germany' => 'Germany'), isset($courier_draft_worksheet->sender_country) ? $courier_draft_worksheet->sender_country : '',['class' => 'form-control']) !!}
 							</div>
 						</div>
 
@@ -230,8 +223,8 @@
 						<div class="form-group">
 							{!! Form::label('recipient_country','Страна получателя',['class' => 'col-md-2 control-label'])   !!}
 							<div class="col-md-8">
-								{!! Form::text('recipient_country',$courier_draft_worksheet->recipient_country,['class' => 'form-control'])!!}
-							</div>
+		                        {!! Form::select('recipient_country', array('RU' => 'Россия (RU)', 'UA' => 'Украина (UA)', 'BY' => 'Беларусь (BY)', 'KZ' => 'Казахстан (KZ)'), $courier_draft_worksheet->recipient_country,['class' => 'form-control']) !!}
+		                    </div>
 						</div>
 						<div class="form-group">
 							{!! Form::label('region','Регион',['class' => 'col-md-2 control-label'])   !!}

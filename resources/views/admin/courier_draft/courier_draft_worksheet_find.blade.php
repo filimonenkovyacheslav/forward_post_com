@@ -21,11 +21,13 @@
 </div> -->
 <div class="content mt-3">
 	<div class="animated fadeIn">
+		@can('update-post')
 		<div class="row">
 			<div class="col-md-12">
 				<a href="{{ route('exportExcelCourierDraft') }}" style="margin-bottom: 20px;" class="btn btn-success btn-move">Экспорт в Excel</a>
 			</div>
 		</div>
+		@endcan
 		<div class="row">
 			<div class="col-md-12">
 				<div class="card">
@@ -47,6 +49,8 @@
 					session(['this_previous_url' => url()->full()]);
 					@endphp
 
+					@can('update-post')
+
 					<div class="btn-move-wrapper" style="display:flex">
 						<form action="{{ route('courierDraftWorksheetFilter') }}" method="GET" id="form-worksheet-table-filter" enctype="multipart/form-data">
 							@csrf
@@ -54,6 +58,7 @@
 								<select class="form-control" id="table_columns" name="table_columns">
 									<option value="" selected="selected"></option>
 									<option value="id">Id</option>
+									<option value="index_number">№</option>
 									<option value="site_name">Сайт</option>
 									<option value="packing_number">Packing No.</option>
 									<option value="date">Дата</option>
@@ -121,6 +126,8 @@
 						
 					</div>
 
+					@endcan
+
 					<div class="checkbox-operations">
 
 						@can('editDraft')
@@ -158,6 +165,9 @@
 						<label class="checkbox-operations-change">Выберите колонку:
 							<select class="form-control" id="tracking-columns" name="tracking-columns">
 								<option value="" selected="selected"></option>
+								@can('update-user')
+								<option value="index_number">№</option>
+								@endcan
 								<option value="site_name">Сайт</option>
 								
 								@can('update-user')
@@ -204,6 +214,8 @@
 							<input type="hidden" name="status_en">
 							<input type="hidden" name="status_ua">
 							<input type="hidden" name="status_he">
+							<input type="hidden" name="sender_country_val">
+							<input type="hidden" name="recipient_country_val">
 						</label>									
 
 						{!! Form::button('Сохранить',['class'=>'btn btn-primary checkbox-operations-change','type'=>'submit']) !!}
@@ -256,6 +268,7 @@
 								<thead>
 									<tr>
 										<th>V</th>
+										<th>№</th>
 										<th>Id</th>
 										<th>№ пакинг-листа</th>
 										<th>Сайт</th>
@@ -341,10 +354,30 @@
 
 									@if(!in_array($user->role, $viewer_arr))
 
+									@php
+									$today = date("H:i:s"); 
+									if ($today > "08:00:00")
+										$emergence_date = Date('Y-m-d', strtotime('-1 days'));
+									else									
+										$emergence_date = Date('Y-m-d', strtotime('-2 days'));
+									
+									if($user->role === 'viewer' && $row->date > $emergence_date)
+										continue;
+									@endphp
+
+									@php	
+									$this_page = (isset($_GET["page"])) ? (int)$_GET["page"] : 1;
+									if($user->role === 'viewer' && $this_page < 30)
+										continue;
+									@endphp
+
 									<tr>
 										<td class="td-checkbox">
 											<input type="checkbox" name="row_id[]" value="{{ $row->id }}">
 										</td>	
+										<td class="@can('update-user')allowed-update @endcan" title="{{$row->index_number}}">
+											<div data-name="index_number" data-id="{{ $row->id }}" class="div-22">{{$row->index_number}}</div>
+										</td>
 										<td title="{{$row->id}}">
 											<div class="div-22">{{$row->id}}</div>
 										</td>	
@@ -358,7 +391,7 @@
 											<div data-name="date" data-id="{{ $row->id }}" class="div-3">{{$row->date}}</div>
 										</td>
 										<td class="@can('editDraft')allowed-update @endcan" title="{{$row->direction}}">
-											<div data-name="direction" data-id="{{ $row->id }}" class="div-2">{{$row->direction}}</div>
+											<div class="div-3">{{$row->direction}}</div>
 										</td>
 										<td class="@can('editDraft')allowed-update @endcan @if($row->getLastDocUniq())pdf-file @endif" title="{{$row->tariff}}">
 											<div data-name="tariff" data-id="{{ $row->id }}" class="div-2">{{$row->tariff}}</div>
@@ -548,6 +581,9 @@
 										<td class="td-checkbox">
 											<input type="checkbox" name="row_id[]" value="{{ $row->id }}">
 										</td>
+										<td class="@can('update-user')allowed-update @endcan" title="{{$row->index_number}}">
+											<div data-name="index_number" data-id="{{ $row->id }}" class="div-22">{{$row->index_number}}</div>
+										</td>
 										<td title="{{$row->id}}">
 											<div class="div-22">{{$row->id}}</div>
 										</td>
@@ -561,7 +597,7 @@
 											<div data-name="date" data-id="{{ $row->id }}" class="div-3">{{$row->date}}</div>
 										</td>
 										<td class="@can('editDraft')allowed-update @endcan" title="{{$row->direction}}">
-											<div data-name="direction" data-id="{{ $row->id }}" class="div-2">{{$row->direction}}</div>
+											<div class="div-3">{{$row->direction}}</div>
 										</td>
 										<td class="@can('editDraft')allowed-update @endcan @if($row->getLastDocUniq())pdf-file @endif" title="{{$row->tariff}}">
 											<div data-name="tariff" data-id="{{ $row->id }}" class="div-2">{{$row->tariff}}</div>
@@ -783,6 +819,8 @@
 						<input type="hidden" name="status_en">
 						<input type="hidden" name="status_ua">
 						<input type="hidden" name="status_he">
+						<input type="hidden" name="sender_country_val">
+						<input type="hidden" name="recipient_country_val">
 					</div>					
 				</div>
 				<div class="modal-footer">

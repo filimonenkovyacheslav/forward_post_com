@@ -70,8 +70,8 @@
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-menu" aria-controls="main-menu" aria-expanded="false" aria-label="Toggle navigation">
                     <i class="fa fa-bars"></i>
                 </button>
-                <a class="navbar-brand" href="/">DD-CARGO</a>
-                <a class="navbar-brand hidden" href="/">DD</a>
+                <a class="navbar-brand" href="/">ORIENTAL-EXPRESS</a>
+                <a class="navbar-brand hidden" href="/">OE</a>
             </div>
 
             <div id="main-menu" class="main-menu collapse navbar-collapse">
@@ -138,9 +138,9 @@
                     @endcan
 
                     @can('view-post')
-                    <li>
+                    <!-- <li>
                         <a href="{{route('adminIndex')}}"><i class="menu-icon fa fa-book "></i> Russian admin </a>
-                    </li>
+                    </li> -->
                     @endcan  
 
                     @can('china-view-post')
@@ -184,6 +184,10 @@
                         <a href="{{route('generalSearchShow')}}"><i class="menu-icon fa fa-book "></i> General Search</a>
                     </li> 
                     @endcan 
+
+                    <li>
+                        <a href="{{route('trackingLists')}}"><i class="menu-icon fa fa-book "></i> Tracking Lists</a>
+                    </li>
                 
                 </ul>
             </div><!-- /.navbar-collapse -->

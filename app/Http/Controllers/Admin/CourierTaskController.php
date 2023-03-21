@@ -113,6 +113,8 @@ class CourierTaskController extends AdminController
     	$value_by = $request->input('value-by-tracking');
     	$column = $request->input('tracking-columns');
 
+    	if ($column === 'courier') $value_by = $request->input('courier');
+
     	for ($i=0; $i < count($row_arr); $i++) { 
     		$task = CourierTask::find($row_arr[$i]);
     		$worksheet = $task->getWorksheet();

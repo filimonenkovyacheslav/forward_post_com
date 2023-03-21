@@ -32,10 +32,13 @@ class CourierDraftController extends AdminController
         if ($request->input('for_active')) {
         	$courier_draft_worksheet_obj = CourierDraftWorksheet::where('in_trash',false)->where('tracking_main','<>',null)
         	->orWhere('status','Забрать')
+        	->orderBy('index_number')
         	->paginate(10);
         }
         else{
-        	$courier_draft_worksheet_obj = CourierDraftWorksheet::where('in_trash',false)->paginate(10);
+        	$courier_draft_worksheet_obj = CourierDraftWorksheet::where('in_trash',false)
+        	->orderBy('index_number')
+        	->paginate(10);
         }
         $data = $request->all();   
         $user = Auth::user();
@@ -118,6 +121,8 @@ class CourierDraftController extends AdminController
 		if ($request->input('tracking_main')) {
 			$check_result .= $this->updateStatusByTracking('courier_draft_worksheet', $courier_draft_worksheet);
 		}
+
+		$courier_draft_worksheet->direction = $this->createRuDirection($request->input('sender_country'), $request->input('recipient_country'));
 
 		if ($old_status !== $courier_draft_worksheet->status) {
 			CourierDraftWorksheet::where('id', $id)
@@ -349,6 +354,17 @@ class CourierDraftController extends AdminController
     				}	   								
     			}
 
+    			if ($column !== 'index_number') {
+    				CourierDraftWorksheet::whereIn('id', $row_arr)
+    				->update([
+    					$column => $value_by
+    				]); 
+    			}   			
+    			elseif ((int)$value_by > 0 && count($row_arr) === 1) {
+    				$worksheet = CourierDraftWorksheet::find($row_arr[0]);
+    				$worksheet->reIndex((int)$value_by);       	
+    			}
+
     			for ($i=0; $i < count($row_arr); $i++) { 
     				$worksheet = CourierDraftWorksheet::where('id',$row_arr[$i])->first();
     				$this->toUpdatesArchive($request,$worksheet);
@@ -395,7 +411,47 @@ class CourierDraftController extends AdminController
     						$this->updateWarehouseLot($worksheet->tracking_main, $value_by, 'ru');
     					}
     				}
-    			}    			  			      	
+    			}    
+
+    			if ($column === 'sender_country') {
+    				for ($i=0; $i < count($row_arr); $i++) { 
+    					$worksheet = CourierDraftWorksheet::where('id',$row_arr[$i])->first();
+    					if (!$worksheet->direction) {
+    						$worksheet->direction = $this->from_country_dir[$value_by].'-';
+    						$worksheet->save();
+    					}
+    					else{
+    						$temp = explode('-', $worksheet->direction);
+    						if (count($temp) == 2) {
+    							$worksheet->direction = $this->from_country_dir[$value_by].'-'.$temp[1];
+    						}
+    						else{
+    							$worksheet->direction = $this->from_country_dir[$value_by].'-';
+    						} 
+    						$worksheet->save();  						
+    					}
+    				}
+    			}
+
+    			if ($column === 'recipient_country') {
+    				for ($i=0; $i < count($row_arr); $i++) { 
+    					$worksheet = CourierDraftWorksheet::where('id',$row_arr[$i])->first();
+    					if (!$worksheet->direction) {
+    						$worksheet->direction = '-'.$value_by;
+    						$worksheet->save();
+    					}
+    					else{
+    						$temp = explode('-', $worksheet->direction);
+    						if (count($temp) == 2) {
+    							$worksheet->direction = $temp[0].'-'.$value_by;
+    						}
+    						else{
+    							$worksheet->direction = '-'.$value_by;
+    						} 
+    						$worksheet->save();  						
+    					}
+    				}
+    			}			  			      	
     		}
     		else if ($request->input('status')){
     			for ($i=0; $i < count($row_arr); $i++) { 
@@ -491,29 +547,6 @@ class CourierDraftController extends AdminController
     				'courier' => $request->input('courier')
     			]);  
     		}
-    		else if ($user->role === 'admin' && !$value_by && $column === 'tracking_main') {
-    			for ($i=0; $i < count($row_arr); $i++) { 
-    				$worksheet = CourierDraftWorksheet::find($row_arr[$i]);
-    				$old_tracking = $worksheet->tracking_main;
-    				$this->removeTrackingFromPalletWorksheet($row_arr[$i], 'ru',true);
-    				$this->toUpdatesArchive($request,$worksheet);
-    				ReceiptArchive::where('tracking_main', $old_tracking)->delete();
-    				Receipt::where('tracking_main', $old_tracking)->update(
-    					['tracking_main' => null]
-    				);
-    				$this->setTrackingToDocument($worksheet,$value_by);
-    				PackingSea::where('work_sheet_id',$worksheet->id)->update([
-    					'track_code' => null
-    				]);
-    				$worksheet->status = 'Подготовка';
-					$worksheet->status_en = null;	
-    				$worksheet->status_ua = null;
-    				$worksheet->status_he = null;
-    				$worksheet->status_date = date('Y-m-d');
-    				$worksheet->tracking_main = null;    				
-    				$worksheet->save();
-    			}    			
-    		}
     		else $status_error = 'New fields error!';
 
     		for ($i=0; $i < count($row_arr); $i++) { 
@@ -571,10 +604,13 @@ class CourierDraftController extends AdminController
         		->orWhere([
         			[$request->table_columns, 'like', '%'.$search.'%'],
         			['status','Забрать']
-        		])->paginate(10);
+        		])
+        		->orderBy('index_number')
+        		->paginate(10);
         	}
         	else{
         		$courier_draft_worksheet_obj = CourierDraftWorksheet::where('in_trash',false)->where($request->table_columns, 'like', '%'.$search.'%')
+        		->orderBy('index_number')
         		->paginate(10);
         	}        	
         }
@@ -631,7 +667,7 @@ class CourierDraftController extends AdminController
     }
 
 
-    public function courierDraftWorksheetDouble(Request $request,$id)
+    public function courierDraftWorksheetDouble(Request $request,$id,$api = false)
     {
     	$duplicate_qty = $request->duplicate_qty;
     	$worksheet = CourierDraftWorksheet::find($id);
@@ -705,6 +741,7 @@ class CourierDraftController extends AdminController
     		} 
 
     		$new_worksheet = CourierDraftWorksheet::find($new_id);
+    		$new_worksheet->setIndexNumber();
     		$new_worksheet->checkCourierTask($new_worksheet->status);
 
     		$packing = PackingSea::where('work_sheet_id',$id)->get();
@@ -716,10 +753,12 @@ class CourierDraftController extends AdminController
     				$new_packing->save();
     			});
     		}  
-    		$this->toUpdatesArchive($object,$new_worksheet,true,$new_id);
+    		if (!$api) $this->toUpdatesArchive($object,$new_worksheet,true,$new_id);
     	}    	
     	
-    	return redirect()->to(session('this_previous_url'))->with('status', 'Строка успешно продублирована!');
+    	if ($api) return $new_worksheet->id;
+    	else
+    		return redirect()->to(session('this_previous_url'))->with('status', 'Строка успешно продублирована!');
     }
 
 
@@ -771,7 +810,7 @@ class CourierDraftController extends AdminController
     }
 
 
-    public function courierDraftActivate($id, $admin = false)
+    public function courierDraftActivate($id, $admin = false, $courier = false)
 	{
 		$courier_draft_worksheet = CourierDraftWorksheet::find($id);		
 		$new_worksheet = new NewWorksheet();
@@ -785,17 +824,24 @@ class CourierDraftController extends AdminController
 		}			
 
 		foreach($fields as $field){
-			if ($field !== 'created_at' && $field !== 'id') {
+			if ($field !== 'created_at' && $field !== 'id' && $field !== 'index_number') {
 				$new_worksheet->$field = $courier_draft_worksheet->$field;
 			}			
 		}
 
-		if ($user->role === 'office_1' || $user->role === 'admin') {
-			$new_worksheet->background = 'tr-orange';
-		}				
+		if (!$admin) {
+			if ($user->role === 'office_1' || $user->role === 'admin') {
+				$new_worksheet->background = 'tr-orange';
+			}
+		}						
 
 		$temp = rtrim($courier_draft_worksheet->package_content, ";");
 		$content_arr = explode(";",$temp);
+		if (!$courier)
+			$new_worksheet->setIndexNumber();
+		else{
+			$new_worksheet->reIndex(100, true);
+		}
 				
 		if ($content_arr[0]) {
 			
@@ -845,7 +891,8 @@ class CourierDraftController extends AdminController
     		]);					
 			
 			CourierDraftWorksheet::where('id', $id)->delete();
-
+			$draft = CourierDraftWorksheet::first();
+			$draft->setIndexNumber();
 			$new_worksheet->checkCourierTask($new_worksheet->status);			
 			
 			if (!$admin)
@@ -1003,5 +1050,14 @@ class CourierDraftController extends AdminController
 		return Excel::download(new CourierDraftWorksheetExport, 'CourierDraftWorksheetExport.xlsx');
 
 	}
+
+
+    public function setIndexes()
+    {
+    	$worksheets = CourierDraftWorksheet::all();
+    	foreach ($worksheets as $item) {
+    		$item->setIndexNumber();
+    	}
+    }
 
 }

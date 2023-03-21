@@ -335,7 +335,7 @@ class AdminController extends Controller
 	}
 
 
-	protected function updateStatusByTracking($table, $worksheet)
+	protected function updateStatusByTracking($table, $worksheet, $api = false)
 	{
 		$check_result = '';
 		
@@ -349,6 +349,7 @@ class AdminController extends Controller
 				$worksheet->status_en = "At the warehouse in the sender country";
 				$worksheet->status_he = "במחסן במדינת השולח";
 				$worksheet->status_ua = "На складі в країні відправника";
+				$worksheet->status_date = date('Y-m-d');
 				$worksheet->save();
 			}
 		
@@ -361,6 +362,7 @@ class AdminController extends Controller
 				$worksheet->status = "At the warehouse in the sender country";
 				$worksheet->status_ru = "На складе в стране отправителя";
 				$worksheet->status_he = "במחסן במדינת השולח";
+				$worksheet->status_date = date('Y-m-d');
 				$worksheet->save();
 			}
 			
@@ -368,12 +370,21 @@ class AdminController extends Controller
 
 			case "courier_draft_worksheet":
 
-			if (in_array($worksheet->status, $this->ru_status_arr_2)) {
+			if (in_array($worksheet->status, $this->ru_status_arr_2) && !$api) {
 				$check_result .= "ВНИМАНИЕ! ПРИ ДОБАВЛЕНИИ ТРЕКИНГ-НОМЕРА СТАТУС НЕ МОЖЕТ БЫТЬ - '$worksheet->status'. СТАТУС БУДЕТ ИЗМЕНЕН АВТОМАТИЧЕСКИ!";
 				$worksheet->status = "На складе в стране отправителя";
 				$worksheet->status_en = "At the warehouse in the sender country";
 				$worksheet->status_he = "במחסן במדינת השולח";
 				$worksheet->status_ua = "На складі в країні відправника";
+				$worksheet->status_date = date('Y-m-d');
+				$worksheet->save();
+			}
+			elseif (in_array($worksheet->status, $this->ru_status_arr_2) && $api){
+				$worksheet->status = "Доставляется на склад в стране отправителя";
+				$worksheet->status_en = "Forwarding to the warehouse in the sender country";
+				$worksheet->status_he = "נשלח למחסן במדינת השולח";
+				$worksheet->status_ua = "Доставляється до складу в країні відправника";
+				$worksheet->status_date = date('Y-m-d');
 				$worksheet->save();
 			}
 		
@@ -381,11 +392,19 @@ class AdminController extends Controller
 			
 			case "courier_eng_draft_worksheet":
 
-			if (in_array($worksheet->status, $this->en_status_arr_2)){
+			if (in_array($worksheet->status, $this->en_status_arr_2) && !$api){
 				$check_result .= "WARNING! A STATUS CANNOT BE '$worksheet->status' AFTER ADDING A TRACKING NUMBER. THE STATUS WILL BE UPDATED BY THE SYSTEM!";
 				$worksheet->status = "At the warehouse in the sender country";
 				$worksheet->status_ru = "На складе в стране отправителя";
 				$worksheet->status_he = "במחסן במדינת השולח";
+				$worksheet->status_date = date('Y-m-d');
+				$worksheet->save();
+			}
+			elseif (in_array($worksheet->status, $this->en_status_arr_2) && $api) {
+				$worksheet->status = "Forwarding to the warehouse in the sender country";
+				$worksheet->status_ru = "Доставляется на склад в стране отправителя";
+				$worksheet->status_he = "נשלח למחסן במדינת השולח";
+				$worksheet->status_date = date('Y-m-d');
 				$worksheet->save();
 			}
 

@@ -23,11 +23,13 @@
 
 <div class="content mt-3">
 	<div class="animated fadeIn">
+		@can('eng-update-post')
 		<div class="row">
 			<div class="col-md-12">
 				<a href="{{ route('exportExcelCourierEngDraft') }}" style="margin-bottom: 20px;" class="btn btn-success btn-move">Export to Excel</a>
 			</div>
 		</div>
+		@endcan
 		<div class="row">
 			<div class="col-md-12">
 				<div class="card">
@@ -319,6 +321,12 @@
 										@if (!in_array($row->id, $id_arr))
 										@php
 										$id_arr[] = $row->id;
+										@endphp
+
+										@php									
+										$emergence_date = Date('Y-m-d', strtotime('-1 days'));
+										if($user->role === 'viewer' && $row->date > $emergence_date)
+											continue;
 										@endphp
 
 										<tr>

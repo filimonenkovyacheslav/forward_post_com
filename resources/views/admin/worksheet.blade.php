@@ -21,11 +21,13 @@
 </div> -->
 <div class="content mt-3">
 	<div class="animated fadeIn">
+		@can('update-post')
 		<div class="row">
 			<div class="col-md-12">
 				<a href="{{ route('exportExcel') }}" style="margin-bottom: 20px;" class="btn btn-success btn-move">Экспорт в Excel</a>
 			</div>
 		</div>
+		@endcan
 		<div class="row">
 			<div class="col-md-12">
 				<div class="card">

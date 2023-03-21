@@ -54,8 +54,10 @@
     localStorage.setItem('document_id', "{{$_GET['document_id']}}")
 </script>
 @endif 
+
 <input type="hidden" id="document_id" name="document_id" value="">
 <input type="hidden" id="form_screen" name="form_screen" value="">
+<input type="hidden" id="session_token" name="session_token" value="">
 
 @if (isset($_GET['user_name']))
 <input type="hidden" name="user_name" value="{{$_GET['user_name']}}">
@@ -67,10 +69,42 @@
 
 <div class="container">
     <center>
-        <button class="btn btn-primary" id="clearSign" style="margin: 20px;">Clear</button>
-        <button class="btn btn-success" id="saveSigned" style="margin: 20px;">Save</button>
+        <button class="btn btn-primary" id="clearSign" style="margin: 20px;">Clear / Очистить</button>
+        <button class="btn btn-success" id="saveSigned" style="margin: 20px;">Save / Сохранить</button>
     </center>   
 </div>
+
+@if (isset($_GET['session_token']))
+<script type="text/javascript">
+    localStorage.setItem('session_token', "{{$_GET['session_token']}}")
+    $.ajax({
+        type:'POST',
+        url:"{{ url('/api/check-temp-table') }}",
+        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+        data: {"session_token":"{{$_GET['session_token']}}"},
+        success:function(data){
+            console.log(data)
+            if (data === 'true') {
+                document.getElementById("saveSigned").disabled = false
+                console.log("{{$_GET['session_token']}}") 
+            }  
+            else document.getElementById("saveSigned").disabled = true             
+        },
+        error: function (msg){
+            alert('Error')
+        }
+    }); 
+    
+</script>
+@elseif ($cancel)
+<script type="text/javascript">
+    document.getElementById("saveSigned").disabled = false 
+</script>
+@else
+<script type="text/javascript">
+    document.getElementById("saveSigned").disabled = true 
+</script>
+@endif
 
     <!-- <br>
     Log: <pre id="log" style="border: 1px solid #ccc;"></pre> -->
@@ -100,6 +134,10 @@
 
         if (localStorage.getItem('document_id')) {            
             document.getElementById("document_id").value = localStorage.getItem('document_id');
+        }
+
+        if (localStorage.getItem('session_token')) {            
+            document.getElementById("session_token").value = localStorage.getItem('session_token');
         }
         
         var phoneExist = null;        
@@ -155,6 +193,7 @@
 
             var saveSigned = document.getElementById("saveSigned");
             saveSigned.addEventListener("click", function(e){
+                saveSigned.disabled = true;
                 let canvas = document.getElementById("canvas");
                 document.getElementById('signed').value = canvas.toDataURL('image/png');
                 localStorage.clear();

@@ -135,8 +135,7 @@ class AuthorizationClass extends Authorization
 				'changeColor'				
 			],
 			'viewer' => [
-				'view-post',
-				'eng-view-post'
+				'view-post'
 			],
 			'viewer_1' => [
 				'view-post'

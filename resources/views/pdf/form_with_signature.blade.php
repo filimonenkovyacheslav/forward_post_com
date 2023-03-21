@@ -191,6 +191,12 @@
 
             {!! Form::hidden('phone_exist_checked',isset($data_parcel->phone_exist_checked) ? $data_parcel->phone_exist_checked : '')!!}
 
+            @if ($id === '0')
+            <script type="text/javascript">
+                $('[name="phone_exist_checked"]').val('true')
+            </script>
+            @endif 
+
             {!! Form::hidden('signature','signature') !!} 
             {!! Form::hidden('status_box','')!!}
             {!! Form::hidden('comment_2','')!!}
@@ -314,7 +320,7 @@
                 <div class="row">
                     {!! Form::label('tariff','Тариф',['class' => 'col-md-4 control-label'])   !!}
                     <div class="col-md-8">
-                        {!! Form::select('tariff', array('Море' => 'Море', 'Авиа' => 'Авиа'), '',['class' => 'form-control']) !!}
+                        {!! Form::select('tariff', array('Обычный' => 'Обычный', 'Экспресс' => 'Экспресс'), '',['class' => 'form-control']) !!}
                     </div>
                 </div>
             </div>
@@ -560,8 +566,8 @@
         let trueInput = false;
 
         const phone = document.querySelector('[name="standard_phone"]'); 
-        if (phone.value.length < 10 || phone.value.length > 13) {
-            alert('Кол-во знаков в телефоне отправителя должно быть от 10 до 13 !');
+        if (phone.value.length !== 13 && countryCode === "+972") {
+            alert('Кол-во знаков в телефоне отправителя должно быть 13 !');
             return false;
         }
         else if (phone.value[0] !== '+') {
@@ -609,6 +615,9 @@
                 const quantity = document.querySelector('[name="other_quantity_'+num+'"]');
 
                 if (content.value && !(quantity.value)) {
+                    trueInput = true;
+                    alert('Заполните кол-во !');
+                    return false;
                 }
                 else if(!(content.value) && quantity.value){
                     trueInput = true;

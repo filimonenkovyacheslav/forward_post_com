@@ -15,7 +15,7 @@ use App\PackingSea;
 class NewWorksheet extends BaseModel
 {   
     public $table = 'new_worksheet';
-    protected $fillable = ['site_name','direction','order_number', 'tracking_main', 'status', 'status_date', 'status_en', 'status_he', 'status_ua', 'update_status_date','tariff','partner','tracking_local','tracking_transit','pallet_number','comment_2','comments','sender_name','sender_country','sender_city','sender_postcode','sender_address','sender_phone','sender_passport','recipient_name','recipient_country','region','district','recipient_city','recipient_postcode','recipient_street','recipient_house','body','recipient_room','recipient_phone','recipient_passport','recipient_email','package_cost','courier','pick_up_date','weight','width','height','length','volume_weight','quantity_things','batch_number','pay_date','pay_sum','background','in_trash','shipper_region','order_date','parcels_qty','packing_number'];   
+    protected $fillable = ['site_name','direction','order_number', 'tracking_main', 'status', 'status_date', 'status_en', 'status_he', 'status_ua', 'update_status_date','tariff','partner','tracking_local','tracking_transit','pallet_number','comment_2','comments','sender_name','sender_country','sender_city','sender_postcode','sender_address','sender_phone','sender_passport','recipient_name','recipient_country','region','district','recipient_city','recipient_postcode','recipient_street','recipient_house','body','recipient_room','recipient_phone','recipient_passport','recipient_email','package_cost','courier','pick_up_date','weight','width','height','length','volume_weight','quantity_things','batch_number','pay_date','pay_sum','background','in_trash','shipper_region','order_date','parcels_qty','packing_number','index_number'];   
 
 
     /**
@@ -139,7 +139,8 @@ class NewWorksheet extends BaseModel
                 $draft->$field = $this->$field;
             }           
         }
-        $draft->in_trash = false;                   
+        $draft->in_trash = false;       
+        $draft->setIndexNumber();            
 
         if ($draft->save())
         {           
@@ -232,6 +233,56 @@ class NewWorksheet extends BaseModel
             return $draft;
         }
         else return null;
+    }
+
+
+    public function setIndexNumber()
+    {
+        $max = 0;
+        if(!$this->index_number){
+            $max = NewWorksheet::max('index_number');
+            $max++;
+            $this->index_number = $max;
+            $this->save();
+        }
+        return $max;
+    } 
+
+
+    public function reIndex($index, $courier = false)
+    {
+        $number = 1;       
+        $old = NewWorksheet::where('index_number', $index)->first();
+        if (!$courier) {
+            if ($old) {
+                if ($this->index_number < $index) {
+                    $old->index_number = $index-1;
+                }
+                elseif ($this->index_number > $index) {
+                    $old->index_number = $index+1;
+                }
+                elseif ($this->index_number === $index) {
+                    return false;
+                }
+                $old->save();
+            } 
+        }
+        elseif ($old){
+            $old->index_number = $index+1;
+            $old->save();
+        }
+
+        $this->index_number = $index;
+        $this->save();        
+        $worksheets = NewWorksheet::orderBy('index_number')->get();
+        
+        foreach ($worksheets as $item) {
+            if ($item->index_number !== $index) {
+                $item->index_number = $number;
+                $item->save();               
+            } 
+            $number++;
+        }
     }
     
 }

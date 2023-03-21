@@ -95,7 +95,7 @@ class Controller extends BaseController
 
 
     protected function generateRandomString($length = 10) {
-        return substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil($length/strlen($x)) )),1,$length);
+        return substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.time(), ceil($length/strlen($x)) )),1,$length);
     }
     
     
@@ -191,6 +191,41 @@ class Controller extends BaseController
         }
 
         return $worksheet;
+    }
+
+
+    protected function getWorkSheetType($worksheet)
+    {
+        $type = null;
+        
+        switch ($worksheet->table) {
+
+            case "courier_draft_worksheet":
+
+            $type = 'draft_id';
+
+            break;
+
+            case "courier_eng_draft_worksheet":
+
+            $type = 'eng_draft_id';
+
+            break;
+
+            case "new_worksheet":
+
+            $type = 'worksheet_id';
+
+            break;
+
+            case "phil_ind_worksheet":
+
+            $type = 'eng_worksheet_id';
+
+            break;
+        }
+
+        return $type;
     }
 
 
@@ -497,11 +532,19 @@ class Controller extends BaseController
         return $from.'-'.$to;        
     }
 
+
+    protected function createRuDirection($from, $to)
+    {
+        $from = ($from) ? $this->from_country_dir[$from] : '';
+        $to = ($to) ? $to : '';
+        return $from.'-'.$to;        
+    }
+
     
     protected function trackingValidate($tracking)
     {
         $admin = $this->checkWhichAdmin($tracking);
-        $pattern = '/^([a-z0-9])|([a-z]\-[a-z0-9])+$/i';
+        $pattern = '/(^([A-Z]{1,3})([0-9]+)$)|(^([A-Z]{1,3})\-([0-9]+)$)|(^([A-Z]{1,3})([0-9]+)([A-Z]{1,3})$)/';
         if (preg_match($pattern, $tracking) && (strlen($tracking) >= 4 && strlen($tracking) <= 18)) {
             if ($admin === 'ru') {
                 if (Schema::hasTable('trackings')){
@@ -2008,6 +2051,18 @@ class Controller extends BaseController
     public function importDraft()
     {
         return '<h1>Draft imported successfully !</h1>';
+    }
+
+
+    public function createTrackingListTable($list_name,$data)
+    {        
+        $temp_arr = [];
+        foreach ($data as $value) {
+            $temp_arr[] = ['tracking'=>$value,'list_name'=>$list_name];
+        }
+        DB::table('tracking_lists')->insert($temp_arr);
+
+        return true;        
     }
 
 }

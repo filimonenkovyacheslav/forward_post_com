@@ -21,6 +21,15 @@ Route::group(['prefix' => App\Http\Middleware\LocaleMiddleware::getLocale()], fu
 		return view('welcome');
 	})->name('welcome');
 
+	Route::get('/set-indexes','Admin\NewWorksheetController@setIndexes');
+	Route::get('/set-draft-indexes','Admin\CourierDraftController@setIndexes');
+
+	// Tracking Lists	
+	Route::get('/tracking-lists',['uses' => 'Admin\TrackingListController@index','as' => 'trackingLists']);
+	Route::get('/tracking-lists-filter',['uses' => 'Admin\TrackingListController@trackingListFilter','as' => 'trackingListFilter']);
+	Route::post('/tracking-lists',['uses' => 'Admin\TrackingListController@destroy','as' => 'trackingListDelete']);
+	Route::post('/tracking-lists-export',['uses' => 'Admin\TrackingListController@exportTrackingList','as' => 'exportTrackingList']);
+	
 	// Import csv
 	Route::post('/import-trackings','TrackingController@importTrackings')->name('importTrackings');
 	Route::get('/export-trackings',['uses' => 'TrackingController@exportTrackings','as' => 'exportTrackings']);
@@ -43,7 +52,7 @@ Route::group(['prefix' => App\Http\Middleware\LocaleMiddleware::getLocale()], fu
 	
 	Route::get('/pdfview-ru/{id}', 'SignedDocumentController@pdfviewRu')->name('pdfviewRu');
 	
-	Route::get('/download-pdf/{id}', 'SignedDocumentController@downloadPdf')->name('downloadPdf');
+	Route::get('/download-pdf/{id}/{api?}', 'SignedDocumentController@downloadPdf')->name('downloadPdf');
 	
 	Route::post('/download-all-pdf', 'SignedDocumentController@downloadAllPdf')->name('downloadAllPdf');
 	
@@ -62,6 +71,7 @@ Route::group(['prefix' => App\Http\Middleware\LocaleMiddleware::getLocale()], fu
 	Route::get('/form-success', 'SignedDocumentController@formSuccess')->name('formSuccess');
 
 	Route::get('/temp-links', 'SignedDocumentController@tempLinks')->name('tempLinks');
+	
 	// End Form with signature
 	
 	Route::get('/page-{page_urn}','Admin\FrontPagesController@frontPage')->name('frontPage');
@@ -70,9 +80,9 @@ Route::group(['prefix' => App\Http\Middleware\LocaleMiddleware::getLocale()], fu
 
 	Route::post('/parcel-form', 'FrontController@newParcelAdd')->name('newParcelAdd');	
 
-	Route::get('/parcel-form-old', 'FrontController@parcelFormOld')->name('parcelFormOld');
+	Route::get('/parcel-form-prior', 'FrontController@parcelFormOld')->name('parcelFormOld');
 
-	Route::post('/parcel-form-old', 'FrontController@newParcelAdd')->name('newParcelAdd');	
+	Route::post('/parcel-form-prior', 'FrontController@newParcelAdd')->name('newParcelAdd');	
 
 	Route::post('/check-phone',['uses' => 'FrontController@checkPhone','as' => 'checkPhone']);
 
@@ -90,9 +100,9 @@ Route::group(['prefix' => App\Http\Middleware\LocaleMiddleware::getLocale()], fu
 
 	Route::post('/phil-ind-parcel-form', 'FrontController@philIndParcelAdd')->name('philIndParcelAdd');
 
-	Route::get('/phil-ind-parcel-form-old', 'FrontController@philIndParcelFormOld')->name('philIndParcelFormOld');
+	Route::get('/phil-ind-parcel-form-prior', 'FrontController@philIndParcelFormOld')->name('philIndParcelFormOld');
 
-	Route::post('/phil-ind-parcel-form-old', 'FrontController@philIndParcelAdd')->name('philIndParcelAdd');
+	Route::post('/phil-ind-parcel-form-prior', 'FrontController@philIndParcelAdd')->name('philIndParcelAdd');
 
 	Route::get('/form-for-adding-eng', 'FrontController@showFormEng')->name('showFormEng');
 
@@ -163,7 +173,7 @@ Route::get('/home', 'HomeController@index')->name('home');
 *  Admin
 */
 Route::group(['prefix' => 'admin','middleware' => 'auth'],function() {	
-
+	
 	// General Search	
 	Route::get('/general-search',['uses' => 'Admin\AdminController@generalSearchShow','as' => 'generalSearchShow']);
 

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\API;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller as Controller;
+use App\Http\Controllers\Admin\AdminController;
 use App\CourierDraftWorksheet;
 use App\CourierEngDraftWorksheet;
 use App\PackingSea;
@@ -17,11 +17,14 @@ use App\DraftWorksheet;
 use App\EngDraftWorksheet;
 use Validator;
 use App\User;
+use App\CourierTask;
 use App\ReceiptArchive;
+use App\Receipt;
 use DB;
+use App\SignedDocument;
 
 
-class BaseController extends Controller
+class BaseController extends AdminController
 {
     protected $token = 'd1k6Lpr2nxEa0R96jCSI5xxUjNkJOLFo2vGllglbqZ1MTHFNunB5b8wfy2pc';
     
@@ -361,4 +364,351 @@ class BaseController extends Controller
             return $this->sendError('Token error.');
         }
     }
+
+
+    public function getCourierTasks(Request $request)
+    {
+        if ($this->checkToken($request->token) && $request->token) {
+            $input = $request->all();
+            $validator = Validator::make($input, [
+                'role' => 'required',
+                'name' => 'required'
+            ]);
+
+            if($validator->fails()){
+                return $this->sendError('Validation Error.', $validator->errors());       
+            }
+
+            $role = $input['role'];
+            $name = $input['name'];
+
+            if ($role === 'admin') {
+                $result = CourierTask::where('packing_num','<>',null)
+                ->orWhere([
+                    ['packing_num',null],
+                    ['status','Box']
+                ])
+                ->orWhere([
+                    ['packing_num',null],
+                    ['status','Коробка']
+                ])
+                ->get();
+            }
+            elseif ($role === 'courier' || $role === 'agent') {
+                $result = CourierTask::where('courier',$name)->get();                
+            }
+            else return $this->sendError('Role error.');
+            
+            if ($result){
+                $result = $result->toArray();
+                return $this->sendResponse($result, 'Courier tasks retrieved successfully.');
+            }
+        }
+        else{
+            return $this->sendError('Token error.');
+        }
+    }
+
+
+    public function updateTaskStatusBox(Request $request)
+    {
+        if ($this->checkToken($request->token) && $request->token) {
+            $input = $request->all();
+            $validator = Validator::make($input, [
+                'id' => 'required'
+            ]);
+
+            if($validator->fails()){
+                return $this->sendError('Validation Error.', $validator->errors());       
+            }
+
+            $task = CourierTask::find($input['id']);
+            if ($task) {
+                $task->taskDone();
+                return $this->sendResponse($task, 'Courier task updated successfully.');
+            }
+            else{
+                return $this->sendError('Data error.');
+            }           
+        }
+        else{
+            return $this->sendError('Token error.');
+        }
+    }
+
+
+    public function addDataWithTracking(Request $request)
+    {
+        if ($this->checkToken($request->token) && $request->token) {
+            $input = $request->all();
+            $validator = Validator::make($input, [
+                'id' => 'required',
+                'tracking' => 'required',
+                'role' => 'required'
+            ]);
+
+            if($validator->fails()){
+                return $this->sendError('Validation Error.', $validator->errors());       
+            }
+
+            $task = CourierTask::find($input['id']);
+            if ($task) {
+                $worksheet = $task->getWorksheet();
+                $old_tracking = $worksheet->tracking_main;
+                $pallet = $worksheet->pallet_number;
+
+                switch ($worksheet->table) {
+
+                    case "courier_draft_worksheet":
+
+                    $error_message = $this->checkTracking("courier_draft_worksheet", $input['tracking'], $worksheet->id);
+                    if($error_message) return $this->sendError($error_message);
+                    
+                    $lot = $worksheet->batch_number;
+
+                    if ($old_tracking && $old_tracking !== $input['tracking']) {
+                        ReceiptArchive::where('tracking_main', $old_tracking)->delete();
+                        Receipt::where('tracking_main', $old_tracking)->update(
+                            ['tracking_main' => $input['tracking']]
+                        );
+                    }
+                    $notification = ReceiptArchive::where('tracking_main', $input['tracking'])->first();
+                    if (!$notification) $this->checkReceipt($worksheet->id, null, 'ru', $input['tracking'],null,$old_tracking); 
+
+                    PackingSea::where('work_sheet_id',$worksheet->id)->update([
+                        'track_code' => $input['tracking']
+                    ]);
+
+                    // Check for missing tracking
+                    $this->checkForMissingTracking($input['tracking']);
+                    // Update Warehouse pallet
+                    $message = $this->updateWarehousePallet($old_tracking, $input['tracking'], $pallet, $pallet, $lot, $lot, 'ru', $worksheet);
+                    if ($message) return $this->sendError($message);
+                                       
+                    $worksheet->pay_sum = $input['amountPayment'];
+                    $worksheet->tracking_main = $input['tracking'];
+                    $worksheet->weight = $input['weight'];
+                    $worksheet->width = $input['width'];
+                    $worksheet->height = $input['height'];
+                    $worksheet->length = $input['length'];
+                    $worksheet->save();
+
+                    if ($input['role'] === 'courier') $this->updateStatusByTracking('courier_draft_worksheet', $worksheet, true);
+                    else $this->updateStatusByTracking('courier_draft_worksheet', $worksheet);
+
+                    // Activate PDF
+                    if (!$old_tracking && $worksheet->getLastDocUniq()) {
+                        app('App\Http\Controllers\Admin\CourierDraftController')->courierDraftActivate($worksheet->id, true, true);
+                    }
+
+                    break;
+
+                    case "courier_eng_draft_worksheet":
+
+                    $error_message = $this->checkTracking("courier_eng_draft_worksheet", $input['tracking'], $worksheet->id);
+                    if($error_message) return $this->sendError($error_message);
+
+                    $lot = $worksheet->lot;
+
+                    if ($old_tracking && $old_tracking !== $input['tracking']) {
+                        ReceiptArchive::where('tracking_main', $old_tracking)->delete();
+                        Receipt::where('tracking_main', $old_tracking)->update(
+                            ['tracking_main' => $input['tracking']]
+                        );
+                    }
+                    $notification = ReceiptArchive::where('tracking_main', $input['tracking'])->first();
+                    if (!$notification) $this->checkReceipt($worksheet->id, null, 'en', $input['tracking'],null,$old_tracking); 
+
+                    PackingEng::where('work_sheet_id',$worksheet->id)->update([
+                        'tracking' => $input['tracking']
+                    ]);
+
+                    // Check for missing tracking
+                    $this->checkForMissingTracking($input['tracking']);
+                    // Update Warehouse pallet
+                    $message = $this->updateWarehousePallet($old_tracking, $input['tracking'], $pallet, $pallet, $lot, $lot, 'en', $worksheet);
+                    if ($message) return $this->sendError($message);
+                    
+                    $worksheet->amount_payment = $input['amountPayment'];
+                    $worksheet->tracking_main = $input['tracking'];
+                    $worksheet->weight = $input['weight'];
+                    $worksheet->width = $input['width'];
+                    $worksheet->height = $input['height'];
+                    $worksheet->length = $input['length'];
+                    $worksheet->save();
+                    
+                    if ($input['role'] === 'courier') $this->updateStatusByTracking('courier_eng_draft_worksheet', $worksheet, true);
+                    else $this->updateStatusByTracking('courier_eng_draft_worksheet', $worksheet);
+
+                    // Activate PDF
+                    if (!$old_tracking && $worksheet->getLastDocUniq()) {
+                        app('App\Http\Controllers\Admin\CourierEngDraftController')->courierEngDraftActivate($worksheet->id, true);
+                    }
+                    
+                    break;
+                }                              
+                
+                $worksheet->checkCourierTask($worksheet->status);
+
+                return $this->sendResponse($task, 'Courier task updated successfully.');
+            }
+            else{
+                return $this->sendError('Task id error.');
+            }           
+        }
+        else{
+            return $this->sendError('Token error.');
+        }
+    }
+
+
+    public function addNewSignedForm(Request $request)
+    {
+        if ($this->checkToken($request->token) && $request->token) {
+            $input = $request->all();
+            $validator = Validator::make($input, [
+                'which_admin' => 'required',
+                'session_token' => 'required'
+            ]);
+
+            if($validator->fails()){
+                return $this->sendError('Validation Error.', $validator->errors());       
+            }
+
+            $user = User::where('api_token',$input['token'])->first();
+            if ($user) {
+                $link = ($input['which_admin'] === 'ru') ? '/form-with-signature/' : '/form-with-signature-eng/';
+                $result = app('App\Http\Controllers\SignedDocumentController')->createTempTable($request);
+                if ($result) {
+                    $link .= '0/'.$result.'/'.$user->name;
+                    return $this->sendResponse(compact('link'), 'Link created successfully.');
+                }               
+            }
+            else{
+                return $this->sendError('Data error.');
+            }           
+        }
+        else{
+            return $this->sendError('Token error.');
+        }
+    }
+
+
+    public function addDuplicateSignedForm(Request $request)
+    {
+        if ($this->checkToken($request->token) && $request->token) {
+            $input = $request->all();
+            $validator = Validator::make($input, [
+                'packing_number' => 'required',
+                'session_token' => 'required',
+                'duplicate_qty' => 'required'
+            ]);
+
+            if($validator->fails()){
+                return $this->sendError('Validation Error.', $validator->errors());       
+            }
+
+            $document = SignedDocument::where('uniq_id',$input['packing_number'])->first();
+            $user = User::where('api_token',$input['token'])->first();
+            
+            if ($document) {
+                $which_admin = ($document->worksheet_id || $document->draft_id) ? 'ru' : 'eng';
+                $worksheet = $document->getWorksheet();
+                $result = app('App\Http\Controllers\SignedDocumentController')->createTempTable($request);
+
+                if ($which_admin !== 'ru') {
+                    $id = app('App\Http\Controllers\Admin\CourierEngDraftController')->courierEngDraftWorksheetDouble($request,$worksheet->id,true);
+                }
+                else{
+                    $id = app('App\Http\Controllers\Admin\CourierDraftController')->courierDraftWorksheetDouble($request,$worksheet->id,true);
+                }               
+                
+                $link = ($which_admin === 'ru') ? '/form-with-signature/' : '/form-with-signature-eng/';
+                $link .= $id.'/'.$result.'/'.$user->name.'?quantity_sender=1&quantity_recipient=1&api=true';
+                return $this->sendResponse(compact('link'), 'Link created successfully.');
+            }
+            else{
+                return $this->sendError('There is not this packing number.');
+            }           
+        }
+        else{
+            return $this->sendError('Token error.');
+        }
+    }
+
+
+    public function addNewSignedFormForUser(Request $request)
+    {
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'user' => 'required'
+        ]);
+
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());       
+        }
+
+        $user = $input['user'];
+        $session_token = $this->generateRandomString(15);
+        $request->request->add(['session_token' => $session_token]);
+        $link = '/form-with-signature/';
+        $result = app('App\Http\Controllers\SignedDocumentController')->createTempTable($request);
+        if ($result) {
+            $link .= '0/'.$result.'/'.$user;
+            return redirect()->to($link);
+        }                         
+    }
+
+
+    public function addNewSignedFormForUserEng(Request $request)
+    {
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'user' => 'required'
+        ]);
+
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());       
+        }
+
+        $user = $input['user'];
+        $session_token = $this->generateRandomString(15);
+        $request->request->add(['session_token' => $session_token]);
+        $link = '/form-with-signature-eng/';
+        $result = app('App\Http\Controllers\SignedDocumentController')->createTempTable($request);
+        if ($result) {
+            $link .= '0/'.$result.'/'.$user;
+            return redirect()->to($link);
+        }                         
+    }
+
+
+    public function addTrackingList(Request $request)
+    {
+        if ($this->checkToken($request->token) && $request->token) {
+            $input = $request->all();
+            $validator = Validator::make($input, [
+                'tracking_list' => 'required',
+                'list_name' => 'required'
+            ]);
+
+            if($validator->fails()){
+                return $this->sendError('Validation Error.', $validator->errors());       
+            }
+
+            $exist_table = DB::table('tracking_lists')->where('list_name',$request->list_name)->first();
+            if (!$exist_table) {
+                $this->createTrackingListTable($request->list_name,$request->tracking_list);
+                return $this->sendResponse($request->list_name, 'List created successfully.');
+            }
+            else{
+                return $this->sendError('This list name is exist!');
+            }
+        }
+        else{
+            return $this->sendError('Token error.');
+        }
+    }
+
+
 }
