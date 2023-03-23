@@ -29,12 +29,14 @@ Route::group(['prefix' => App\Http\Middleware\LocaleMiddleware::getLocale()], fu
 	Route::get('/tracking-lists-filter',['uses' => 'Admin\TrackingListController@trackingListFilter','as' => 'trackingListFilter']);
 	Route::post('/tracking-lists',['uses' => 'Admin\TrackingListController@destroy','as' => 'trackingListDelete']);
 	Route::post('/tracking-lists-export',['uses' => 'Admin\TrackingListController@exportTrackingList','as' => 'exportTrackingList']);
+	Route::get('/checklist',['uses' => 'ChecklistController@index','as' => 'checklist']);
 	
 	// Import csv
 	Route::post('/import-trackings','TrackingController@importTrackings')->name('importTrackings');
 	Route::get('/export-trackings',['uses' => 'TrackingController@exportTrackings','as' => 'exportTrackings']);
 	Route::post('/import-trackings-eng','TrackingController@importTrackingsEng')->name('importTrackingsEng');
 	Route::get('/export-trackings-eng',['uses' => 'TrackingController@exportTrackingsEng','as' => 'exportTrackingsEng']);
+	Route::post('/import-checklist','ChecklistController@importChecklist')->name('importChecklist');
 
 	// Update all packing numbers
 	Route::get('/all-packing-numbers', 'Controller@updateAllPdfPacking');

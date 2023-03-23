@@ -185,8 +185,15 @@
                     </li> 
                     @endcan 
 
-                    <li>
-                        <a href="{{route('trackingLists')}}"><i class="menu-icon fa fa-book "></i> Tracking Lists</a>
+                    <li class="dropdown">
+                        <a class="btn btn-dropdown dropdown-toggle" type="button" data-toggle="dropdown">Tracking Lists
+                            <span class="caret"></span>
+                            <i class="menu-icon fa fa-book "></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{{route('trackingLists')}}"> Tracking Lists </a></li>
+                            <li><a href="{{route('checklist')}}"> Checklist </a></li>
+                        </ul>
                     </li>
                 
                 </ul>
