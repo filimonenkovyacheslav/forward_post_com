@@ -763,6 +763,12 @@ class FrontController extends AdminController
     }
 
 
+    public function trackingRuForm()
+    {
+        return view('tracking_ru_form');
+    }
+
+
     public function getTracking(Request $request)
     {
         $tracking = $request->input('get_tracking');

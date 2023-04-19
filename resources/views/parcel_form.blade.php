@@ -2,31 +2,33 @@
 
 @section('content')
 
-<section class="app-content page-bg">
-    <div class="container">                       
-        <div class="parcel-form">
+<section class="app-content">
+    <div class="container new-parcel">   
 
-            @if (session('status'))
+        <div class="row row-black-button">
+            <a class="black-button" href="{{ route('trackingRuForm') }}">Отследить посылку</a>
+            <a class="black-button" href="https://www.orientalexp.com/">На главную</a>
+        </div>                     
+            
+            @php
+            $get_data = request()->all();
+            @endphp
+            
+            @if (isset($get_data['message']))
             <div class="alert alert-success">
-                {{ session('status') }}
-            </div>
-            @endif
-
-            @if (session('quantity_sender'))
-            <div class="alert alert-success">
-                {{ session('quantity_sender') }}
+                {{ $get_data['message'] }}
             </div>
             @endif
 
             @php
-            if (session('data_parcel')){
-                $data_parcel = json_decode(session('data_parcel'));
+            if (request()->all()){
+                $data_parcel = request();
             }
             @endphp
 
-            @if (session('no_phone'))
+            @if (isset($get_data['err_message']))
             <div class="alert alert-danger">
-                {{ session('no_phone') }}
+                {{ $get_data['err_message'] }}
             </div>
             @endif
 
@@ -45,19 +47,19 @@
                 <h6>укажите типы и количество коробок</h6>
                 <h6>ТИП - КОЛЛИЧЕСТВО</h6>
                 <ul class="box-group">
-                    <li style="width: 170px;">
+                    <li style="width: 200px;">
                         <label class="control-label">Очень большая</label>
                         <input type="number" data-name="Очень большая" name="extra_large" style="width: 40px;float: right;" min="0">
                     </li>
-                    <li style="width: 170px;">
+                    <li style="width: 200px;">
                         <label class="control-label">Большая</label>
                         <input type="number" data-name="Большая" name="large" style="width: 40px;float: right;" min="0">
                     </li>
-                    <li style="width: 170px;">
+                    <li style="width: 200px;">
                         <label class="control-label">Средняя</label>
                         <input type="number" data-name="Средняя" name="medium" style="width: 40px;float: right;" min="0">
                     </li>
-                    <li style="width: 170px;">
+                    <li style="width: 200px;">
                         <label class="control-label">Маленькая</label>
                         <input type="number" data-name="Маленькая" name="small" style="width: 40px;float: right;" min="0">
                     </li>
@@ -85,7 +87,7 @@
                                 <button type="button" onclick="clickAnswer(this)" class="btn btn-primary pull-left yes sender" data-dismiss="modal">Да</button>
                                 <button type="button" onclick="clickAnswer(this)" class="btn btn-danger pull-left no" data-dismiss="modal">Нет</button>
 
-                                {!! Form::open(['url'=>route('checkPhone'), 'class'=>'form-horizontal check-phone','method' => 'POST']) !!}
+                                {!! Form::open(['url'=>'https://ddcargos.com/api/forward-check-phone', 'class'=>'form-horizontal check-phone','method' => 'GET']) !!}
 
                                 <div class="form-group">
                                     <div class="row">
@@ -93,6 +95,7 @@
                                             {!! Form::text('sender_phone',old('sender_phone'),['class' => 'form-control', 'placeholder' => 'Phone*', 'required'])!!}
                                             {!! Form::hidden('quantity_sender')!!}
                                             {!! Form::hidden('quantity_recipient')!!}
+                                            {!! Form::hidden('url_name','https://www.forward-post.com/parcel-form')!!}
                                         </div>
                                         <div class="col-md-6">
                                             {!! Form::button('Отправить',['class'=>'btn btn-success','type'=>'submit']) !!}
@@ -115,13 +118,13 @@
                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                             </div>
                             <div class="modal-body">
-                                <p class="question">{{ session('phone_exist') }}</p>
+                                <p class="question">{{ isset($get_data['phone_exist']) ? $get_data['phone_exist'] : ''}}</p>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" onclick="clickAnswer2(this)" class="btn btn-primary pull-left yes sender" data-dismiss="modal">Yes</button>
                                 <button type="button" onclick="clickAnswer2(this)" class="btn btn-danger pull-left no" data-dismiss="modal">Нет</button>
 
-                                {!! Form::open(['url'=>route('checkPhone'), 'class'=>'form-horizontal check-phone','method' => 'POST']) !!}
+                                {!! Form::open(['url'=>'https://ddcargos.com/api/forward-check-phone', 'class'=>'form-horizontal check-phone','method' => 'GET']) !!}
 
                                 <div class="form-group">
                                     <div class="row">
@@ -130,6 +133,7 @@
                                             {!! Form::hidden('quantity_sender')!!}
                                             {!! Form::hidden('quantity_recipient')!!}
                                             {!! Form::hidden('draft','draft')!!}
+                                            {!! Form::hidden('url_name','https://www.forward-post.com/parcel-form')!!}
                                         </div>
                                         <div class="col-md-6">
                                             {!! Form::button('Отправить',['class'=>'btn btn-success','type'=>'submit']) !!}
@@ -150,9 +154,9 @@
             </p>
             <a href="#phoneExist" class="btn btn-success eng-modal-2" data-toggle="modal"></a>
 
-            @if (session('add_parcel'))
+            @if (isset($get_data['add_parcel']))
             <script type="text/javascript">
-                var addParcel = '<?=session("add_parcel")?>'
+                var addParcel = '<?=$get_data["add_parcel"]?>'
             </script>
             @else
             <script type="text/javascript">
@@ -160,10 +164,10 @@
             </script>
             @endif
 
-            @if (session('phone_exist'))
+            @if (isset($get_data['phone_exist']))
             <script type="text/javascript">
-                var phoneExist = '<?=session("phone_exist")?>';
-                var phoneNumber = '<?=session("phone_number")?>';
+                var phoneExist = '<?=$get_data["phone_exist"]?>';
+                var phoneNumber = '<?=$get_data["phone_number"]?>';
             </script>
             @else
             <script type="text/javascript">
@@ -171,12 +175,13 @@
             </script>
             @endif 
 
-            {!! Form::open(['url'=>route('newParcelAdd'),'onsubmit' => 'сonfirmSigned(event)', 'class'=>'form-horizontal form-send-parcel','method' => 'POST']) !!}
+            {!! Form::open(['url'=>'https://ddcargos.com/api/forward-parcel-form','onsubmit' => 'сonfirmSigned(event)', 'class'=>'form-horizontal form-send-parcel','method' => 'GET']) !!}
 
             {!! Form::hidden('phone_exist_checked',isset($data_parcel->phone_exist_checked) ? $data_parcel->phone_exist_checked : '')!!}
             {!! Form::hidden('status_box','')!!}
             {!! Form::hidden('comment_2','')!!}
             {!! Form::hidden('short_order','short_order') !!}
+            {!! Form::hidden('url_name','https://www.forward-post.com/parcel-form')!!}
 
             <h3>Данные отправителя</h3>
 
@@ -251,24 +256,16 @@
 
             <!-- временное -->
             <br>
-            <div class="tracking">
-                <a href="{{ route('parcelForm') }}">
-                    <div class="style-tracking">
-                        <span>{{__('front.create_another')}}</span> 
-                    </div>           
-                </a>
+            <div>
+                <button class="btn btn-default" style="width:200px"><a style="color:#000" href="{{ route('parcelForm') }}">Оформить еще посылку</a></button>
             </div>
             <br>
-            <div class="ask">
-                <a href="{{__('front.home_link')}}">
-                    <div class="style-ask">
-                        <span>{{__('front.back')}}</span>
-                    </div>    
-                </a>    
-            </div>
+            <div>
+                <button class="btn btn-default" style="width:200px"><a style="color:#000" href="https://www.orientalexp.com/">Вернуться на главную</a></button>
+            </div> 
+            <br>
             <!-- /временное -->           
             
-        </div>
     </div>           
 </section><!-- /.app-content -->
 

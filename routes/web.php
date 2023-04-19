@@ -78,9 +78,7 @@ Route::group(['prefix' => App\Http\Middleware\LocaleMiddleware::getLocale()], fu
 	
 	Route::get('/page-{page_urn}','Admin\FrontPagesController@frontPage')->name('frontPage');
 	
-	Route::get('/parcel-form', 'FrontController@parcelForm')->name('parcelForm');
-
-	Route::post('/parcel-form', 'FrontController@newParcelAdd')->name('newParcelAdd');	
+	Route::get('/parcel-form', 'FrontController@parcelForm')->name('parcelForm');	
 
 	Route::get('/parcel-form-prior', 'FrontController@parcelFormOld')->name('parcelFormOld');
 
@@ -93,6 +91,8 @@ Route::group(['prefix' => App\Http\Middleware\LocaleMiddleware::getLocale()], fu
 	Route::get('/tracking-form', 'FrontController@trackingForm')->name('trackingForm');
 
 	Route::post('/tracking-form', 'FrontController@getTracking')->name('getTracking');
+
+	Route::get('/tracking-ru-form', 'FrontController@trackingRuForm')->name('trackingRuForm');
 
 	Route::get('/china-parcel-form', 'FrontController@chinaParcelForm')->name('chinaParcelForm');
 
