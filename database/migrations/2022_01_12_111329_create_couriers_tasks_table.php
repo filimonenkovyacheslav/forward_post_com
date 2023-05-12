@@ -39,6 +39,8 @@ class CreateCouriersTasksTable extends Migration
             $table->string('standard_phone', 50)->nullable();
             $table->string('courier', 50)->nullable();
             $table->text('pick_up_date_comments')->nullable();
+            $table->string('weight')->nullable();
+            $table->text('shipped_items')->nullable();
             $table->timestamps();
         });
     }

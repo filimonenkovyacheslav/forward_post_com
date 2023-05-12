@@ -55,6 +55,8 @@ class PhilIndWorksheet extends BaseModel
             $new_task->standard_phone = $this->standard_phone;
             $new_task->courier = $this->courier;
             $new_task->pick_up_date_comments = $this->delivery_date_comments;
+            $new_task->weight = $this->weight;
+            $new_task->shipped_items = $this->shipped_items;
             $new_task->save();
             $result = $new_task;
         }
@@ -75,6 +77,8 @@ class PhilIndWorksheet extends BaseModel
             $this->courierTask->standard_phone = $this->standard_phone;
             $this->courierTask->courier = $this->courier;
             $this->courierTask->pick_up_date_comments = $this->delivery_date_comments;
+            $this->courierTask->weight = $this->weight;
+            $this->courierTask->shipped_items = $this->shipped_items;
             $this->courierTask->save();
             $result = $this->courierTask;
         }

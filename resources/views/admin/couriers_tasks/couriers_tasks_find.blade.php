@@ -89,6 +89,8 @@
 									<option value="standard_phone">Телефон отправителя/Shipper phone</option>
 									<option value="courier">Курьер/Courier</option>
 									<option value="pick_up_date_comments">Дата забора/Pick up date</option>    
+									<option value="weight">Вес/Weight</option>
+									<option value="shipped_items">Содержание/Shipped items</option>
 								</select>
 							</label>
 							<label>Фильтр/Filter:
@@ -122,6 +124,8 @@
 										<th>Телефон отправителя / Shipper phone</th>
 										<th>Курьер / Courier</th>
 										<th>Дата забора / Pick up date</th>
+										<th>Вес / Weight</th>
+										<th>Содержание / Shipped items</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -199,6 +203,12 @@
 										<td class="@can('editPost')allowed-update @endcan" title="{{$row->pick_up_date_comments}}">
 											<div data-name="pick_up_date_comments" data-id="{{ $row->id }}" class="div-3">{{$row->pick_up_date_comments}}</div>
 										</td>
+										<td title="{{$row->weight}}">
+											<div class="div-number">{{$row->weight}}</div>
+										</td>
+										<td title="{{$row->shipped_items}}">
+											<div class="div-invoice">{{$row->shipped_items}}</div>
+										</td>
 									@endif
 									@endforeach
 									@endfor
@@ -226,6 +236,8 @@
 											<option value="standard_phone">Телефон отправителя/Shipper phone</option>
 											<option value="courier">Курьер/Courier</option>
 											<option value="pick_up_date_comments">Дата забора/Pick up date</option>  
+											<option value="weight">Вес/Weight</option>
+											<option value="shipped_items">Содержание/Shipped items</option>
 										</select>
 									</label>	
 

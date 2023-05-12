@@ -12,7 +12,7 @@ use App\CourierEngDraftWorksheet;
 class CourierTask extends Model
 {   
     protected $table = 'couriers_tasks';
-    protected $fillable = ['worksheet_id','eng_worksheet_id','draft_id', 'eng_draft_id', 'direction', 'site_name', 'status', 'parcels_qty', 'comments_1', 'comments_2', 'shipper_name', 'shipper_country','shipper_city','shipper_address','standard_phone','courier','pick_up_date_comments','shipper_region','order_number','packing_num'];
+    protected $fillable = ['worksheet_id','eng_worksheet_id','draft_id', 'eng_draft_id', 'direction', 'site_name', 'status', 'parcels_qty', 'comments_1', 'comments_2', 'shipper_name', 'shipper_country','shipper_city','shipper_address','standard_phone','courier','pick_up_date_comments','shipper_region','order_number','packing_num','weight','shipped_items'];
 
 
     /**
@@ -37,6 +37,7 @@ class CourierTask extends Model
             $new_task->status = $row->status;
             $new_task->parcels_qty = 1;
             $new_task->order_number = $row->order_number;
+            $new_task->packing_num = $row->packing_number;
             $new_task->comments_1 = $row->comment_2;
             $new_task->comments_2 = $row->comments;
             $new_task->shipper_name = $row->sender_name;
@@ -47,6 +48,8 @@ class CourierTask extends Model
             $new_task->standard_phone = $row->standard_phone;
             $new_task->courier = $row->courier;
             $new_task->pick_up_date_comments = $row->pick_up_date;
+            $new_task->weight = $row->weight;
+            $new_task->shipped_items = $row->package_content;
             $new_task->save();
         }
         foreach ($worksheet_eng as $row) {
@@ -57,6 +60,7 @@ class CourierTask extends Model
             $new_task->status = $row->status;
             $new_task->parcels_qty = 1;
             $new_task->order_number = $row->order_number;
+            $new_task->packing_num = $row->packing_number;
             $new_task->comments_1 = $row->comments_1;
             $new_task->comments_2 = $row->comments_2;
             $new_task->shipper_name = $row->shipper_name;
@@ -67,6 +71,8 @@ class CourierTask extends Model
             $new_task->standard_phone = $row->standard_phone;
             $new_task->courier = $row->courier;
             $new_task->pick_up_date_comments = $row->delivery_date_comments;
+            $new_task->weight = $row->weight;
+            $new_task->shipped_items = $row->shipped_items;
             $new_task->save();
         }
         foreach ($draft as $row) {
@@ -77,6 +83,7 @@ class CourierTask extends Model
             $new_task->status = $row->status;
             $new_task->parcels_qty = $row->parcels_qty;
             $new_task->order_number = $row->order_number;
+            $new_task->packing_num = $row->packing_number;
             $new_task->comments_1 = $row->comment_2;
             $new_task->comments_2 = $row->comments;
             $new_task->shipper_name = $row->sender_name;
@@ -87,6 +94,8 @@ class CourierTask extends Model
             $new_task->standard_phone = $row->standard_phone;
             $new_task->courier = $row->courier;
             $new_task->pick_up_date_comments = $row->pick_up_date;
+            $new_task->weight = $row->weight;
+            $new_task->shipped_items = $row->package_content;
             $new_task->save();
         }
         foreach ($draft_eng as $row) {
@@ -97,6 +106,7 @@ class CourierTask extends Model
             $new_task->status = $row->status;
             $new_task->parcels_qty = $row->parcels_qty;
             $new_task->order_number = $row->order_number;
+            $new_task->packing_num = $row->packing_number;
             $new_task->comments_1 = $row->comments_1;
             $new_task->comments_2 = $row->comments_2;
             $new_task->shipper_name = $row->shipper_name;
@@ -107,6 +117,8 @@ class CourierTask extends Model
             $new_task->standard_phone = $row->standard_phone;
             $new_task->courier = $row->courier;
             $new_task->pick_up_date_comments = $row->delivery_date_comments;
+            $new_task->weight = $row->weight;
+            $new_task->shipped_items = $row->shipped_items;
             $new_task->save();
         }
         

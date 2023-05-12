@@ -244,13 +244,41 @@ class AdminController extends Controller
 	}
 
 
+	protected function checkTrackingWithPackingNumber($table, $tracking, $id)
+	{
+		$validate = false;
+		
+		switch ($table) {			
+
+			case "courier_draft_worksheet":
+
+			$worksheet = CourierDraftWorksheet::find($id);			
+			if ($tracking === $worksheet->getLastDocUniq())
+				$validate = true;
+		
+			break;
+			
+			case "courier_eng_draft_worksheet":
+
+			$worksheet = CourierEngDraftWorksheet::find($id);
+			if ($tracking === $worksheet->getLastDocUniq())
+				$validate = true;
+
+			break;
+		}
+
+		return $validate;
+	}
+
+
 	protected function checkTracking($table, $tracking, $id)
 	{
 		$status_error = '';
-		if (!$this->trackingValidate($tracking)){
-			$status_error = "The tracking number is invalid. Please try again.";
-			return $status_error;
-		}
+		if (!$this->checkTrackingWithPackingNumber($table, $tracking, $id))
+			if (!$this->trackingValidate($tracking)){
+				$status_error = "The tracking number is invalid. Please try again.";
+				return $status_error;
+			}
 		
 		switch ($table) {
 			
