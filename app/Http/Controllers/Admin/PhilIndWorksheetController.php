@@ -1089,41 +1089,21 @@ class PhilIndWorksheetController extends AdminController
 
 	public function philIndWorksheetFilter(Request $request)
 	{
-        $title = 'Work sheet Filter';
-        $arr_columns = parent::new_phil_ind_columns();   
-        $data = $request->all(); 
-        $search = $request->table_filter_value;
-        $worksheet_arr = []; 
-        $attributes = PhilIndWorksheet::first()->attributesToArray(); 
-        $id_arr = [];
-        $new_arr = []; 
-        
-        if ($request->table_columns) {
-        	$phil_ind_worksheet_obj = PhilIndWorksheet::where('in_trash',false)->where($request->table_columns, 'like', '%'.$search.'%')
-        	->paginate(10);
+        $title = 'Work sheet Filter';               
+        $model = $this->getModel();
+        $arr_columns = parent::new_phil_ind_columns();
+        $data = $request->all();
+        $user = Auth::user();
+        $viewer_arr = parent::VIEWER_ARR; 
+
+        $result = $model::searchByMultipleParameters($model, $request);
+        if (!$result) return redirect()->to(session('this_previous_url'))->with('status-error', 'You must specify a value!');
+        if (is_array($result)){
+        	return view('admin.phil_ind.phil_ind_worksheet_find', ['title' => $title,'worksheet_arr' => $result,'new_column_1' => $arr_columns[0],'new_column_2' => $arr_columns[1],'new_column_3' => $arr_columns[2],'new_column_4' => $arr_columns[3],'new_column_5' => $arr_columns[4]]);
         }
         else{
-        	foreach($attributes as $key => $value)
-        	{
-        		if ($key !== 'created_at' && $key !== 'updated_at' && $key !== 'update_status_date') {
-        			$sheet = PhilIndWorksheet::where('in_trash',false)->where($key, 'like', '%'.$search.'%')->get()->first();
-        			if ($sheet) {
-        				$temp_arr = PhilIndWorksheet::where('in_trash',false)->where($key, 'like', '%'.$search.'%')->get();
-        				$new_arr = $temp_arr->filter(function ($item, $k) use($id_arr) {
-        					if (!in_array($item->id, $id_arr)) { 
-        						$id_arr[] = $item->id;       						  
-        						return $item;    					
-        					}       					       					
-        				});        				
-        				$worksheet_arr[] = $new_arr;         		
-        			} 
-        		}        		
-        	}
-        	
-        	return view('admin.phil_ind.phil_ind_worksheet_find', ['title' => $title,'worksheet_arr' => $worksheet_arr,'new_column_1' => $arr_columns[0],'new_column_2' => $arr_columns[1],'new_column_3' => $arr_columns[2],'new_column_4' => $arr_columns[3],'new_column_5' => $arr_columns[4]]);
-        }                       
-        
-        return view('admin.phil_ind.phil_ind_worksheet', ['title' => $title,'data' => $data,'phil_ind_worksheet_obj' => $phil_ind_worksheet_obj,'new_column_1' => $arr_columns[0],'new_column_2' => $arr_columns[1],'new_column_3' => $arr_columns[2],'new_column_4' => $arr_columns[3],'new_column_5' => $arr_columns[4]]);
+        	return view('admin.phil_ind.phil_ind_worksheet', ['title' => $title,'data' => $data,'phil_ind_worksheet_obj' => $result,'new_column_1' => $arr_columns[0],'new_column_2' => $arr_columns[1],'new_column_3' => $arr_columns[2],'new_column_4' => $arr_columns[3],'new_column_5' => $arr_columns[4]]);
+        }
     }
 
 

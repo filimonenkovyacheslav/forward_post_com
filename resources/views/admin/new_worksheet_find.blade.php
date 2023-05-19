@@ -58,69 +58,74 @@
 					<div class="btn-move-wrapper" style="display:flex">
 						<form action="{{ route('newWorksheetFilter') }}" method="GET" id="form-worksheet-table-filter" enctype="multipart/form-data">
 							@csrf
-							<label class="table_columns" style="margin: 0 15px">Выберите колонку:
-								<select class="form-control" id="table_columns" name="table_columns">
-									<option value="" selected="selected"></option>
-									<option value="id">Id</option>
-									<option value="index_number">№</option>
-									<option value="site_name">Сайт</option>
-									<option value="packing_number">Packing No.</option>
-									<option value="date">Дата</option>
-									<option value="direction">Направление</option>
-									<option value="tariff">Тариф</option>
-									<option value="status">Статус</option>
-									<option value="status_date">Дата Статуса</option>
-									<option value="order_date">Дата Заказа</option>
-									<option value="partner">Партнер</option>
-									<option value="tracking_main">Основной</option>
-									<option value="tracking_local">Локальный</option>
-									<option value="tracking_transit">Транзитный</option>
-									<option value="pallet_number">Номер паллеты</option>
-									<option value="comment_2">Коммент</option>
-									<option value="comments">Комментарии</option>
-									<option value="sender_name">Отправитель</option>
-									<option value="sender_country">Страна отправителя</option>
-									<option value="shipper_region">Регион отправителя</option>
-									<option value="sender_city">Город отправителя</option>
-									<option value="sender_postcode">Индекс отправителя</option>
-									<option value="sender_address">Адрес отправителя</option>
-									<option value="standard_phone">Телефон (стандарт)</option>
-									<option value="sender_phone">Телефон (дополнительно)</option>
-									<option value="sender_passport">Номер паспорта отправителя</option>
-									<option value="recipient_name">Получатель</option>
-									<option value="recipient_country">Страна получателя</option>
-									<option value="region">Регион</option>
-									<option value="district">Район</option>
-									<option value="recipient_city">Город получателя</option>
-									<option value="recipient_postcode">Индекс получателя</option>
-									<option value="recipient_street">Улица получателя</option>
-									<option value="recipient_house">№ дома пол-ля</option>
-									<option value="body">корпус</option>
-									<option value="recipient_room">№ кв. пол-ля</option>
-									<option value="recipient_phone">Телефон получателя</option>
-									<option value="recipient_passport">Номер паспорта получателя</option>
-									<option value="recipient_email">E-mail получателя</option>
-									<option value="package_cost">Стоимость посылки</option>
-									<option value="courier">Курьер</option>
-									<option value="pick_up_date">Дата забора и комментарии</option>
-									<option value="weight">Вес посылки</option>
-									<option value="width">Ширина</option>
-									<option value="height">Высота</option>
-									<option value="length">Длина</option>
-									<option value="volume_weight">Объемный вес</option>
-									<option value="quantity_things">Кол-во предметов</option>
-									<option value="batch_number">Партия</option>
-									<option value="pay_date">Дата оплаты и комментарии</option>
-									<option value="pay_sum">Сумма оплаты</option>
-									<option value="status_en">ENG Статус</option>
-									<option value="status_he">HE Статус</option>
-									<option value="status_ua">UA Статус</option>                  
-								</select>
-							</label>
-							<label>Фильтр:
-								<input type="search" name="table_filter_value" class="form-control form-control-sm">
-							</label>
-							<button type="button" id="table_filter_button" style="margin-left:35px" class="btn btn-default">Искать</button>
+
+							<div class="filter-item">
+								<label class="table_columns" style="margin: 0 15px">Выберите колонку:
+									<select class="form-control" id="table_columns" name="table_columns[]">
+										<option value="" selected="selected"></option>
+										<option value="id">Id</option>
+										<option value="index_number">№</option>
+										<option value="site_name">Сайт</option>
+										<option value="packing_number">Packing No.</option>
+										<option value="date">Дата</option>
+										<option value="direction">Направление</option>
+										<option value="tariff">Тариф</option>
+										<option value="status">Статус</option>
+										<option value="status_date">Дата Статуса</option>
+										<option value="order_date">Дата Заказа</option>
+										<option value="partner">Партнер</option>
+										<option value="tracking_main">Основной</option>
+										<option value="tracking_local">Локальный</option>
+										<option value="tracking_transit">Транзитный</option>
+										<option value="pallet_number">Номер паллеты</option>
+										<option value="comment_2">Коммент</option>
+										<option value="comments">Комментарии</option>
+										<option value="sender_name">Отправитель</option>
+										<option value="sender_country">Страна отправителя</option>
+										<option value="shipper_region">Регион отправителя</option>
+										<option value="sender_city">Город отправителя</option>
+										<option value="sender_postcode">Индекс отправителя</option>
+										<option value="sender_address">Адрес отправителя</option>
+										<option value="standard_phone">Телефон (стандарт)</option>
+										<option value="sender_phone">Телефон (дополнительно)</option>
+										<option value="sender_passport">Номер паспорта отправителя</option>
+										<option value="recipient_name">Получатель</option>
+										<option value="recipient_country">Страна получателя</option>
+										<option value="region">Регион</option>
+										<option value="district">Район</option>
+										<option value="recipient_city">Город получателя</option>
+										<option value="recipient_postcode">Индекс получателя</option>
+										<option value="recipient_street">Улица получателя</option>
+										<option value="recipient_house">№ дома пол-ля</option>
+										<option value="body">корпус</option>
+										<option value="recipient_room">№ кв. пол-ля</option>
+										<option value="recipient_phone">Телефон получателя</option>
+										<option value="recipient_passport">Номер паспорта получателя</option>
+										<option value="recipient_email">E-mail получателя</option>
+										<option value="package_cost">Стоимость посылки</option>
+										<option value="courier">Курьер</option>
+										<option value="pick_up_date">Дата забора и комментарии</option>
+										<option value="weight">Вес посылки</option>
+										<option value="width">Ширина</option>
+										<option value="height">Высота</option>
+										<option value="length">Длина</option>
+										<option value="volume_weight">Объемный вес</option>
+										<option value="quantity_things">Кол-во предметов</option>
+										<option value="batch_number">Партия</option>
+										<option value="pay_date">Дата оплаты и комментарии</option>
+										<option value="pay_sum">Сумма оплаты</option>
+										<option value="status_en">ENG Статус</option>
+										<option value="status_he">HE Статус</option>
+										<option value="status_ua">UA Статус</option>                  
+									</select>
+								</label>
+								<label>Фильтр:
+									<input type="search" name="table_filter_value[]" class="form-control form-control-sm">
+								</label>
+							</div>
+
+							<button type="submit" id="table_filter_button" style="margin-left:35px" class="btn btn-default">Искать</button>
+							<button type="button" id="filter-item-button" style="margin-left:30px" class="btn btn-primary">Добавить фильтр</button>
 						</form>
 					</div>
 
@@ -175,6 +180,7 @@
 								@endcan
 								
 								<option value="direction">Направление</option>
+								<option value="tariff">Тариф</option>
 								<option value="status">Статус</option>
 								<option value="partner">Партнер</option>
 								<option value="tracking_local">Локальный</option>
@@ -446,7 +452,7 @@
 										<td class="@can('editPost')allowed-update @endcan" title="{{$row->direction}}">
 											<div class="div-3">{{$row->direction}}</div>
 										</td>
-										<td class="@can('editPost')allowed-update @endcan @if($row->getLastDocUniq())pdf-file @endif" title="{{$row->tariff}}">
+										<td class="@can('editPost')allowed-update @endcan" title="{{$row->tariff}}">
 											<div data-name="tariff" data-id="{{ $row->id }}" class="div-2">{{$row->tariff}}</div>
 										</td>
 										<td class="@can('editPost')allowed-update @endcan" title="{{$row->status}}">
@@ -679,7 +685,7 @@
 										<td class="@can('editPost')allowed-update @endcan" title="{{$row->direction}}">
 											<div class="div-3">{{$row->direction}}</div>
 										</td>
-										<td class="@can('editPost')allowed-update @endcan @if($row->getLastDocUniq())pdf-file @endif" title="{{$row->tariff}}">
+										<td class="@can('editPost')allowed-update @endcan" title="{{$row->tariff}}">
 											<div data-name="tariff" data-id="{{ $row->id }}" class="div-2">{{$row->tariff}}</div>
 										</td>
 										<td class="@can('editPost')allowed-update @endcan" title="{{$row->status}}">

@@ -1418,48 +1418,24 @@ class NewWorksheetController extends AdminController
 	}
 
 
-	public function newWorksheetFilter(Request $request){
-        $title = 'Фильтр Нового рабочего листа';
-        $search = $request->table_filter_value;
-        $new_worksheet_arr = [];
-        $attributes = NewWorksheet::first()->attributesToArray();
-
+	public function newWorksheetFilter(Request $request)
+	{
+        $title = 'Фильтр Нового рабочего листа';               
+        $model = $this->getModel();
         $arr_columns = parent::new_columns();
-
+        $data = $request->all();
         $user = Auth::user();
         $viewer_arr = parent::VIEWER_ARR; 
-        $id_arr = [];
-        $new_arr = [];      
+        $update_all_statuses = NewWorksheet::where('in_trash',false)->where('update_status_date','=', date('Y-m-d'))->get()->count();
 
-        if ($request->table_columns) {
-        	$new_worksheet_obj = NewWorksheet::where('in_trash',false)->where($request->table_columns, 'like', '%'.$search.'%')
-        	->orderBy('index_number')->paginate(10);
+        $result = $model::searchByMultipleParameters($model, $request);
+        if (!$result) return redirect()->to(session('this_previous_url'))->with('status-error', 'You must specify a value!');
+        if (is_array($result)){
+        	return view('admin.new_worksheet_find', ['title' => $title,'new_worksheet_arr' => $result,'new_column_1' => $arr_columns[0],'new_column_2' => $arr_columns[1],'new_column_3' => $arr_columns[2],'new_column_4' => $arr_columns[3],'new_column_5' => $arr_columns[4], 'user' => $user, 'viewer_arr' => $viewer_arr]);
         }
         else{
-        	foreach($attributes as $key => $value)
-        	{
-        		if ($key !== 'created_at' && $key !== 'updated_at' && $key !== 'update_status_date') {
-        			$sheet = NewWorksheet::where('in_trash',false)->where($key, 'like', '%'.$search.'%')->get()->first();
-        			if ($sheet) {       				
-        				$temp_arr = NewWorksheet::where('in_trash',false)->where($key, 'like', '%'.$search.'%')->get();
-        				$new_arr = $temp_arr->filter(function ($item, $k) use($id_arr) {
-        					if (!in_array($item->id, $id_arr)) { 
-        						$id_arr[] = $item->id;       						  
-        						return $item;    					
-        					}       					       					
-        				});        				
-        				$new_worksheet_arr[] = $new_arr;   				         		
-        			}
-        		}         		
-        	}
-
-        	return view('admin.new_worksheet_find', ['title' => $title,'new_worksheet_arr' => $new_worksheet_arr,'new_column_1' => $arr_columns[0],'new_column_2' => $arr_columns[1],'new_column_3' => $arr_columns[2],'new_column_4' => $arr_columns[3],'new_column_5' => $arr_columns[4], 'user' => $user, 'viewer_arr' => $viewer_arr]);      	
-        }
-        
-        $data = $request->all();    
-        $update_all_statuses = NewWorksheet::where('in_trash',false)->where('update_status_date','=', date('Y-m-d'))->get()->count();
-        
-        return view('admin.new_worksheet', ['title' => $title,'data' => $data,'new_worksheet_obj' => $new_worksheet_obj,'new_column_1' => $arr_columns[0],'new_column_2' => $arr_columns[1],'new_column_3' => $arr_columns[2],'new_column_4' => $arr_columns[3],'new_column_5' => $arr_columns[4], 'user' => $user, 'viewer_arr' => $viewer_arr, 'update_all_statuses' => $update_all_statuses]);
+        	return view('admin.new_worksheet', ['title' => $title,'data' => $data,'new_worksheet_obj' => $result,'new_column_1' => $arr_columns[0],'new_column_2' => $arr_columns[1],'new_column_3' => $arr_columns[2],'new_column_4' => $arr_columns[3],'new_column_5' => $arr_columns[4], 'user' => $user, 'viewer_arr' => $viewer_arr, 'update_all_statuses' => $update_all_statuses]);
+        }  
     }
 
 

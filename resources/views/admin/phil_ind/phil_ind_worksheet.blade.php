@@ -58,61 +58,66 @@
 					<div class="btn-move-wrapper" style="display:flex">
 						<form action="{{ route('philIndWorksheetFilter') }}" method="GET" id="form-worksheet-table-filter" enctype="multipart/form-data">
 							@csrf
-							<label class="table_columns" style="margin: 0 15px">Choose column:
-								<select class="form-control" id="table_columns" name="table_columns">
-									<option value="" selected="selected"></option>
-									<option value="id">Id</option>
-									<option value="packing_number">Packing No.</option>
-									<option value="date">Date</option>
-									<option value="direction">Direction</option>
-									<option value="status">Status</option>
-									<option value="status_date">Status Date</option>
-									<option value="order_date">Order Date</option>
-									<option value="tracking_main">Main Tracking number</option>
-									<option value="tracking_local">Local tracking number</option>
-									<option value="pallet_number">Pallet number</option>
-									<option value="comments_1">Comments 1</option>
-									<option value="comments_2">Comments 2</option>
-									<option value="shipper_name">Shipper\'s name</option>
-									<option value="shipper_country">Shipper\'s country</option>
-									<option value="shipper_region">Shipper region</option>
-									<option value="shipper_city">Shipper\'s city/village</option>
-									<option value="passport_number">GSTN/Passport number</option>
-									<option value="return_date">Estimated return to India date</option>
-									<option value="shipper_address">Shipper\'s address</option>
-									<option value="standard_phone">Shipper\'s phone (standard)</option>
-									<option value="shipper_phone">Shipper\'s phone (additionally)</option>
-									<option value="shipper_id">Shipper\'s ID number</option>
-									<option value="consignee_name">Consignee\'s name</option>
-									<option value="consignee_country">Consignee\'s country</option>
-									<option value="house_name">House name</option>
-									<option value="post_office">Local post office</option>
-									<option value="district">District/City</option>
-									<option value="state_pincode">State pincode</option>
-									<option value="consignee_address">Consignee\'s address</option>
-									<option value="consignee_phone">Consignee\'s phone number</option>
-									<option value="consignee_id">Consignee\'s ID number</option>
-									<option value="shipped_items">Shipped items</option>
-									<option value="shipment_val">Shipment\'s declared value</option>
-									<option value="operator">Operator</option>
-									<option value="courier">Courier</option>
-									<option value="delivery_date_comments">Pick-up/delivery date and comments</option>
-									<option value="weight">Weight</option>
-									<option value="width">Width</option>
-									<option value="height">Height</option>
-									<option value="length">Length</option>
-									<option value="volume_weight">Volume weight</option>
-									<option value="lot">Lot</option>
-									<option value="payment_date_comments">Payment date and comments</option>
-									<option value="amount_payment">Amount of payment</option>
-									<option value="status_ru">Status Ru</option>
-									<option value="status_he">Status He</option>                 
-								</select>
-							</label>
-							<label>Filter:
-								<input type="search" name="table_filter_value" class="form-control form-control-sm">
-							</label>
-							<button type="button" id="table_filter_button" style="margin-left:30px" class="btn btn-default">Search</button>
+
+							<div class="filter-item">
+								<label class="table_columns" style="margin: 0 15px">Choose column:
+									<select class="form-control" id="table_columns" name="table_columns[]">
+										<option value="" selected="selected"></option>
+										<option value="id">Id</option>
+										<option value="packing_number">Packing No.</option>
+										<option value="date">Date</option>
+										<option value="direction">Direction</option>
+										<option value="status">Status</option>
+										<option value="status_date">Status Date</option>
+										<option value="order_date">Order Date</option>
+										<option value="tracking_main">Main Tracking number</option>
+										<option value="tracking_local">Local tracking number</option>
+										<option value="pallet_number">Pallet number</option>
+										<option value="comments_1">Comments 1</option>
+										<option value="comments_2">Comments 2</option>
+										<option value="shipper_name">Shipper\'s name</option>
+										<option value="shipper_country">Shipper\'s country</option>
+										<option value="shipper_region">Shipper region</option>
+										<option value="shipper_city">Shipper\'s city/village</option>
+										<option value="passport_number">GSTN/Passport number</option>
+										<option value="return_date">Estimated return to India date</option>
+										<option value="shipper_address">Shipper\'s address</option>
+										<option value="standard_phone">Shipper\'s phone (standard)</option>
+										<option value="shipper_phone">Shipper\'s phone (additionally)</option>
+										<option value="shipper_id">Shipper\'s ID number</option>
+										<option value="consignee_name">Consignee\'s name</option>
+										<option value="consignee_country">Consignee\'s country</option>
+										<option value="house_name">House name</option>
+										<option value="post_office">Local post office</option>
+										<option value="district">District/City</option>
+										<option value="state_pincode">State pincode</option>
+										<option value="consignee_address">Consignee\'s address</option>
+										<option value="consignee_phone">Consignee\'s phone number</option>
+										<option value="consignee_id">Consignee\'s ID number</option>
+										<option value="shipped_items">Shipped items</option>
+										<option value="shipment_val">Shipment\'s declared value</option>
+										<option value="operator">Operator</option>
+										<option value="courier">Courier</option>
+										<option value="delivery_date_comments">Pick-up/delivery date and comments</option>
+										<option value="weight">Weight</option>
+										<option value="width">Width</option>
+										<option value="height">Height</option>
+										<option value="length">Length</option>
+										<option value="volume_weight">Volume weight</option>
+										<option value="lot">Lot</option>
+										<option value="payment_date_comments">Payment date and comments</option>
+										<option value="amount_payment">Amount of payment</option>
+										<option value="status_ru">Status Ru</option>
+										<option value="status_he">Status He</option>                 
+									</select>
+								</label>
+								<label>Filter:
+									<input type="search" name="table_filter_value[]" class="form-control form-control-sm">
+								</label>
+							</div>
+
+							<button type="submit" id="table_filter_button" style="margin-left:30px" class="btn btn-default">Search</button>
+							<button type="button" id="filter-item-button" style="margin-left:30px" class="btn btn-primary">Add filter</button>
 						</form>
 					</div>
 

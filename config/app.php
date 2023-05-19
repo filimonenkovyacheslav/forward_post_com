@@ -217,6 +217,12 @@ return [
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'Transliterate' => ElForastero\Transliterate\TransliterationFacade::class,
         'PDF' => Barryvdh\DomPDF\Facade::class,
+
+        /*Models aliases*/
+        'CourierDraftWorksheet' => \App\CourierDraftWorksheet::class,
+        'NewWorksheet' => \App\NewWorksheet::class,
+        'CourierEngDraftWorksheet' => \App\CourierEngDraftWorksheet::class,
+        'PhilIndWorksheet' => \App\PhilIndWorksheet::class,
     ],
 
 ];

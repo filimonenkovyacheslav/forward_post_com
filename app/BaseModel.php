@@ -58,4 +58,141 @@ class BaseModel extends Model
         
         return $s; // возвращаем результат
     }
+
+
+    private static function createQuery($query,$column,$search,$active,$model,$ru_models)
+    {
+        if($search){
+            if ($active) {                
+                $query->where([
+                    [$column, 'like', '%'.$search.'%'],
+                    ['tracking_main','<>',null],
+                    ['in_trash',false]
+                ]);
+
+                if (in_array($model, $ru_models)) {
+                    $query->orWhere([
+                        [$column, 'like', '%'.$search.'%'],
+                        ['status','Забрать'],
+                        ['in_trash',false]
+                    ])
+                    ->orderBy('index_number');
+                }
+                else{
+                    $query->orWhere([
+                        [$column, 'like', '%'.$search.'%'],
+                        ['status','Pick up'],
+                        ['in_trash',false]
+                    ]);
+                }
+            }
+            else{
+                $query->where([
+                    [$column, 'like', '%'.$search.'%'],
+                    ['in_trash',false]
+                ]);
+
+                if (in_array($model, $ru_models)) {
+                    $query->orderBy('index_number');
+                }
+            } 
+        }
+        return $query;
+    }
+
+
+    public static function searchByMultipleParameters($model, $request)
+    {     
+        $attributes = $model::first()->attributesToArray();
+        $search = $request->table_filter_value;
+        $column = $request->table_columns;
+        $active = $request->for_active;       
+        $ru_models = ['CourierDraftWorksheet','NewWorksheet'];
+        
+        if (!in_array(null, $column)) {     
+            if (in_array(null, $search)) return null;       
+            $query = static::query();            
+            for ($i=0; $i < count($column); $i++) {  
+                $query = static::createQuery($query,$column[$i],$search[$i],$active,$model,$ru_models);
+            } 
+            return $query->paginate(10);  
+        }
+        else{
+            if (in_array(null, $search)) return null;
+            $arr = [];
+            $id_arr = [];            
+
+            for ($i=0; $i < count($column); $i++) { 
+                                
+                if ($column[$i]) {
+                    $query = static::query();
+                    $query = static::createQuery($query,$column[$i],$search[$i],$active,$model,$ru_models);
+
+                    $temp_arr = $query->get();
+
+                    if ($temp_arr->first()){
+                        if (!$id_arr) {
+                            $arr[] = $temp_arr;
+                            $id_arr = $temp_arr->pluck('id')->toArray();                           
+                        }
+                        else{
+                            $arr = [];
+                            $new_arr = $temp_arr->filter(function ($item, $k) use($id_arr) {
+                                if (in_array($item->id, $id_arr)) {                               
+                                    return $item;                       
+                                }                                                   
+                            });                     
+                            $id_arr = $new_arr->pluck('id')->toArray();
+                            $arr[] = $new_arr;
+                        }                          
+                    }
+                }
+                else{
+                    $this_arr = [];
+                    $this_id_arr = [];
+                    
+                    foreach($attributes as $key => $value) {
+                        if ($key !== 'created_at' && $key !== 'updated_at' && $key !== 'update_status_date') {
+
+                            $query = static::query();
+                            $query = static::createQuery($query,$key,$search[$i],$active,$model,$ru_models);
+                            $temp_arr = $query->get();
+                                                        
+                            if ($temp_arr->first()){
+                                $new_arr = $temp_arr->filter(function ($item, $k) use($this_id_arr) {
+                                    if (!in_array($item->id, $this_id_arr)) { 
+                                        $this_id_arr[] = $item->id;                      
+                                        return $item;                       
+                                    }  
+                                }); 
+                                $this_arr[] = $new_arr;
+                                $temp = $new_arr->pluck('id')->toArray();
+                                $this_id_arr = array_unique(array_merge($this_id_arr, $temp));
+                            }                                
+                        }               
+                    }
+
+                    if ($this_id_arr){
+                        if (!$id_arr) {
+                            $arr = $this_arr;
+                            $id_arr = $this_id_arr;
+                        }
+                        else{
+                            $arr = [];
+                            for ($j=0; $j < count($this_arr); $j++) { 
+                                $new_arr = $this_arr[$j]->filter(function ($item, $k) use($id_arr) {
+                                    if (in_array($item->id, $id_arr))  
+                                        return $item;               
+                                });                                                               
+                                $arr[] = $new_arr; 
+                                $id_arr = $new_arr->pluck('id')->toArray();
+                            }                                                  
+                        }                                                  
+                    } 
+                }                
+            }
+            
+            return $arr;
+        }
+    }
 }

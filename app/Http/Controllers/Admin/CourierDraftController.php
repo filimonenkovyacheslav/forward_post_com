@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Admin\AdminController;
-use App\CourierDraftWorksheet;
-use App\NewWorksheet;
+use CourierDraftWorksheet;
+use NewWorksheet;
 use App\NewPacking;
 use App\PackingSea;
 use App\Invoice;
@@ -583,87 +583,20 @@ class CourierDraftController extends AdminController
 
 
 	public function courierDraftWorksheetFilter(Request $request){
-        $title = 'Фильтр Черновика';
-        $search = $request->table_filter_value;
-        $courier_draft_worksheet_arr = [];
-        $attributes = CourierDraftWorksheet::first()->attributesToArray();
-
-        $arr_columns = parent::new_columns();
-
+        $title = 'Фильтр Черновика';               
+        $model = $this->getModel('Worksheet');
+        $data = $request->all();
         $user = Auth::user();
         $viewer_arr = parent::VIEWER_ARR; 
-        $id_arr = [];
-        $new_arr = [];      
 
-        if ($request->table_columns) {
-        	if ($request->input('for_active')) {
-        		$courier_draft_worksheet_obj = CourierDraftWorksheet::where('in_trash',false)->where([
-        			[$request->table_columns, 'like', '%'.$search.'%'],
-        			['tracking_main','<>',null]
-        		])
-        		->orWhere([
-        			[$request->table_columns, 'like', '%'.$search.'%'],
-        			['status','Забрать']
-        		])
-        		->orderBy('index_number')
-        		->paginate(10);
-        	}
-        	else{
-        		$courier_draft_worksheet_obj = CourierDraftWorksheet::where('in_trash',false)->where($request->table_columns, 'like', '%'.$search.'%')
-        		->orderBy('index_number')
-        		->paginate(10);
-        	}        	
+        $result = $model::searchByMultipleParameters($model, $request);
+        if (!$result) return redirect()->to(session('this_previous_url'))->with('status-error', 'You must specify a value!');
+        if (is_array($result)){
+        	return view('admin.courier_draft.courier_draft_worksheet_find', ['title' => $title,'courier_draft_worksheet_arr' => $result, 'user' => $user, 'viewer_arr' => $viewer_arr]);
         }
         else{
-        	foreach($attributes as $key => $value)
-        	{
-        		if ($key !== 'created_at' && $key !== 'updated_at' && $key !== 'update_status_date') {
-        			if ($request->input('for_active')) {
-        				$sheet = CourierDraftWorksheet::where('in_trash',false)->where([
-        					[$key, 'like', '%'.$search.'%'],
-        					['tracking_main','<>',null]
-        				])
-        				->orWhere([
-        					[$key, 'like', '%'.$search.'%'],
-        					['status','Забрать']
-        				])->first();
-        			}
-        			else{
-        				$sheet = CourierDraftWorksheet::where('in_trash',false)->where($key, 'like', '%'.$search.'%')->first();
-        			}         			       			
-        			
-        			if ($sheet) { 
-        				if ($request->input('for_active')) {
-        					$temp_arr = CourierDraftWorksheet::where('in_trash',false)->where([
-        						[$key, 'like', '%'.$search.'%'],
-        						['tracking_main','<>',null]
-        					])
-        					->orWhere([
-        						[$key, 'like', '%'.$search.'%'],
-        						['status','Забрать']
-        					])->get();
-        				}      				
-        				else{
-        					$temp_arr = CourierDraftWorksheet::where('in_trash',false)->where($key, 'like', '%'.$search.'%')->get();
-        				}
-
-        				$new_arr = $temp_arr->filter(function ($item, $k) use($id_arr) {
-        					if (!in_array($item->id, $id_arr)) { 
-        						$id_arr[] = $item->id;       						  
-        						return $item;    					
-        					}       					       					
-        				});        				
-        				$courier_draft_worksheet_arr[] = $new_arr;   				         		
-        			}
-        		}         		
-        	}
-
-        	return view('admin.courier_draft.courier_draft_worksheet_find', ['title' => $title,'courier_draft_worksheet_arr' => $courier_draft_worksheet_arr, 'user' => $user, 'viewer_arr' => $viewer_arr]);      	
+        	return view('admin.courier_draft.courier_draft_worksheet', ['title' => $title,'data' => $data,'courier_draft_worksheet_obj' => $result, 'user' => $user, 'viewer_arr' => $viewer_arr]);
         }
-        
-        $data = $request->all();             
-        
-        return view('admin.courier_draft.courier_draft_worksheet', ['title' => $title,'data' => $data,'courier_draft_worksheet_obj' => $courier_draft_worksheet_obj, 'user' => $user, 'viewer_arr' => $viewer_arr]);
     }
 
 
