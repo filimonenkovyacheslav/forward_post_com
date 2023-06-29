@@ -640,7 +640,7 @@ class Controller extends BaseController
     protected function checkReceipt($id, $receipt_id, $which_admin, $tracking_main, $receipt_number = null, $old_tracking = null)
     {
         $message = '';
-        $receipt = Receipt::where('tracking_main',$tracking_main)->first();
+        /*$receipt = Receipt::where('tracking_main',$tracking_main)->first();
         $update_date = Date('Y-m-d', strtotime('+4 days'));
 
         if ($receipt_id == null) {
@@ -711,7 +711,7 @@ class Controller extends BaseController
                 ];
                 ReceiptArchive::create($archive);
             }
-        }      
+        }  */    
         
         return $message;
     }
@@ -1849,6 +1849,7 @@ class Controller extends BaseController
     protected function fillResponseDataRu($data, $request, $content = false, $draft = false){
         $data_parcel = [];
         if ($draft) $data_parcel['phone_exist_checked'] = 'true';
+        $data_parcel['site_name'] = $data->site_name;
         
         if ($request->quantity_sender === '1') {               
             $sender_name = explode(" ", $data->sender_name);
@@ -2075,6 +2076,29 @@ class Controller extends BaseController
         DB::table('tracking_lists')->insert($temp_arr);
 
         return true;        
+    }
+
+
+    public function sendSms($sender_phone, $link)
+    {
+        $api = new \Zadarma_API\Api(env('SEND_SMS_KEY'), env('SEND_SMS_SECRET'));      
+        
+        if ($this->getDomainRule() !== 'forward') {
+            try{
+                $result = $api->sendSms($sender_phone, 'קיבלה קבלה חדשה מחברת שליחויות בינלאומית, לצפייה לחצו כאן'.' '.$link, '972559909659');
+                return $link;
+            } catch (\Zadarma_API\ApiException $e) {
+                return $e->getMessage();
+            }
+        }
+        elseif($this->getDomainRule() === 'forward'){
+            try{
+                $result = $api->sendSms($sender_phone, 'קיבלה קבלה חדשה מחברת אוריינטל אקספרס 0559398039 ,לצפייה לחצו כאן'.' '.$link);
+                return $link;
+            } catch (\Zadarma_API\ApiException $e) {
+                return $e->getMessage();
+            }
+        }
     }
 
 }

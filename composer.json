@@ -17,7 +17,8 @@
         "laravel/tinker": "^1.0",
         "laravelcollective/html": "^5.4.0",
         "maatwebsite/excel": "^3.1",
-        "mtownsend/xml-to-array": "^2.0"
+        "mtownsend/xml-to-array": "^2.0",
+        "zadarma/user-api-v1": "^1.1"
     },
     "require-dev": {
         "filp/whoops": "^2.0",

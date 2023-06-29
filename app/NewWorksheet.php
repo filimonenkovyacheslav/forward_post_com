@@ -10,6 +10,7 @@ use App\BaseModel;
 use App\SignedDocument;
 use App\CourierDraftWorksheet;
 use App\PackingSea;
+use App\NewPacking;
 
 
 class NewWorksheet extends BaseModel
@@ -24,6 +25,14 @@ class NewWorksheet extends BaseModel
     public function courierTask()
     {
         return $this->hasOne('App\CourierTask','worksheet_id');
+    }
+
+    /**
+    * Get the new packing lists associated with the worksheet.
+    */
+    public function newPackinglists()
+    {
+        return $this->hasMany('App\NewPacking','work_sheet_id');
     }
 
 

@@ -18,6 +18,11 @@ class NewPackingController extends AdminController
 	public function index()
 	{
 		$title = 'Новый пакинг лист';
+        $collection = NewPacking::all();
+        foreach ($collection as $item) {
+            if ($item->worksheet && $item->worksheet->status === "Доставлено") 
+                $item->delete();
+        }
         $new_packing_obj = NewPacking::where('in_trash',false)->orderBy('work_sheet_id')->paginate(10);
 
         return view('admin.packing.new_packing', compact('title','new_packing_obj'));

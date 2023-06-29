@@ -1,6 +1,6 @@
 @extends('layouts.phil_ind_admin')
 @section('content')
-@can('changeColor')
+@can('editPost')
 <!-- <div class="breadcrumbs">
 	<div class="col-sm-4">
 		<div class="page-header float-left">
@@ -45,13 +45,13 @@
 					@endphp
 
 					<div class="btn-move-wrapper" style="display:flex">
-						<form action="{{ route('trackingListFilter') }}" method="GET" id="form-worksheet-table-filter" enctype="multipart/form-data">
+						<form action="{{ route('newReceiptsFilter') }}" method="GET" id="form-worksheet-table-filter" enctype="multipart/form-data">
 							@csrf
 							<label class="table_columns" style="margin: 0 15px">Choose column:
 								<select class="form-control" id="table_columns" name="table_columns">
 									<option value="" selected="selected"></option>
-									<option value="list_name">List name</option>
-									<option value="tracking">Tracking No.</option>                
+									<option value="name">Receipt name</option>
+									<option value="created_at">Date</option>                
 								</select>
 							</label>
 							<label>Filter:
@@ -71,8 +71,8 @@
 								<thead>
 									<tr>
 										<th>Action</th>
-										<th>List name</th>
-										<th>Tracking No.</th>				
+										<th>Receipt name</th>
+										<th>Date</th>				
 									</tr>
 
 								</thead>
@@ -93,28 +93,13 @@
 
 									<tr>
 										<td class="td-button">
-
-											<form class="form-horizontal" action="{{ route('exportTrackingList') }}" method="POST">
-												@csrf	
-												<input type="hidden" name="list_name" value="{{$row->list_name}}">
-												<button class="btn btn-primary" type="submit">Export</button>
-											</form>
-
-											@can('editPost')
-											
-											{!! Form::open(['url'=>route('trackingListDelete'),'onsubmit' => 'return ConfirmDelete()', 'class'=>'form-horizontal','method' => 'POST']) !!}
-											{!! Form::hidden('action',$row->list_name) !!}
-											{!! Form::button('Remove all list',['class'=>'btn btn-danger','type'=>'submit']) !!}
-											{!! Form::close() !!}
-
-											@endcan
-											
+											<a class="btn btn-primary" href="{{ url('/download-new-receipt').'/'.$row->id }}">Download</a>
 										</td>
-										<td title="{{$row->list_name}}">
-											<div style="width:250px">{{$row->list_name}}</div>
+										<td title="{{$row->name}}">
+											<div style="width:250px">{{$row->name}}</div>
 										</td>
-										<td title="{{$row->tracking}}">
-											<div class="div-4">{{$row->tracking}}</div>
+										<td title="{{$row->created_at}}">
+											<div class="div-4">{{$row->created_at}}</div>
 										</td>                                                  
 									</tr>
 
@@ -133,19 +118,6 @@
 		
 	</div><!-- .animated -->
 </div><!-- .content -->
-
-<script>
-
-	function ConfirmDelete()
-	{
-		var x = confirm("Are you sure?");
-		if (x)
-			return true;
-		else
-			return false;
-	}
-
-</script>
 
 @else
 <h1>You cannot view this page!</h1>

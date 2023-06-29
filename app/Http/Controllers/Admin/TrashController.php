@@ -113,4 +113,35 @@ class TrashController extends AdminController
     	return redirect()->to(session('this_previous_url'))->with('status', 'Строка восстановлена / Row restored!');
     }
 
+
+    public function deleteFromTrash($id)
+    {
+        $trash = Trash::find($id);
+        $worksheet_id = $trash->worksheet_id;
+        $table = $trash->table_name;      
+        switch($table) {
+            case 'new_worksheet';
+                $this->removeTrackingFromPalletWorksheet($worksheet_id, 'ru');
+                $this->deleteUploadFiles('worksheet_id',$worksheet_id);
+                break;
+            case 'phil_ind_worksheet';
+                $this->removeTrackingFromPalletWorksheet($worksheet_id, 'en');
+                $this->deleteUploadFiles('eng_worksheet_id',$worksheet_id);
+                break;
+            case 'courier_draft_worksheet';
+                $this->removeTrackingFromPalletWorksheet($worksheet_id, 'ru', true);
+                $this->deleteUploadFiles('draft_id',$worksheet_id);
+                break;
+            case 'courier_eng_draft_worksheet';
+                $this->removeTrackingFromPalletWorksheet($worksheet_id, 'en', true);
+                $this->deleteUploadFiles('eng_draft_id',$worksheet_id);
+                break;       
+            default:
+                break;
+        }
+        
+        $trash->removeСompletely();
+        return redirect()->to(session('this_previous_url'))->with('status', 'Строка удалена / Row deleted!');
+    }
+
 }

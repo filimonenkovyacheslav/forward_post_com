@@ -16,6 +16,7 @@ use App\Exports\ReceiptExport;
 use App\ReceiptArchive;
 use DB;
 use Excel;
+use PDF;
 
 class AdminController extends Controller
 {
@@ -1547,4 +1548,113 @@ class AdminController extends Controller
 		return redirect()->to(session('this_previous_url'))->with('status', 'Строка успешно удалена!');
 	}
 
+
+	public function showNewReceipts()
+	{
+		$title = 'RECEIPTS';
+		$new_receipts = null;
+		if (Schema::hasTable('new_receipts'))
+			$new_receipts = DB::table('new_receipts')->paginate(10);
+			
+		return view('admin.new_receipts.new_receipts', compact('title', 'new_receipts'));
+	}
+
+
+	public function newReceiptsFilter(Request $request)
+    {
+    	if (!Schema::hasTable('new_receipts')) return redirect()->to(session('this_previous_url'))->with('status-error', 'There’s nothing!');
+        $title = 'New Receipts Filter';
+        $search = $request->table_filter_value;
+        $filter_arr = [];
+        $attributes = DB::table('new_receipts')->first();
+
+        $id_arr = [];
+        $new_arr = [];      
+
+        if ($request->table_columns) {
+            $new_receipts = DB::table('new_receipts')->where($request->table_columns, 'like', '%'.$search.'%')->paginate(10);
+        }
+        else{
+            foreach($attributes as $key => $value)
+            {
+                if ($key !== 'updated_at') {
+                    $sheet = DB::table('new_receipts')->where($key, 'like', '%'.$search.'%')->get()->first();
+                    if ($sheet) {                       
+                        $temp_arr = DB::table('new_receipts')->where($key, 'like', '%'.$search.'%')->get();
+                        $new_arr = $temp_arr->filter(function ($item, $k) use($id_arr) {
+                            if (!in_array($item->id, $id_arr)) { 
+                                $id_arr[] = $item->id;                                
+                                return $item;                       
+                            }                                                   
+                        });                     
+                        $filter_arr[] = $new_arr;                                   
+                    }
+                }               
+            }
+
+            return view('admin.new_receipts.new_receipts_find', compact('title','filter_arr'));       
+        }
+        
+        $data = $request->all();             
+        
+        return view('admin.new_receipts.new_receipts', compact('title','new_receipts','data'));
+    }
+
+
+	public function createNewReceipt($receipt)
+	{
+		$phone = str_replace('+', '', $receipt['senderPhone']);
+		$date = date('Y-m-d');
+		$name = str_replace('-', '_', $date).'_'.$phone;
+		$link = $this->savePdfReceipt($receipt, $name, $date);
+		
+		if (!Schema::hasTable('new_receipts')){
+			Schema::create('new_receipts', function (Blueprint $table) {
+				$table->increments('id');
+				$table->string('name')->nullable();
+				$table->string('link')->nullable();			
+				$table->timestamps();
+			});
+		}
+
+		DB::table('new_receipts')->insert([
+			'name'=>$name,
+			'link'=>$link,
+			'created_at'=>$date
+		]);
+
+		$last_id = DB::getPdo()->lastInsertId();
+		$download = url('/download-new-receipt').'/'.$last_id;
+
+		$this->sendSms($phone, $download);
+				
+		return $name;
+	}
+
+
+	/**
+    *  Create pdf file
+    */
+    public function pdfviewReceipt($receipt, $name, $date)
+    {       
+        return view('pdf.pdfview_receipt',compact('receipt','name','date'));
+    }
+
+
+    public function savePdfReceipt($receipt, $name, $date)
+    {
+        $folderPath = $this->checkDirectory('receipts_'.date("Y_m"));       
+        $file_name = $name.'.pdf';
+        $pdf = PDF::loadView('pdf.pdfview_receipt',compact('receipt','name','date'));
+        $pdf->save($folderPath.$file_name);
+
+        return $folderPath.$file_name;
+    }
+
+	
+	public function downloadNewReceipt($id)
+	{   
+		$item = DB::table('new_receipts')->find($id);
+        return response()->download($item->link);
+	}
 }

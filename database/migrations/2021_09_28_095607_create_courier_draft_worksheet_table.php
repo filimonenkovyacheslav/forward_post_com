@@ -15,6 +15,7 @@ class CreateCourierDraftWorksheetTable extends Migration
     {
         Schema::create('courier_draft_worksheet', function (Blueprint $table) {
             $table->increments('id');
+            $table->unsignedInteger('index_number')->nullable();
             $table->string('site_name')->default('DD-C');
             $table->string('packing_number')->nullable();
             $table->string('date')->nullable();

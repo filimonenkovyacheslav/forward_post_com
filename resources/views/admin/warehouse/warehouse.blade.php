@@ -1,4 +1,4 @@
-@extends('layouts.phil_ind_admin')
+@extends('layouts.admin')
 @section('content')
 @can('editColumns-2')
 <!-- <div class="breadcrumbs">
@@ -70,7 +70,7 @@
 								<input type="search" name="table_filter_value" class="form-control form-control-sm">
 							</label>
 							<input type="hidden" name="hide_left">
-							<button type="button" id="table_filter_button" style="margin-left:30px" class="btn btn-default">Search</button>
+							<button type="submit" id="table_filter_button" style="margin-left:30px" class="btn btn-default">Search</button>
 						</form>
 						
 						<label style="margin-top: 30px;margin-left: 30px;">Hide left pallets

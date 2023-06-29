@@ -67,7 +67,7 @@
 
 							<input type="hidden" name="for_active">
 							
-							<button type="button" id="table_filter_button" style="margin-left:30px" class="btn btn-default">Search</button>
+							<button type="submit" id="table_filter_button" style="margin-left:30px" class="btn btn-default">Search</button>
 						</form>
 					
 					</div>

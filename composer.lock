@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6c3e9fe68f3fd499d628bcc248d9460a",
+    "content-hash": "2e81bb1ffa22353a5789ec01176cd349",
     "packages": [
         {
             "name": "barryvdh/laravel-dompdf",
@@ -4319,6 +4319,55 @@
                 "environment"
             ],
             "time": "2021-01-20T14:39:13+00:00"
+        },
+        {
+            "name": "zadarma/user-api-v1",
+            "version": "v1.1.9",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/zadarma/user-api-v1.git",
+                "reference": "bfdb7550b8f17e49b2928a84bfa0ec8587838806"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/zadarma/user-api-v1/zipball/bfdb7550b8f17e49b2928a84bfa0ec8587838806",
+                "reference": "bfdb7550b8f17e49b2928a84bfa0ec8587838806",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "php": ">=5.5.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Zadarma_API\\": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Zadarma",
+                    "email": "github@zadarma.com"
+                }
+            ],
+            "description": "PHP class for Zadarma API",
+            "homepage": "https://github.com/zadarma/user-api-v1",
+            "keywords": [
+                "api",
+                "free calls",
+                "pbx",
+                "sip",
+                "zadarma"
+            ],
+            "support": {
+                "issues": "https://github.com/zadarma/user-api-v1/issues",
+                "source": "https://github.com/zadarma/user-api-v1/tree/v1.1.9"
+            },
+            "time": "2023-01-17T09:52:53+00:00"
         }
     ],
     "packages-dev": [

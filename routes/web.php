@@ -24,6 +24,10 @@ Route::group(['prefix' => App\Http\Middleware\LocaleMiddleware::getLocale()], fu
 	Route::get('/set-indexes','Admin\NewWorksheetController@setIndexes');
 	Route::get('/set-draft-indexes','Admin\CourierDraftController@setIndexes');
 
+	// New Receipt
+	Route::get('/download-new-receipt/{id}',['uses' => 'Admin\AdminController@downloadNewReceipt','as' => 'downloadNewReceipt']);
+	Route::get('/send-sms',['uses' => 'Controller@sendSms','as' => 'sendSms']);
+
 	// Tracking Lists	
 	Route::get('/tracking-lists',['uses' => 'Admin\TrackingListController@index','as' => 'trackingLists']);
 	Route::get('/tracking-lists-filter',['uses' => 'Admin\TrackingListController@trackingListFilter','as' => 'trackingListFilter']);
@@ -78,7 +82,9 @@ Route::group(['prefix' => App\Http\Middleware\LocaleMiddleware::getLocale()], fu
 	
 	Route::get('/page-{page_urn}','Admin\FrontPagesController@frontPage')->name('frontPage');
 	
-	Route::get('/parcel-form', 'FrontController@parcelForm')->name('parcelForm');	
+	Route::get('/parcel-form', 'FrontController@parcelForm')->name('parcelForm');
+
+	Route::post('/parcel-form', 'FrontController@newParcelAdd')->name('newParcelAdd');	
 
 	Route::get('/parcel-form-prior', 'FrontController@parcelFormOld')->name('parcelFormOld');
 
@@ -175,7 +181,12 @@ Route::get('/home', 'HomeController@index')->name('home');
 *  Admin
 */
 Route::group(['prefix' => 'admin','middleware' => 'auth'],function() {	
-	
+
+	// New Receipts
+	Route::get('/new-receipts',['uses' => 'Admin\AdminController@showNewReceipts','as' => 'showNewReceipts']);
+
+	Route::get('/new-receipts-filter',['uses' => 'Admin\AdminController@newReceiptsFilter','as' => 'newReceiptsFilter']);
+		
 	// General Search	
 	Route::get('/general-search',['uses' => 'Admin\AdminController@generalSearchShow','as' => 'generalSearchShow']);
 
@@ -224,6 +235,8 @@ Route::group(['prefix' => 'admin','middleware' => 'auth'],function() {
 	Route::get('/trash-filter',['uses' => 'Admin\TrashController@trashFilter','as' => 'trashFilter']);
 
 	Route::get('/trash-activate/{id}',['uses' => 'Admin\TrashController@fromTrash','as' => 'fromTrash']);
+
+	Route::get('/trash-delete/{id}',['uses' => 'Admin\TrashController@deleteFromTrash','as' => 'deleteFromTrash']);
 
 	// Log of deleted orders
 	Route::get('/logs',['uses' => 'Admin\DeletedLogController@index','as' => 'adminLog']);

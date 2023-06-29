@@ -99,7 +99,7 @@
 
 							<input type="hidden" name="for_active">
 							
-							<button type="button" id="table_filter_button" style="margin-left:30px" class="btn btn-default">Search</button>
+							<button type="submit" id="table_filter_button" style="margin-left:30px" class="btn btn-default">Search</button>
 						</form>
 					
 					</div>
@@ -197,6 +197,10 @@
 										<td class="td-button">
 
 											<a class="btn btn-success" data-id="{{ $row->id }}" onclick="ConfirmActivate()" href="{{ url('/admin/trash-activate/'.$row->id) }}">Activate</a>
+
+											@can('update-user')
+											<a class="btn btn-danger" data-id="{{ $row->id }}" onclick="ConfirmDelete()" href="{{ url('/admin/trash-delete/'.$row->id) }}">Remove</a>
+											@endcan
 											
 										</td>
 										<td title="{{$table_name}}">
@@ -385,6 +389,15 @@
 	function ConfirmActivate()
 	{
 		var x = confirm("Are you sure you want to activate?");
+		if (x)
+			return true;
+		else
+			return false;
+	}
+
+	function ConfirmDelete()
+	{
+		var x = confirm("Are you sure you want to delete?");
 		if (x)
 			return true;
 		else

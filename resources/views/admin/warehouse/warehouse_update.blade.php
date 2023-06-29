@@ -1,4 +1,4 @@
-@extends('layouts.phil_ind_admin')
+@extends('layouts.admin')
 @section('content')
 @can('editColumns-2')
 <!-- <div class="breadcrumbs">

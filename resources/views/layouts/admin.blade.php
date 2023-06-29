@@ -102,7 +102,10 @@
                     </li>
 
                     @can('editPost')
-                    <li class="dropdown">
+                    <li>
+                        <a href="{{route('showNewReceipts')}}"><i class="menu-icon fa fa-book "></i> New Receipts</a>
+                    </li>
+                    <!-- <li class="dropdown">
                         <a class="btn btn-dropdown dropdown-toggle" type="button" data-toggle="dropdown">Квитанции
                             <span class="caret"></span>
                             <i class="menu-icon fa fa-book "></i>
@@ -112,7 +115,7 @@
                             <li><a href="{{url('/admin/receipts/ul')}}"> Квитанции ЮЛ (Receipts UL) </a></li>
                             <li><a href="{{route('adminReceiptsArchive')}}"></i> Notifications </a></li>
                         </ul>
-                    </li>                     
+                    </li>  -->                    
                     @endcan
 
                     @can('editPost')
