@@ -164,6 +164,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         Collective\Html\HtmlServiceProvider::class,
         Barryvdh\DomPDF\ServiceProvider::class,
+        niklasravnsborg\LaravelPdf\PdfServiceProvider::class,
     ],
 
     /*
@@ -217,6 +218,7 @@ return [
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'Transliterate' => ElForastero\Transliterate\TransliterationFacade::class,
         'PDF' => Barryvdh\DomPDF\Facade::class,
+        'ArPDF' => niklasravnsborg\LaravelPdf\Facades\Pdf::class,
 
         /*Models aliases*/
         'CourierDraftWorksheet' => \App\CourierDraftWorksheet::class,

@@ -42,7 +42,7 @@
                     <input type="checkbox" name="not_first_order">
                 </div>
 
-                <div class="form-group">
+                <!-- <div class="form-group">
                     <label class="control-label">I need empty box/boxes</label>
                     <input onclick="clickRadio(this)" type="radio" name="need_box" value="need">
                     <h6>please specify the boxes types and quantity</h6>
@@ -64,7 +64,7 @@
                     
                     <label class="control-label">I send in my own box</label>
                     <input onclick="clickRadio(this)" type="radio" name="need_box" value="not_need" checked>
-                </div>                
+                </div>  -->               
 
                 <div class="container">
                     <!-- Modal -->
@@ -337,115 +337,23 @@
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-9">
-                            {!! Form::text('item_1', isset($data_parcel->item_1) ? $data_parcel->item_1 : old('item_1'),['class' => 'form-control', 'placeholder' => 'item 1', 'data-item' => '1'])!!}
-                        </div>
-                        <div class="col-3">
-                            {!! Form::text('q_item_1', isset($data_parcel->q_item_1) ? $data_parcel->q_item_1 : old('q_item_1'),['class' => 'form-control'])!!}
-                        </div>
-                    </div>
-                </div>
+                @for ($i=1; $i < 41; $i++)
+                @php
+                    $item = 'item_'.$i;
+                    $q_item = 'q_item_'.$i;
+                @endphp
 
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-9">
-                            {!! Form::text('item_2', isset($data_parcel->item_2) ? $data_parcel->item_2 : old('item_2'),['class' => 'form-control', 'placeholder' => 'item 2', 'data-item' => '2'])!!}
-                        </div>
-                        <div class="col-3">
-                            {!! Form::text('q_item_2', isset($data_parcel->q_item_2) ? $data_parcel->q_item_2 : old('q_item_2'),['class' => 'form-control'])!!}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-9">
-                            {!! Form::text('item_3', isset($data_parcel->item_3) ? $data_parcel->item_3 : old('item_3'),['class' => 'form-control', 'placeholder' => 'item 3', 'data-item' => '3'])!!}
-                        </div>
-                        <div class="col-3">
-                            {!! Form::text('q_item_3', isset($data_parcel->q_item_3) ? $data_parcel->q_item_3 : old('q_item_3'),['class' => 'form-control'])!!}
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-9">
+                                {!! Form::text($item, isset($data_parcel->$item) ? $data_parcel->$item : old($item),['class' => 'form-control', 'placeholder' => 'item '.$i, 'data-item' => $i])!!}
+                            </div>
+                            <div class="col-3">
+                                {!! Form::text($q_item, isset($data_parcel->$q_item) ? $data_parcel->$q_item : old($q_item),['class' => 'form-control'])!!}
+                            </div>
                         </div>
                     </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-9">
-                            {!! Form::text('item_4', isset($data_parcel->item_4) ? $data_parcel->item_4 : old('item_4'),['class' => 'form-control', 'placeholder' => 'item 4', 'data-item' => '4'])!!}
-                        </div>
-                        <div class="col-3">
-                            {!! Form::text('q_item_4', isset($data_parcel->q_item_4) ? $data_parcel->q_item_4 : old('q_item_4'),['class' => 'form-control'])!!}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-9">
-                            {!! Form::text('item_5', isset($data_parcel->item_5) ? $data_parcel->item_5 : old('item_5'),['class' => 'form-control', 'placeholder' => 'item 5', 'data-item' => '5'])!!}
-                        </div>
-                        <div class="col-3">
-                            {!! Form::text('q_item_5', isset($data_parcel->q_item_5) ? $data_parcel->q_item_5 : old('q_item_5'),['class' => 'form-control'])!!}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-9">
-                            {!! Form::text('item_6', isset($data_parcel->item_6) ? $data_parcel->item_6 : old('item_6'),['class' => 'form-control', 'placeholder' => 'item 6', 'data-item' => '6'])!!}
-                        </div>
-                        <div class="col-3">
-                            {!! Form::text('q_item_6', isset($data_parcel->q_item_6) ? $data_parcel->q_item_6 : old('q_item_6'),['class' => 'form-control'])!!}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-9">
-                            {!! Form::text('item_7', isset($data_parcel->item_7) ? $data_parcel->item_7 : old('item_7'),['class' => 'form-control', 'placeholder' => 'item 7', 'data-item' => '7'])!!}
-                        </div>
-                        <div class="col-3">
-                            {!! Form::text('q_item_7', isset($data_parcel->q_item_7) ? $data_parcel->q_item_7 : old('q_item_7'),['class' => 'form-control'])!!}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-9">
-                            {!! Form::text('item_8', isset($data_parcel->item_8) ? $data_parcel->item_8 : old('item_8'),['class' => 'form-control', 'placeholder' => 'item 8', 'data-item' => '8'])!!}
-                        </div>
-                        <div class="col-3">
-                            {!! Form::text('q_item_8', isset($data_parcel->q_item_8) ? $data_parcel->q_item_8 : old('q_item_8'),['class' => 'form-control'])!!}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-9">
-                            {!! Form::text('item_9', isset($data_parcel->item_9) ? $data_parcel->item_9 : old('item_9'),['class' => 'form-control', 'placeholder' => 'item 9', 'data-item' => '9'])!!}
-                        </div>
-                        <div class="col-3">
-                            {!! Form::text('q_item_9', isset($data_parcel->q_item_9) ? $data_parcel->q_item_9 : old('q_item_9'),['class' => 'form-control'])!!}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-9">
-                            {!! Form::text('item_10', isset($data_parcel->item_10) ? $data_parcel->item_10 : old('item_10'),['class' => 'form-control', 'placeholder' => 'item 10', 'data-item' => '10'])!!}
-                        </div>
-                        <div class="col-3">
-                            {!! Form::text('q_item_10', isset($data_parcel->q_item_10) ? $data_parcel->q_item_10 : old('q_item_10'),['class' => 'form-control'])!!}
-                        </div>
-                    </div>
-                </div>
+                @endfor
 
                 {!! Form::hidden('parcels_qty',isset($data_parcel->parcels_qty) ? $data_parcel->parcels_qty :'1') !!}
 
@@ -574,7 +482,7 @@
                 }
             }
             else{
-                if (!document.querySelector('input[name="shipper_city"]').value){
+                if (!document.querySelector('[name="shipper_city"]').value){
                     alert('The city field is required !');
                     return false;
                 }

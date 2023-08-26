@@ -29,16 +29,21 @@ class ChecklistController extends Controller
     {
         if ($request->hasFile('import_file')) {
             $file = $request->file('import_file');
-            $import = new ChecklistImport();
+            $import = new ChecklistImport();    
+            $array = Excel::toArray($import, $file); 
+            $result = $import->checkRow($array[0][0]);
+
+            if (!$result) return redirect()->to(session('this_previous_url'))->with('status-error', 'Fields "tracking_main" and "value" are required!');     
 
             if (Schema::hasTable('checklist')) Schema::dropIfExists('checklist');
             Schema::create('checklist', function (Blueprint $table) {
                 $table->increments('id');
                 $table->string('tracking_main')->nullable();
+                $table->string('value')->nullable();
                 $table->timestamps();
-            });
-            
-            Excel::import($import, $file);
+            }); 
+
+            Excel::import($import, $file);                       
 
             return redirect()->to(session('this_previous_url'))->with('status', 'File uploaded successfully!');
         } else {

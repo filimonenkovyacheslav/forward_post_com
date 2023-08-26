@@ -16,6 +16,7 @@ class CreateChecklistTable extends Migration
         Schema::create('checklist', function (Blueprint $table) {
             $table->increments('id');
             $table->string('tracking_main', 50);
+            $table->string('value');
             $table->timestamps();
         });
     }

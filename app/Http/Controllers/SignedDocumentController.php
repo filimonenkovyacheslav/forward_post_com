@@ -786,7 +786,7 @@ class SignedDocumentController extends Controller
             else if($field === 'package_content'){
                 $content = '';       
                 
-                for ($i=1; $i < 11; $i++){
+                for ($i=1; $i < 41; $i++){
                     $temp = 'other_content_'.$i;
                     $temp_2 = 'other_quantity_'.$i;
                     if (isset($request->$temp) AND !empty($request->$temp)) {
@@ -1068,7 +1068,7 @@ class SignedDocumentController extends Controller
             }
             else if ($field === 'shipped_items') {
                 $temp = '';
-                for ($i=1; $i < 11; $i++) { 
+                for ($i=1; $i < 41; $i++) { 
                     $var = 'item_'.$i;
                     $var_2 = 'q_item_'.$i;
                     if (isset($request->$var) AND !empty($request->$var)) {
@@ -1139,7 +1139,7 @@ class SignedDocumentController extends Controller
                 }
                 else if ($field === 'items') {
                     $temp = '';
-                    for ($i=1; $i < 11; $i++) { 
+                    for ($i=1; $i < 41; $i++) { 
                         $var = 'item_'.$i;
                         $var_2 = 'q_item_'.$i;
                         if (isset($request->$var) AND !empty($request->$var)) {

@@ -59,7 +59,7 @@
 							<label>Фильтр (Filter):
 								<input type="search" name="table_filter_value" class="form-control form-control-sm">
 							</label>
-							<button type="button" id="table_filter_button" style="margin-left:30px" class="btn btn-default">Поиск (Search)</button>
+							<button type="submit" id="table_filter_button" style="margin-left:30px" class="btn btn-default">Поиск (Search)</button>
 						</form>
 					</div>
 					

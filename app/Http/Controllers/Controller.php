@@ -2085,7 +2085,7 @@ class Controller extends BaseController
         
         if ($this->getDomainRule() !== 'forward') {
             try{
-                $result = $api->sendSms($sender_phone, 'קיבלה קבלה חדשה מחברת שליחויות בינלאומית, לצפייה לחצו כאן'.' '.$link, '972559909659');
+                $result = $api->sendSms($sender_phone, 'קיבלה קבלה חדשה מחברת שליחויות בינלאומית, לצפייה לחצו כאן'.' '.$link);
                 return $link;
             } catch (\Zadarma_API\ApiException $e) {
                 return $e->getMessage();

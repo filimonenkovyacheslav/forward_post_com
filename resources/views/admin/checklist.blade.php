@@ -78,7 +78,8 @@
 				<table class="table table-striped table-bordered">
 					<thead>
 						<tr>
-							<th>Tracking No.</th>				
+							<th>Tracking No.</th>	
+							<th>Value</th>			
 						</tr>
 
 					</thead>
@@ -90,7 +91,10 @@
 						<tr>
 							<td title="{{$row->tracking_main}}">
 								<div class="div-4">{{$row->tracking_main}}</div>
-							</td>                                                  
+							</td>  
+							<td title="{{$row->value}}">
+								<div class="div-invoice">{{$row->value}}</div>
+							</td>                                                
 						</tr>
 
 						@endforeach

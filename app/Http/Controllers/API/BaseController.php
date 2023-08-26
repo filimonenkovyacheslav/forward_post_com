@@ -581,7 +581,16 @@ class BaseController extends AdminController
                 $link = ($input['which_admin'] === 'ru') ? '/form-with-signature/' : '/form-with-signature-eng/';
                 $result = app('App\Http\Controllers\SignedDocumentController')->createTempTable($request);
                 if ($result) {
-                    $link .= '0/'.$result.'/'.$user->name;
+                    if ($input['id']) {
+                        $task = CourierTask::find($input['id']);
+                        if ($task) {
+                            $worksheet = $task->getWorksheet();
+                            $link .= $worksheet->id.'/'.$result.'/'.$user->name.'?quantity_sender=1&quantity_recipient=1&api=true';
+                        }
+                        else return $this->sendError('Task id error.');
+                    }
+                    else
+                        $link .= '0/'.$result.'/'.$user->name;
                     return $this->sendResponse(compact('link'), 'Link created successfully.');
                 }               
             }
@@ -729,7 +738,7 @@ class BaseController extends AdminController
             $name = $input['name'];
 
             if ($role === 'admin' || $role === 'courier' || $role === 'agent') {
-                $result = Checklist::pluck('tracking_main');                
+                $result = Checklist::all()->toArray();                
             }
             else return $this->sendError('Role error.');
             
@@ -747,7 +756,6 @@ class BaseController extends AdminController
     {
         $input = $request->all();
         $validator = Validator::make($input, [
-            'id' => 'required',
             'senderPhone' => 'required',
             'senderName' => 'required',
             'quantity' => 'required',
