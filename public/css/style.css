@@ -290,7 +290,7 @@ ul.navbar-nav>li:hover>ul{
   display: flex;
 }
 .page-bg{
-  background: url(../images/page-bg.jpg);
+  /*background: url(../images/page-bg.jpg);*/
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
@@ -707,6 +707,13 @@ Front Forward
   background-repeat: no-repeat;
   background-size: contain;
 }
+.gcs-header{
+  background: url('/images/gcs-deliveries-bg.jpg');
+  height: 800px;
+  width: 100%;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
 .black-button{
   transition: all 0.2s ease, visibility 0s;
   background: #24292D;
@@ -719,7 +726,20 @@ Front Forward
   text-align: center;
   display: inline-block;
 }
-.black-button:hover{
+.yellow-button{
+  transition: all 0.2s ease, visibility 0s;
+  background: rgb(255, 228, 115);
+  border: 1px solid #24292D;
+  width: 292px;
+  height: 37px;
+  color: #24292D;
+  font-family: poppins-semibold,poppins,sans-serif;
+  font-size: 22px;
+  font-weight: 200;
+  text-align: center;
+  display: inline-block;
+}
+.black-button:hover,.yellow-button:hover{
   background: #fff;
   color: #24292D;
 }
@@ -733,8 +753,18 @@ Front Forward
   margin-bottom: 50px;
 }
 
+.gcs-footer{
+  background: rgb(40, 41, 43);
+}
+
 @media (max-width: 767px) {
   .forward-header{
     display: none;
+  }
+  .gcs-header{
+    display: none;
+  }
+  .row-black-button, .row-black-button .black-button, .row-black-button .yellow-button{
+    margin-top:50px;
   }
 }

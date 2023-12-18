@@ -403,6 +403,13 @@
                     const num = item.getAttribute('data-item');
                     const content = document.querySelector('[name="item_'+num+'"]');
                     const quantity = document.querySelector('[name="q_item_'+num+'"]');
+
+                    if (content.value.indexOf(':') !== -1 || quantity.value.indexOf(':') !== -1) {
+                        trueInput = true;
+                        alert('Remove symbol ":" from content !');
+                        return false;
+                    }
+                    
                     if (content.value && !(quantity.value)) {
                         alert('Fill in the quantity !');
                         return false;

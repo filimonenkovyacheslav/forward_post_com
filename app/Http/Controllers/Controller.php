@@ -2061,6 +2061,149 @@ class Controller extends BaseController
     }
 
 
+    protected function fillResponseDataArchiveRu($data, $request, $draft = false)
+    {
+        $data_parcel = [];
+        if ($draft) $data_parcel['phone_exist_checked'] = 'true';
+        $data_parcel['site_name'] = $data->site_name;
+        
+        if ($request->quantity_sender === '1') {
+            $shipper_name = explode(" ", $data->shipper_name);
+            if (count($shipper_name) > 1) {
+                $data_parcel['first_name'] = $shipper_name[0];
+                $data_parcel['last_name'] = $shipper_name[1];
+            }
+            elseif (count($shipper_name) == 1) {
+                $data_parcel['first_name'] = $shipper_name[0];
+                $data_parcel['last_name'] = '';
+            }
+            else{
+                $data_parcel['first_name'] = '';
+                $data_parcel['last_name'] = '';
+            }
+            $data_parcel['sender_address'] = $data->shipper_address;
+            $data_parcel['standard_phone'] = $data->standard_phone;
+            $data_parcel['sender_country'] = $data->shipper_country;
+            $data_parcel['sender_city'] = $data->shipper_city;
+        }
+        
+        if ($request->quantity_recipient === '1') {
+            if (!$draft) {
+                $data = Archive::where([
+                    ['standard_phone', 'like', '%'.$request->input('shipper_phone').'%'],
+                    ['consignee_name','<>', null],
+                    ['consignee_address','<>', null],
+                    ['consignee_phone','<>', null]
+                ])
+                ->get()->last();
+            }
+            
+            if ($data) {
+                $address = trim(stristr($data->consignee_address, " "));                    
+                $consignee_name = explode(" ", $data->consignee_name);
+                if (count($consignee_name) > 1) {
+                    $data_parcel['recipient_first_name'] = $consignee_name[0];
+                    $data_parcel['recipient_last_name'] = $consignee_name[1];
+                }
+                elseif (count($consignee_name) == 1) {
+                    $data_parcel['recipient_first_name'] = $consignee_name[0];
+                    $data_parcel['recipient_last_name'] = '';
+                }
+                else{
+                    $data_parcel['recipient_first_name'] = '';
+                    $data_parcel['recipient_last_name'] = '';
+                }
+                $data_parcel['recipient_address'] = $address;
+                $data_parcel['recipient_country'] = $data->consignee_country;
+                $data_parcel['recipient_phone'] = $data->consignee_phone;
+                $data_parcel['recipient_passport'] = $data->consignee_id;
+            }
+            else{
+                $data_parcel['recipient_first_name'] = '';
+                $data_parcel['recipient_last_name'] = '';
+                $data_parcel['recipient_address'] = '';
+                $data_parcel['recipient_phone'] = '';
+                $data_parcel['recipient_passport'] = '';
+                $data_parcel['recipient_country'] = '';
+            }
+        }
+        
+        return $data_parcel;
+    }
+
+
+    protected function fillResponseDataArchiveEng($data, $request, $draft = false)
+    {
+        $data_parcel = [];
+        if ($draft) $data_parcel['phone_exist_checked'] = 'true';
+        
+        if ($request->quantity_sender === '1') {
+            $shipper_name = explode(" ", $data->shipper_name);
+            if (count($shipper_name) > 1) {
+                $data_parcel['first_name'] = $shipper_name[0];
+                $data_parcel['last_name'] = $shipper_name[1];
+            }
+            elseif (count($shipper_name) == 1) {
+                $data_parcel['first_name'] = $shipper_name[0];
+                $data_parcel['last_name'] = '';
+            }
+            else{
+                $data_parcel['first_name'] = '';
+                $data_parcel['last_name'] = '';
+            }
+            $data_parcel['shipper_address'] = $data->shipper_address;
+            $data_parcel['standard_phone'] = $data->standard_phone;
+            $data_parcel['shipper_phone'] = $data->shipper_phone;
+            $data_parcel['shipper_country'] = $data->shipper_country;
+            $data_parcel['shipper_id'] = $data->shipper_id;
+            $data_parcel['shipper_city'] = $data->shipper_city;
+        }
+        
+        if ($request->quantity_recipient === '1') {
+            if (!$draft) {
+                $data = Archive::where([
+                    ['standard_phone', 'like', '%'.$request->input('shipper_phone').'%'],
+                    ['consignee_name','<>', null],
+                    ['consignee_address','<>', null],
+                    ['consignee_phone','<>', null]
+                ])
+                ->get()->last();
+            }
+            
+            if ($data) {
+                $address = trim(stristr($data->consignee_address, " "));                    
+                $consignee_name = explode(" ", $data->consignee_name);
+                if (count($consignee_name) > 1) {
+                    $data_parcel['consignee_first_name'] = $consignee_name[0];
+                    $data_parcel['consignee_last_name'] = $consignee_name[1];
+                }
+                elseif (count($consignee_name) == 1) {
+                    $data_parcel['consignee_first_name'] = $consignee_name[0];
+                    $data_parcel['consignee_last_name'] = '';
+                }
+                else{
+                    $data_parcel['consignee_first_name'] = '';
+                    $data_parcel['consignee_last_name'] = '';
+                }
+                $data_parcel['consignee_address'] = $address;
+                $data_parcel['consignee_country'] = $data->consignee_country;
+                $data_parcel['consignee_phone'] = $data->consignee_phone;
+                $data_parcel['consignee_id'] = $data->consignee_id;
+            }
+            else{
+                $data_parcel['consignee_first_name'] = '';
+                $data_parcel['consignee_last_name'] = '';
+                $data_parcel['consignee_address'] = '';
+                $data_parcel['consignee_phone'] = '';
+                $data_parcel['consignee_id'] = '';
+                $data_parcel['consignee_country'] = '';
+            }
+        }
+        
+        return $data_parcel;
+    }
+
+
     public function importDraft()
     {
         return '<h1>Draft imported successfully !</h1>';
@@ -2073,20 +2216,29 @@ class Controller extends BaseController
         foreach ($data as $value) {
             $temp_arr[] = ['tracking'=>$value,'list_name'=>$list_name];
         }
-        DB::table('tracking_lists')->insert($temp_arr);
+        $result = DB::table('tracking_lists')
+        ->where([
+            ['tracking',$temp_arr[0]['tracking']],
+            ['list_name',$temp_arr[0]['list_name']]
+        ])
+        ->first();
 
+        if (!$result) {
+            DB::table('tracking_lists')->insert($temp_arr);
+        }
+        
         return true;        
     }
 
 
     public function sendSms($sender_phone, $link)
     {
-        $api = new \Zadarma_API\Api(env('SEND_SMS_KEY'), env('SEND_SMS_SECRET'));      
+        $api = new \Zadarma_API\Api(env('SEND_SMS_KEY'), env('SEND_SMS_SECRET'));             
         
         if ($this->getDomainRule() !== 'forward') {
             try{
                 $result = $api->sendSms($sender_phone, 'קיבלה קבלה חדשה מחברת שליחויות בינלאומית, לצפייה לחצו כאן'.' '.$link);
-                return $link;
+                return $result;
             } catch (\Zadarma_API\ApiException $e) {
                 return $e->getMessage();
             }
@@ -2094,11 +2246,50 @@ class Controller extends BaseController
         elseif($this->getDomainRule() === 'forward'){
             try{
                 $result = $api->sendSms($sender_phone, 'קיבלה קבלה חדשה מחברת אוריינטל אקספרס 0559398039 ,לצפייה לחצו כאן'.' '.$link);
-                return $link;
+                return $result;
             } catch (\Zadarma_API\ApiException $e) {
                 return $e->getMessage();
             }
         }
+    }
+
+
+    public function downloadZip($id_arr, $table, $date)
+    {
+        $files_folder = 'packing_archive_'.$date;
+        $name_arr = $this->getPdfFileNames($id_arr, $table);
+        $files = File::files(public_path('upload/documents'));
+        $new_path = $this->checkDirectory($files_folder);
+        $old_path = $this->checkDirectory('documents');
+        
+        foreach ($files as $key => $value){              
+            $this_file_name = explode('.pdf', basename($value))[0];           
+            if (in_array($this_file_name, $name_arr)) {
+                $relative_name = basename($value);
+                rename($old_path.$relative_name, $new_path.$relative_name);
+            }                
+        }
+
+        return $files_folder;
+    }
+
+
+    private function getPdfFileNames($id_arr, $table)
+    {
+        $name_arr = [];
+        
+        switch($table) {
+            case 'new_worksheet';
+                $name_arr = NewWorksheet::whereIn('id', $id_arr)->pluck('packing_number')->toArray();
+                break;
+            case 'phil_ind_worksheet';
+                $name_arr = PhilIndWorksheet::whereIn('id', $id_arr)->pluck('packing_number')->toArray();
+                break;      
+            default:
+            break;
+        }
+
+        return $name_arr;
     }
 
 }

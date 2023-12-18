@@ -156,6 +156,8 @@
 								<option value="change">Изменить</option>
 								@endcan
 
+								<option value="double">Дубль в Черновике</option>
+
 								<!-- <option value="cancel-pdf">Отменить PDF</option> -->
 								<option value="download-pdf">Скачать PDF</option>
 								<option value="return-draft">Вернуть в Черновик</option>
@@ -242,6 +244,12 @@
 
 						<form class="checkbox-operations-change-one" action="{{ url('/admin/new-worksheet/') }}" method="GET">
 							@csrf	
+						</form>
+
+						<form class="checkbox-operations-double" action="{{ url('/admin/courier-draft-worksheet-double/') }}" method="GET">
+							@csrf	
+							<input type="hidden" name="duplicate_qty" value="1">
+							<input type="hidden" name="worksheet_original" value="1">
 						</form>
 
 						<form class="checkbox-operations-return-draft" action="{{ url('/admin/return-draft') }}" method="GET">

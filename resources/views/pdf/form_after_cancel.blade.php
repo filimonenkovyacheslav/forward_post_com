@@ -384,6 +384,12 @@
                 const num = item.getAttribute('data-item');
                 const content = document.querySelector('[name="other_content_'+num+'"]');
                 const quantity = document.querySelector('[name="other_quantity_'+num+'"]');
+                
+                if (content.value.indexOf(':') !== -1 || quantity.value.indexOf(':') !== -1) {
+                    trueInput = true;
+                    alert('Уберите символ ":" из содержимого !');
+                    return false;
+                }
 
                 if (content.value && !(quantity.value)) {
                     trueInput = true;

@@ -96,6 +96,11 @@
                                                     {!! Form::text('shipper_phone',old('shipper_phone'),['class' => 'form-control', 'placeholder' => 'Phone*', 'required'])!!}
                                                     {!! Form::hidden('quantity_sender')!!}
                                                     {!! Form::hidden('quantity_recipient')!!}
+                                                    @if (isset($user_name))  
+                                                    {!! Form::hidden('user_name',$user_name) !!} 
+                                                    @else
+                                                    {!! Form::hidden('user_name','') !!}
+                                                    @endif
                                                 </div>
                                                 <div class="col-md-6">
                                                     {!! Form::button('Send',['class'=>'btn btn-success','type'=>'submit']) !!}
@@ -138,6 +143,11 @@
                                                     {!! Form::hidden('quantity_sender')!!}
                                                     {!! Form::hidden('quantity_recipient')!!}
                                                     {!! Form::hidden('draft','draft')!!}
+                                                    @if (isset($user_name))  
+                                                    {!! Form::hidden('user_name',$user_name) !!} 
+                                                    @else
+                                                    {!! Form::hidden('user_name','') !!}
+                                                    @endif
                                                 </div>
                                                 <div class="col-md-6">
                                                     {!! Form::button('Send',['class'=>'btn btn-success','type'=>'submit']) !!}
@@ -519,6 +529,13 @@
                     const num = item.getAttribute('data-item');
                     const content = document.querySelector('[name="item_'+num+'"]');
                     const quantity = document.querySelector('[name="q_item_'+num+'"]');
+                    
+                    if (content.value.indexOf(':') !== -1 || quantity.value.indexOf(':') !== -1) {
+                        trueInput = true;
+                        alert('Remove symbol ":" from content !');
+                        return false;
+                    }
+
                     if (content.value && !(quantity.value)) {
                         alert('Fill in the quantity !');
                         return false;

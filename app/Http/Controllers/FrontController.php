@@ -27,6 +27,23 @@ class FrontController extends AdminController
     }
 
 
+    public function parcelFormGcs()
+    {
+        $israel_cities = $this->israelCities();
+        $israel_cities['other'] = 'Другой город';
+        return view('parcel_form_gcs',compact('israel_cities'));       
+    }
+
+
+    public function parcelFormEngGcs()
+    {
+        $israel_cities = $this->israelCities();
+        $israel_cities['other'] = 'Other city';
+        $to_country = $this->to_country_arr;
+        return view('phil_ind_parcel_form_gcs',compact('israel_cities','to_country'));      
+    }
+
+
     public function parcelFormOld()
     {
         return view('parcel_form_old');       

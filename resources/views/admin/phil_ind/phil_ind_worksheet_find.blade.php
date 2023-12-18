@@ -142,6 +142,8 @@
 								<option value="change">Change</option>	
 								@endcan
 
+								<option value="double">Double in Draft</option>
+
 								<!-- <option value="cancel-pdf">Cancel PDF</option> -->
 								<option value="download-pdf">Download PDF</option>
 								<option value="return-eng-draft">Return to Draft</option>
@@ -203,6 +205,12 @@
 
 						<form class="checkbox-operations-change-one" action="{{ url('/admin/phil-ind-worksheet/') }}" method="GET">
 							@csrf	
+						</form>
+
+						<form class="checkbox-operations-double" action="{{ url('/admin/courier-eng-draft-worksheet-double/') }}" method="GET">
+							@csrf	
+							<input type="hidden" name="duplicate_qty" value="1">
+							<input type="hidden" name="worksheet_original" value="1">
 						</form>
 
 						<form class="checkbox-operations-return-eng-draft" action="{{ url('/admin/return-eng-draft') }}" method="GET">

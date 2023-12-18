@@ -22,7 +22,14 @@ Route::group(['prefix' => App\Http\Middleware\LocaleMiddleware::getLocale()], fu
 	})->name('welcome');
 
 	Route::get('/test-pdf','Admin\AdminController@testPDF');
+	
+	// Full Status Parcel
+	Route::get('/full-status-parcel', function () {
+		return view('full_status_parcel_form');
+	})->name('fullStatusParcelForm');
+	Route::post('/full-status-parcel','Admin\FullStatusParcelController@getFullStatusParcel')->name('getFullStatusParcel');
 
+	// Set Indexes
 	Route::get('/set-indexes','Admin\NewWorksheetController@setIndexes');
 	Route::get('/set-draft-indexes','Admin\CourierDraftController@setIndexes');
 
@@ -30,20 +37,6 @@ Route::group(['prefix' => App\Http\Middleware\LocaleMiddleware::getLocale()], fu
 	Route::get('/download-new-receipt/{id}',['uses' => 'Admin\AdminController@downloadNewReceipt','as' => 'downloadNewReceipt']);
 	Route::get('/send-sms',['uses' => 'Controller@sendSms','as' => 'sendSms']);
 	Route::get('/download-jpg-new-receipt/{id}',['uses' => 'Admin\AdminController@downloadJpgNewReceipt','as' => 'downloadJpgNewReceipt']);
-
-	// Tracking Lists	
-	Route::get('/tracking-lists',['uses' => 'Admin\TrackingListController@index','as' => 'trackingLists']);
-	Route::get('/tracking-lists-filter',['uses' => 'Admin\TrackingListController@trackingListFilter','as' => 'trackingListFilter']);
-	Route::post('/tracking-lists',['uses' => 'Admin\TrackingListController@destroy','as' => 'trackingListDelete']);
-	Route::post('/tracking-lists-export',['uses' => 'Admin\TrackingListController@exportTrackingList','as' => 'exportTrackingList']);
-	Route::get('/checklist',['uses' => 'ChecklistController@index','as' => 'checklist']);
-	
-	// Import csv
-	Route::post('/import-trackings','TrackingController@importTrackings')->name('importTrackings');
-	Route::get('/export-trackings',['uses' => 'TrackingController@exportTrackings','as' => 'exportTrackings']);
-	Route::post('/import-trackings-eng','TrackingController@importTrackingsEng')->name('importTrackingsEng');
-	Route::get('/export-trackings-eng',['uses' => 'TrackingController@exportTrackingsEng','as' => 'exportTrackingsEng']);
-	Route::post('/import-checklist','ChecklistController@importChecklist')->name('importChecklist');
 
 	// Update all packing numbers
 	Route::get('/all-packing-numbers', 'Controller@updateAllPdfPacking');
@@ -87,6 +80,10 @@ Route::group(['prefix' => App\Http\Middleware\LocaleMiddleware::getLocale()], fu
 	
 	Route::get('/parcel-form', 'FrontController@parcelForm')->name('parcelForm');
 
+	Route::get('/parcel-form-gcs', 'FrontController@parcelFormGcs')->name('parcelFormGcs');
+
+	Route::get('/phil-ind-parcel-form-gcs', 'FrontController@parcelFormEngGcs')->name('parcelFormEngGcs');
+
 	Route::post('/parcel-form', 'FrontController@newParcelAdd')->name('newParcelAdd');	
 
 	Route::get('/parcel-form-prior', 'FrontController@parcelFormOld')->name('parcelFormOld');
@@ -102,6 +99,14 @@ Route::group(['prefix' => App\Http\Middleware\LocaleMiddleware::getLocale()], fu
 	Route::post('/tracking-form', 'FrontController@getTracking')->name('getTracking');
 
 	Route::get('/tracking-ru-form', 'FrontController@trackingRuForm')->name('trackingRuForm');
+
+	Route::get('/tracking-ru-form-gcs', function () {
+		return view('tracking_ru_form_gcs');
+	})->name('trackingRuFormGcs');
+
+	Route::get('/tracking-form-gcs', function () {
+		return view('tracking_form_gcs');
+	})->name('trackingFormGcs');
 
 	Route::get('/china-parcel-form', 'FrontController@chinaParcelForm')->name('chinaParcelForm');
 
@@ -122,6 +127,33 @@ Route::group(['prefix' => App\Http\Middleware\LocaleMiddleware::getLocale()], fu
 	Route::post('/check-tracking-phone-eng',['uses' => 'FrontController@engCheckTrackingPhone','as' => 'engCheckTrackingPhone']);
 });
 
+Route::middleware('auth')->group(function () {	
+
+	// Tracking Lists	
+	Route::get('/tracking-lists',['uses' => 'Admin\TrackingListController@index','as' => 'trackingLists']);
+	Route::get('/tracking-lists-filter',['uses' => 'Admin\TrackingListController@trackingListFilter','as' => 'trackingListFilter']);
+	Route::post('/tracking-lists',['uses' => 'Admin\TrackingListController@destroy','as' => 'trackingListDelete']);
+	Route::post('/tracking-lists-export',['uses' => 'Admin\TrackingListController@exportTrackingList','as' => 'exportTrackingList']);
+
+	// Checklist
+	Route::get('/checklist',['uses' => 'ChecklistController@index','as' => 'checklist']);
+	Route::get('/checks-history',['uses' => 'ChecklistController@checksHistory','as' => 'checksHistory']);
+	Route::post('/checks-history',['uses' => 'ChecklistController@destroy','as' => 'checksHistoryDelete']);
+	Route::post('/checks-history-export',['uses' => 'ChecklistController@exportChecksHistory','as' => 'exportChecksHistory']);
+	Route::post('/import-checklist','ChecklistController@importChecklist')->name('importChecklist');
+	
+	// Import csv
+	Route::post('/import-trackings','TrackingController@importTrackings')->name('importTrackings');
+	Route::get('/export-trackings',['uses' => 'TrackingController@exportTrackings','as' => 'exportTrackings']);
+	Route::post('/import-trackings-eng','TrackingController@importTrackingsEng')->name('importTrackingsEng');
+	Route::get('/export-trackings-eng',['uses' => 'TrackingController@exportTrackingsEng','as' => 'exportTrackingsEng']);
+	
+	// Full Status Parcel
+	Route::get('/show-full-status-parcel','Admin\FullStatusParcelController@showFullStatusParcel')->name('showFullStatusParcel');
+	Route::get('/export-full-status-parcel','Admin\FullStatusParcelController@exportFullStatusParcel')->name('exportFullStatusParcel');
+	Route::post('/import-full-status-parcel','Admin\FullStatusParcelController@importFullStatusParcel')->name('importFullStatusParcel');
+
+});
 
 // Альтернатива php artisan storage:link
 Route::get('storage/{filename}', function ($filename)
@@ -184,6 +216,27 @@ Route::get('/home', 'HomeController@index')->name('home');
 *  Admin
 */
 Route::group(['prefix' => 'admin','middleware' => 'auth'],function() {	
+
+	// Archive
+	Route::get('/archive',['uses' => 'Admin\ArchiveController@index','as' => 'adminArchive']);
+
+	Route::post('/to-archive',['uses' => 'Admin\ArchiveController@toArchive','as' => 'toArchive']);
+
+	Route::get('/archive-filter',['uses' => 'Admin\ArchiveController@archiveFilter','as' => 'archiveFilter']);
+
+	Route::post('/to-archive-remove-files',['uses' => 'Admin\ArchiveController@toArchiveRemoveFiles','as' => 'toArchiveRemoveFiles']);
+
+	Route::post('/to-archive-remove-data',['uses' => 'Admin\ArchiveController@toArchiveRemoveData','as' => 'toArchiveRemoveData']);
+
+	Route::post('/to-archive-remove-temp-data',['uses' => 'Admin\ArchiveController@toArchiveRemoveTempData','as' => 'toArchiveRemoveTempData']);
+
+	Route::post('/to-repeat-download-files',['uses' => 'Admin\ArchiveController@toRepeatDownloadFiles','as' => 'toRepeatDownloadFiles']);
+
+	Route::post('/to-repeat-import',['uses' => 'Admin\ArchiveController@toRepeatImport','as' => 'toRepeatImport']);
+
+	Route::get('/export-archive',['uses' => 'Admin\ArchiveController@exportArchive','as' => 'exportArchive']);
+
+	Route::post('/delete-from-archive',['uses' => 'Admin\ArchiveController@deleteFromArchive','as' => 'deleteFromArchive']);
 
 	// New Receipts
 	Route::get('/new-receipts',['uses' => 'Admin\AdminController@showNewReceipts','as' => 'showNewReceipts']);

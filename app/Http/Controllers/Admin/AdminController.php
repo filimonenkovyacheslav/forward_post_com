@@ -1632,11 +1632,9 @@ class AdminController extends Controller
 		]);
 
 		$last_id = DB::getPdo()->lastInsertId();
-		$jpg = url('/download-jpg-new-receipt').'/'.$last_id;
+		$jpg = url('/download-jpg-new-receipt').'/'.$last_id;		
 
-		$this->sendSms($phone, $jpg);
-				
-		return $name;
+		return $jpg;
 	}
 
 

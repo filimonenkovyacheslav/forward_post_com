@@ -603,9 +603,15 @@ class CourierEngDraftController extends AdminController
     {
     	$duplicate_qty = $request->duplicate_qty;
     	$worksheet = CourierEngDraftWorksheet::find($id);
+    	if ($request->worksheet_original) {
+    		$worksheet = PhilIndWorksheet::find($id);
+    	}
     	if (!$worksheet->getLastDocUniq())
     		return redirect()->to(session('this_previous_url'))->with('status-error', 'You can not duplicate without PDF!');
-    	$old_delete = false;
+    	    	
+    	if ($request->worksheet_original) $old_delete = true;
+    	else $old_delete = false;
+    	
     	$worksheet_data = [
     		'standard_phone' => $worksheet->standard_phone,
     		'shipper_name' => $worksheet->shipper_name,
@@ -615,6 +621,7 @@ class CourierEngDraftController extends AdminController
     		'shipper_address' => $worksheet->shipper_address,
     		'shipper_phone' => $worksheet->shipper_phone,
     		'shipper_id' => $worksheet->shipper_id,
+    		'shipper_region' => $worksheet->shipper_region,    		
     		'consignee_name' => $worksheet->consignee_name,
     		'consignee_country' => $worksheet->consignee_country,
     		'house_name' => $worksheet->house_name,
@@ -636,7 +643,7 @@ class CourierEngDraftController extends AdminController
     			['standard_phone',$worksheet->standard_phone]
     		])->get();   		
 
-    		if (!$worksheet->getLastDocUniq() && !$old_delete)
+    		if (!$worksheet->getLastDocUniq() && !$old_delete && !$request->worksheet_original)
     			$old_delete = $this->deleteOldWorksheet($id,'eng');
 
     		$qty = $all_worksheet->count();    	  		   		
