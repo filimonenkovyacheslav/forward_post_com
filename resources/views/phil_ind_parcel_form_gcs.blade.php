@@ -62,7 +62,7 @@
                                     <button type="button" onclick="philIndAnswer(this)" class="btn btn-primary pull-left yes sender" data-dismiss="modal">Yes</button>
                                     <button type="button" onclick="philIndAnswer(this)" class="btn btn-danger pull-left no" data-dismiss="modal">No</button>
 
-                                        {!! Form::open(['url'=>'https://ddcargos.com/api/forward-check-phone-eng', 'class'=>'form-horizontal check-phone','method' => 'GET']) !!}
+                                        {!! Form::open(['url'=>'https://forward-post.com/api/forward-check-phone-eng', 'class'=>'form-horizontal check-phone','method' => 'GET']) !!}
 
                                         <div class="form-group">
                                             <div class="row">
@@ -99,7 +99,7 @@
                                     <button type="button" onclick="philIndAnswer2(this)" class="btn btn-primary pull-left yes sender" data-dismiss="modal">Yes</button>
                                     <button type="button" onclick="philIndAnswer2(this)" class="btn btn-danger pull-left no" data-dismiss="modal">No</button>
 
-                                        {!! Form::open(['url'=>'https://ddcargos.com/api/forward-check-phone-eng', 'class'=>'form-horizontal check-phone','method' => 'GET']) !!}
+                                        {!! Form::open(['url'=>'https://forward-post.com/api/forward-check-phone-eng', 'class'=>'form-horizontal check-phone','method' => 'GET']) !!}
 
                                         <div class="form-group">
                                             <div class="row">
@@ -149,7 +149,7 @@
                 </script>
                 @endif 
 
-                {!! Form::open(['url'=>'https://ddcargos.com/api/forward-parcel-form-eng','onsubmit' => 'сonfirmSigned(event)', 'class'=>'form-horizontal form-send-parcel','method' => 'GET']) !!}
+                {!! Form::open(['url'=>'https://forward-post.com/api/forward-parcel-form-eng','onsubmit' => 'сonfirmSigned(event)', 'class'=>'form-horizontal form-send-parcel','method' => 'GET']) !!}
 
                 {!! Form::hidden('phone_exist_checked',isset($data_parcel->phone_exist_checked) ? $data_parcel->phone_exist_checked : '')!!}
                 {!! Form::hidden('status_box','')!!}

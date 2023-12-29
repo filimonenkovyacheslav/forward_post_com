@@ -20,7 +20,7 @@
 	<table>
 		<tr>
 			<th colspan="4" style="font-size:14px">
-				<p style="font-size:16px">ORIENTAL EXPRESS</p>
+				<p style="font-size:16px">{{ $brand }}</p>
 				<span style="font-style: italic">PACKING LIST {{ $document->uniq_id }}</span>
 			</th>
 		</tr>

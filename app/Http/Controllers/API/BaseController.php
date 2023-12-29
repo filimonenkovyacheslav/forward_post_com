@@ -396,8 +396,17 @@ class BaseController extends AdminController
                 ])
                 ->get();
             }
-            elseif ($role === 'courier' || $role === 'agent') {
-                $result = CourierTask::where('courier',$name)->get();                
+            elseif (in_array($role, parent::COURIERS_ARR) || $role === 'agent') {
+                $courier = User::where('email', 'like', '%'.$name.'%')->first();
+                if ($courier) {
+                    $email_arr = User::where('role', $courier->role)->pluck('email')->toArray();
+                    $name_arr = [];
+                    foreach ($email_arr as $value) {
+                        $name_arr[] = explode('@', $value)[0];
+                    }
+                    $result = CourierTask::whereIn('courier',$name_arr)->get();
+                }
+                else return $this->sendError('Role error.');               
             }
             else return $this->sendError('Role error.');
             
@@ -495,7 +504,7 @@ class BaseController extends AdminController
                     $worksheet->length = $input['length'];
                     $worksheet->save();
 
-                    if ($input['role'] === 'courier') $this->updateStatusByTracking('courier_draft_worksheet', $worksheet, true);
+                    if (in_array($input['role'], parent::COURIERS_ARR)) $this->updateStatusByTracking('courier_draft_worksheet', $worksheet, true);
                     else $this->updateStatusByTracking('courier_draft_worksheet', $worksheet);
 
                     // Activate PDF
@@ -539,7 +548,7 @@ class BaseController extends AdminController
                     $worksheet->length = $input['length'];
                     $worksheet->save();
                     
-                    if ($input['role'] === 'courier') $this->updateStatusByTracking('courier_eng_draft_worksheet', $worksheet, true);
+                    if (in_array($input['role'], parent::COURIERS_ARR)) $this->updateStatusByTracking('courier_eng_draft_worksheet', $worksheet, true);
                     else $this->updateStatusByTracking('courier_eng_draft_worksheet', $worksheet);
 
                     // Activate PDF
@@ -732,7 +741,7 @@ class BaseController extends AdminController
             $role = $input['role'];
             $name = $input['name'];
 
-            if ($role === 'admin' || $role === 'courier' || $role === 'agent') {
+            if ($role === 'admin' || in_array($role, parent::COURIERS_ARR) || $role === 'agent') {
                 $result = TrackingList::pluck('list_name')->unique()->toArray();                
             }
             else return $this->sendError('Role error.');
@@ -763,7 +772,7 @@ class BaseController extends AdminController
             $role = $input['role'];
             $name = $input['name'];
 
-            if ($role === 'admin' || $role === 'courier' || $role === 'agent') {
+            if ($role === 'admin' || in_array($role, parent::COURIERS_ARR) || $role === 'agent') {
                 $result = Checklist::all()->toArray();                
             }
             else return $this->sendError('Role error.');
@@ -838,7 +847,21 @@ class BaseController extends AdminController
             $text = 'קיבלה קבלה חדשה מחברת שליחויות בינלאומית, לצפייה לחצו כאן'.' '.$jpg;
         }
         elseif($this->getDomainRule() === 'forward'){
-            $text = 'קיבלה קבלה חדשה מחברת אוריינטל אקספרס 0559398039 ,לצפייה לחצו כאן'.' '.$jpg;
+            if (isset($input['country']) && $input['country']) {
+                $country = $input['country'];
+            }
+            else {
+                $result = PhilIndWorksheet::where('tracking_main',$input['tracking'])->first();
+                $country = $result ? $result->consignee_country : '';
+            }
+
+            if ($country === 'India') {
+                $text = 'קיבלה קבלה חדשה מחברת דזי.סי.אס.דיליברי 0559912684 ,לצפייה לחצו כאן'.' '.$jpg;
+            }
+            else{
+                $text = 'קיבלה קבלה חדשה מחברת אוריינטל אקספרס 0559398039 ,לצפייה לחצו כאן'.' '.$jpg;
+            }
+            
         }
         
         return $this->sendResponse($text, 'Receipt added successfully.');        

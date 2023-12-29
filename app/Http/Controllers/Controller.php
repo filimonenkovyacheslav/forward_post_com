@@ -341,7 +341,7 @@ class Controller extends BaseController
 
     protected function getDomainRule()
     {
-        $domain = $_SERVER['SERVER_NAME'];
+        $domain = url()->current();
         if (strripos($domain, 'forward-post') !== false) return 'forward';
         else return 'ddcargos';
     }
@@ -362,7 +362,8 @@ class Controller extends BaseController
                     $pdf = PDF::loadView('pdf.pdfview',compact('worksheet','document','tracking','cancel'));
                 }
                 elseif($this->getDomainRule() === 'forward'){
-                    $pdf = PDF::loadView('pdf.pdfview_forward',compact('worksheet','document','tracking','cancel'));
+                    $brand = $worksheet->consignee_country !== 'India' ? 'ORIENTAL EXPRESS' : 'GCS-DELIVERIES';
+                    $pdf = PDF::loadView('pdf.pdfview_forward',compact('worksheet','document','tracking','cancel','brand'));
                 }
             }
             else{
@@ -2258,6 +2259,8 @@ class Controller extends BaseController
     {
         $files_folder = 'packing_archive_'.$date;
         $name_arr = $this->getPdfFileNames($id_arr, $table);
+        if (!$name_arr) return null;
+        
         $files = File::files(public_path('upload/documents'));
         $new_path = $this->checkDirectory($files_folder);
         $old_path = $this->checkDirectory('documents');
@@ -2280,10 +2283,16 @@ class Controller extends BaseController
         
         switch($table) {
             case 'new_worksheet';
-                $name_arr = NewWorksheet::whereIn('id', $id_arr)->pluck('packing_number')->toArray();
-                break;
+            $name_arr = NewWorksheet::where('packing_number', '!=', null)
+            ->where(function ($query) use ($id_arr) {
+                $query->whereIn('id',$id_arr);
+            })->pluck('packing_number')->toArray();
+            break;
             case 'phil_ind_worksheet';
-                $name_arr = PhilIndWorksheet::whereIn('id', $id_arr)->pluck('packing_number')->toArray();
+                $name_arr = PhilIndWorksheet::where('packing_number', '!=', null)
+            ->where(function ($query) use ($id_arr) {
+                $query->whereIn('id',$id_arr);
+            })->pluck('packing_number')->toArray();
                 break;      
             default:
             break;

@@ -212,7 +212,8 @@ class SignedDocumentController extends Controller
                 $pdf = PDF::loadView('pdf.pdfview',compact('worksheet','document','tracking','cancel'));
             }
             elseif($this->getDomainRule() === 'forward'){
-                $pdf = PDF::loadView('pdf.pdfview_forward',compact('worksheet','document','tracking','cancel'));
+                $brand = $worksheet->consignee_country !== 'India' ? 'ORIENTAL EXPRESS' : 'GCS-DELIVERIES';
+                $pdf = PDF::loadView('pdf.pdfview_forward',compact('worksheet','document','tracking','cancel','brand'));
             }           
         }
         else{
@@ -476,7 +477,8 @@ class SignedDocumentController extends Controller
         $document = SignedDocument::find($id);
         $worksheet = $document->getWorksheet();
         $tracking = $worksheet->tracking_main;      
-        return view('pdf.pdfview_forward',compact('worksheet','document','tracking','cancel'));
+        $brand = $worksheet->consignee_country !== 'India' ? 'ORIENTAL EXPRESS' : 'GCS-DELIVERIES';
+        return view('pdf.pdfview_forward',compact('worksheet','document','tracking','cancel','brand'));
     }
 
 
@@ -508,7 +510,8 @@ class SignedDocumentController extends Controller
             $pdf = PDF::loadView('pdf.pdfview',compact('worksheet','document','tracking','cancel'));
         }
         elseif($this->getDomainRule() === 'forward'){
-            $pdf = PDF::loadView('pdf.pdfview_forward',compact('worksheet','document','tracking','cancel'));
+            $brand = $worksheet->consignee_country !== 'India' ? 'ORIENTAL EXPRESS' : 'GCS-DELIVERIES';
+            $pdf = PDF::loadView('pdf.pdfview_forward',compact('worksheet','document','tracking','cancel','brand'));
         }
         $pdf->save($folderPath.$file_name);
 
@@ -565,7 +568,8 @@ class SignedDocumentController extends Controller
                 $pdf = PDF::loadView('pdf.pdfview',compact('worksheet','document','tracking','cancel'));
             }
             elseif($this->getDomainRule() === 'forward'){
-                $pdf = PDF::loadView('pdf.pdfview_forward',compact('worksheet','document','tracking','cancel'));
+                $brand = $worksheet->consignee_country !== 'India' ? 'ORIENTAL EXPRESS' : 'GCS-DELIVERIES';
+                $pdf = PDF::loadView('pdf.pdfview_forward',compact('worksheet','document','tracking','cancel','brand'));
             }
         }
         else        

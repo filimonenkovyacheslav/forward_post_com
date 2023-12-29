@@ -10,7 +10,7 @@
 				<a class="yellow-button" href="{{ route('parcelFormEngGcs') }}">Book Online</a>
 			</div>  
 
-				{!! Form::open(['url'=>'https://ddcargos.com/api/forward-tracking-form-eng', 'class'=>'form-horizontal','method' => 'GET']) !!}
+				{!! Form::open(['url'=>'https://forward-post.com/api/forward-tracking-form-eng', 'class'=>'form-horizontal','method' => 'GET']) !!}
 
                 <div class="form-group">
                     <div class="row">

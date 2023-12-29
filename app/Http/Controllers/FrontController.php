@@ -987,20 +987,44 @@ class FrontController extends AdminController
     }
     
 
+    public function forwardParcelAddEng(Request $request)
+    {
+        $parcels_qty = (int)$request->parcels_qty;
+        $message = '';
+        if (!$request->phone_exist_checked) {
+            $message = $this->checkExistPhone($request,'courier_eng_draft_worksheet');
+            if ($message) {
+                return redirect($request->url_name.'?phone_exist='.$message.'&phone_number='.$request->input('standard_phone'));
+            }
+        }  
+        else{
+            $message = $this->__philIndParcelAdd($request);
+            return redirect($request->url_name.'?message='.$message);
+        }     
+        
+        $message = $this->__philIndParcelAdd($request);
+        return redirect($request->url_name.'?message='.$message);
+    }
+    
+
     private function __philIndParcelAdd($request)
     {
         $worksheet = new CourierEngDraftWorksheet();
         $fields = $this->getTableColumns('courier_eng_draft_worksheet');
+        $message = [];
 
         foreach($fields as $field){
-            /*if ($field === 'shipper_name') {
-                $worksheet->$field = $request->input('first_name').' '.$request->input('last_name');
-            }*/
-            if ($field === 'consignee_name') {
-                $worksheet->$field = $request->input('consignee_first_name').' '.$request->input('consignee_last_name');
+            if ($field === 'shipper_name') {
+                if ($request->shipper_name) 
+                    $worksheet->$field = $request->shipper_name;
+                else
+                    $worksheet->$field = $request->first_name.' '.$request->last_name;
+            }
+            else if ($field === 'consignee_name') {
+                $worksheet->$field = $request->consignee_first_name.' '.$request->consignee_last_name;
             }
             else if ($field === 'consignee_address') {
-                $worksheet->$field = $request->input('consignee_country').' '.$request->input('consignee_address');
+                $worksheet->$field = $request->consignee_country.' '.$request->consignee_address;
             }
             else if ($field === 'shipped_items') {
                 $temp = '';
@@ -1013,27 +1037,28 @@ class FrontController extends AdminController
                 }
                 if ($temp) $worksheet->$field = $temp;
                 else $worksheet->$field = 'Empty: 0';
+
             }
             else if ($field === 'direction') {
-                $worksheet->$field = $this->createDirection($request->input('shipper_country'), $request->input('consignee_country'));
+                $worksheet->$field = $this->createDirection($request->shipper_country, $request->consignee_country);
             }
             else if ($field !== 'created_at'){
-                $worksheet->$field = $request->input($field);
+                $worksheet->$field = $request->$field;
             }                               
         }
 
         $worksheet->in_trash = false;
-
-        if (in_array($worksheet->shipper_city, array_keys($this->israel_cities))) {
-            $worksheet->shipper_region = $this->israel_cities[$worksheet->shipper_city];
-        }
-       
+        if ($worksheet->shipper_country === 'Israel') {
+            if (in_array($worksheet->shipper_city, array_keys($this->israel_cities))) {
+                $worksheet->shipper_region = $this->israel_cities[$worksheet->shipper_city];
+            }
+        }        
 
         $worksheet->date = date('Y-m-d');
         $worksheet->status_date = date('Y-m-d');
         $worksheet->order_date = date('Y-m-d');
 
-        if ($request->comments_2 !== 'I need boxes') {
+        if (!$request->status_box) {
             if(!$request->short_order)
                 $worksheet->status = 'Pick up';
             else
@@ -1055,18 +1080,18 @@ class FrontController extends AdminController
             $packing = new PackingEng;
             foreach($fields_packing as $field){
                 if ($field === 'country') {
-                    $packing->$field = $request->input('consignee_country');
+                    $packing->$field = $request->consignee_country;
                     // New parcel form
-                    if (!$request->input('consignee_address')) $packing->consignee_address = $request->input('consignee_country');                    
+                    if (!$request->consignee_address) $packing->consignee_address = $request->consignee_country;                    
                 }
-                /*elseif ($field === 'shipper_name') {
-                    $packing->$field = $request->input('first_name').' '.$request->input('last_name');
-                }*/
+                elseif ($field === 'shipper_name') {
+                    $packing->$field = $request->first_name.' '.$request->last_name;
+                }
                 elseif ($field === 'shipper_phone') {
-                    $packing->$field = $request->input('standard_phone');
+                    $packing->$field = $request->standard_phone;
                 }
                 elseif ($field === 'consignee_name') {
-                    $packing->$field = $request->input('consignee_first_name').' '.$request->input('consignee_last_name');
+                    $packing->$field = $request->consignee_first_name.' '.$request->consignee_last_name;
                 }
                 elseif ($field === 'work_sheet_id') {
                     $packing->$field = $work_sheet_id;
@@ -1074,25 +1099,32 @@ class FrontController extends AdminController
                 else if ($field === 'items') {
                     $temp = '';
                     for ($i=1; $i < 11; $i++) { 
-                        if (null !== $request->input('item_'.$i)) {
-                            $temp .= $request->input('item_'.$i).': '.$request->input('q_item_'.$i).'; ';
+                        $t_1 = 'item_'.$i;
+                        $t_2 = 'q_item_'.$i;
+                        if ($request->$t_1) {
+                            $temp .= $request->$t_1.': '.$request->$t_2.'; ';
                         }
                     }
-                    $packing->$field = $temp;
+                    if ($temp) $packing->$field = $temp;
+                    else $packing->$field = 'Empty: 0';
                 }
                 else{
-                    $packing->$field = $request->input($field);
+                    $packing->$field = $request->$field;
                 } 
             }
             $packing->save();
 
-            $message = 'Shipment order successfully created !';
+            $message['id'] = $work_sheet_id;
+            $message['message'] = 'Shipment order successfully created !';
         }
         else{
-            $message = 'Saving error !';
+            $message['message'] = 'Saving error !';
         }
 
-        return $message;        
+        if ($request->url_name) 
+            return $message['message'];
+        else
+            return $message;        
     }
 
 
@@ -1416,5 +1448,121 @@ class FrontController extends AdminController
         else{
             return redirect()->route('philIndParcelForm')->with('no_phone', $message);
         }        
+    }
+
+
+    public function forwardCheckPhoneEng(Request $request)
+    {
+        if (!$request->url_name) return redirect()->back();
+        
+        $data = PhilIndWorksheet::where('shipper_phone',$request->shipper_phone)
+        ->orWhere('standard_phone', 'like', '%'.$request->shipper_phone.'%')
+        ->get()->last();
+
+        if (!$data) {
+            $data = CourierEngDraftWorksheet::where('standard_phone', 'like', '%'.$request->shipper_phone.'%')->get()->last();
+        }
+
+        if (!$data) {
+            $archive_data = Archive::where([
+                ['standard_phone', 'like', '%'.$request->shipper_phone.'%']
+            ])->get()->last();
+        }
+        
+        $message = 'This phone number is not available in the system';
+        $add_parcel = 'true';
+        $data_parcel = [];
+
+        if ($data) {
+            if ($request->draft) {
+                $data_parcel = $this->fillResponseDataEng($data, $request, false, true);
+            }
+            else{
+                $data_parcel = $this->fillResponseDataEng($data, $request);
+            }
+
+            return redirect($request->url_name.'?'.http_build_query($data_parcel));
+            
+        }
+        elseif ($archive_data) {
+            if ($request->draft) {
+                $data_parcel = $this->fillResponseDataArchiveEng($archive_data, $request, false, true);
+            }
+            else{
+                $data_parcel = $this->fillResponseDataArchiveEng($archive_data, $request);
+            }
+
+            return redirect($request->url_name.'?'.http_build_query($data_parcel));
+        }
+        else{
+            return redirect($request->url_name.'?err_message='.$message);
+        }  
+    }
+
+
+    public function getForwardTrackingEng(Request $request)
+    {
+        $tracking = $request->get_tracking;
+        $message_arr['ru'] = '';
+        $message_arr['en'] = '';
+        $message_arr['he'] = '';
+        $message_arr['ua'] = '';
+        $message = '';
+
+        if (stripos($tracking, 'T') !== false){
+            if (stripos($tracking, 'T-') === false) {
+                $tracking = preg_replace("/[^0-9]/", '', $tracking);
+                $tracking = 'T-'.$tracking;
+            }
+        }
+
+        $row = DB::table('phil_ind_worksheet')
+        ->select('status','status_he','status_ru')
+        ->where('tracking_main', '=', $tracking)
+        ->get();   
+
+        if (!$row->count())
+            $row = DB::table('courier_eng_draft_worksheet')
+        ->select('status','status_he','status_ru')
+        ->where('tracking_main', '=', $tracking)
+        ->get(); 
+
+        if (!$row->count())
+            $row = DB::table('phil_ind_worksheet')
+        ->select('status','status_he','status_ru')
+        ->where('packing_number', '=', $tracking)
+        ->get();  
+
+        if (!$row->count())
+            $row = DB::table('courier_eng_draft_worksheet')
+        ->select('status','status_he','status_ru')
+        ->where('packing_number', '=', $tracking)
+        ->get(); 
+
+        if ($row->count()) {
+            foreach ($row as $val) {
+                if ($val->status) {
+                    $message_arr['ru'] = $val->status_ru;
+                }
+                if ($val->status) {
+                    $message_arr['en'] = $val->status;
+                }
+                if ($val->status) {
+                    $message_arr['he'] = $val->status_he;
+                }
+            }
+        }
+        $message_arr['ua'] = '';
+        $message = $message_arr['en'];
+
+        if ($request->url_name) {
+            if ($message) {
+                return redirect($request->url_name.'?message='.$message);
+            }
+            else
+                return redirect($request->url_name.'?err_message=Not found');
+        } 
+        else
+            return redirect()->back();
     }
 }
